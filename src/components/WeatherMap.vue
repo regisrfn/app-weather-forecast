@@ -115,6 +115,14 @@ import { getNeighborCities, getRegionalWeather } from '../services/apiService';
 import { getMunicipalityMesh } from '../services/ibgeService';
 import { getRainfallColor, getRainfallDescription, type WeatherData } from '../services/mockService';
 
+// Corrigir ícones do Leaflet para produção
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: '/marker-icon-2x.png',
+  iconUrl: '/marker-icon.png',
+  shadowUrl: '/marker-shadow.png',
+});
+
 const mapContainer = ref<HTMLElement | null>(null);
 let map: L.Map | null = null;
 const selectedCity = ref<WeatherData | null>(null);
