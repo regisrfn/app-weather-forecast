@@ -141,10 +141,11 @@ const toggleMenu = () => {
 };
 
 const legendItems = [
-  { color: 'rgba(220, 220, 220, 0.2)', label: 'Sem chuva' },
-  { color: 'rgba(180, 200, 255, 0.4)', label: 'Fraca' },
-  { color: 'rgba(70, 80, 255, 0.6)', label: 'Moderada' },
-  { color: 'rgba(10, 10, 200, 0.9)', label: 'Intensa' },
+  { color: 'rgba(200, 200, 200, 0.3)', label: 'Sem chuva' },
+  { color: 'rgba(173, 216, 230, 0.6)', label: 'Fraca' },
+  { color: 'rgba(100, 149, 237, 0.7)', label: 'Moderada' },
+  { color: 'rgba(30, 144, 255, 0.8)', label: 'Forte' },
+  { color: 'rgba(0, 0, 139, 0.9)', label: 'Intensa' },
 ];
 
 const formatTime = (timestamp: string): string => {
