@@ -192,25 +192,28 @@ curl "https://servicodados.ibge.gov.br/api/v3/malhas/municipios/3543204?formato=
 
 ## 🚀 Deploy
 
-### Deploy na AWS
-
-Veja [DEPLOY_AWS.md](./DEPLOY_AWS.md) para instruções completas usando:
-- **S3** - Hospedagem estática
-- **CloudFront** - CDN global
-- **Route 53** - DNS customizado
-- **Terraform** - Infraestrutura como código
+### Deploy na AWS S3 (Versão Simplificada)
 
 **Deploy rápido:**
 ```bash
 # Build da aplicação
 npm run build
 
-# Deploy no S3
-aws s3 sync dist/ s3://seu-bucket-name/ --delete
-
-# Invalidar cache do CloudFront
-aws cloudfront create-invalidation --distribution-id XXX --paths "/*"
+# Deploy automático no S3
+./deploy-s3.sh
 ```
+
+📖 **Documentação completa**: [DEPLOY_S3.md](./DEPLOY_S3.md)
+
+---
+
+### Deploy na AWS com CloudFront (Requer conta verificada)
+
+Veja [DEPLOY_AWS.md](./DEPLOY_AWS.md) para instruções completas usando:
+- **S3** - Hospedagem estática
+- **CloudFront** - CDN global
+- **Route 53** - DNS customizado
+- **Terraform** - Infraestrutura como código
 
 ### Outras Opções de Deploy
 
