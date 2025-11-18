@@ -1,324 +1,277 @@
-# 🌦️ App Previsão do Tempo - Ribeirão do Sul# 🌦️ App Previsão do Tempo - Ribeirão do Sul
+# 🌦️ App Previsão do Tempo - Ribeirão do Sul
 
+Aplicação web interativa para visualizar previsão do tempo focada em **Ribeirão do Sul, SP** e cidades vizinhas com visualização em mapa usando malhas municipais do IBGE.
 
+## ✨ Funcionalidades
 
-Aplicação web interativa para visualizar previsão do tempo focada em **Ribeirão do Sul, SP** e cidades vizinhas.Aplicação Vue.js para visualização de previsão do tempo com foco em **Ribeirão do Sul/SP** e cidades vizinhas. Mostra dados de chuva com gradiente visual azul, subdivisões dentro das cidades, e integração com malhas municipais do IBGE.
-
-
-
-## ✨ Funcionalidades## 🚀 Tecnologias
-
-
-
-- 🎯 **Foco em Ribeirão do Sul** como ponto central- **Vue 3** + TypeScript + Vite
-
-- 📍 **Busca por raio** - Ajuste de 10 a 150 km para cidades vizinhas- **Leaflet** - Mapas interativos
-
-- 🗺️ **Visualização em mapa** com malhas municipais do IBGE- **API IBGE** - Malhas municipais
-
-- 🌈 **Gradiente de cores azuis** indicando intensidade de chuva- **Axios** - Requisições HTTP
-
-- 📊 **Dados meteorológicos** completos por cidade- **PostGIS** (backend) - Dados geoespaciais
-
+- 🎯 **Foco em Ribeirão do Sul** como ponto central
+- 📍 **Busca por raio ajustável** - 10 a 150 km para cidades vizinhas
+- 🗺️ **Visualização em mapa interativo** com malhas municipais do IBGE
+- 🌈 **Gradiente de cores azuis** indicando intensidade de chuva
+- 📊 **Painel de informações** completas por cidade
+- 📱 **Interface responsiva** - Desktop e mobile
 - 🔄 **Atualização automática** a cada 5 minutos
+- 🧪 **Dados mockados** para desenvolvimento (sem necessidade de backend)
 
-## 📋 Features
+## 🚀 Tecnologias
 
-## 🚀 Como Executar
-
-✅ Visualização de mapa centrado em Ribeirão do Sul  
-
-```bash✅ Malhas municipais do IBGE sobrepostas  
-
-# Instalar dependências✅ Gradiente de cores azul (intensidade de chuva)  
-
-npm install✅ Subdivisões dentro de cada cidade  
-
-✅ Painel de informações meteorológicas  
-
-# Iniciar em modo desenvolvimento✅ Atualização automática a cada 5 minutos  
-
-npm run dev✅ Dados mockados para desenvolvimento (sem backend)  
-
-
-
-# Build para produção## 🛠️ Instalação e Desenvolvimento
-
-npm run build
-
-```### Pré-requisitos
-
-- Node.js 20+
-
-Acesse: `http://localhost:5173/`- npm ou yarn
-
-
-
-## 🎮 Como Usar### Instalação
-
-
-
-1. **Ajustar Raio de Busca** - Use o slider no topo para selecionar o raio (10-150 km)```bash
-
-2. **Navegar no Mapa** - Clique e arraste para mover, scroll para zoom# Clone o repositório
-
-3. **Ver Detalhes** - Clique em uma cidade para ver informações completasgit clone https://github.com/seu-usuario/app-weather-forecast.git
-
-4. **Acompanhar Cores** - Quanto mais escuro o azul, maior a intensidade de chuvacd app-weather-forecast
-
-
-
-### Escala de Cores# Instale as dependências
-
-npm install
-
-- 🌫️ Cinza claro - Sem chuva
-
-- 🔵 Azul muito claro - Nublado (0-20%)# Configure as variáveis de ambiente
-
-- 🔵 Azul claro - Chuva fraca (20-40%)cp .env.example .env
-
-- 🔵 Azul médio - Chuva moderada (40-60%)```
-
-- 🔵 Azul escuro - Chuva forte (60-80%)
-
-- 🔵 Azul intenso - Chuva intensa (80-100%)### Desenvolvimento Local
-
-
-
-## 🛠️ Tecnologias```bash
-
-# Inicie o servidor de desenvolvimento
-
-- **Vue 3** - Framework frontendnpm run dev
-
+### Frontend
+- **Vue 3** - Framework progressivo com Composition API
 - **TypeScript** - Tipagem estática
+- **Leaflet** - Biblioteca de mapas interativos
+- **Vite** - Build tool ultrarrápida
+- **Axios** - Cliente HTTP
 
-- **Leaflet** - Mapas interativos# Acesse http://localhost:5173
+### APIs Externas
+- **IBGE Malhas** - Geometrias GeoJSON dos municípios
+- **OpenStreetMap** - Tiles do mapa base
 
-- **Vite** - Build tool```
+### Backend (Opcional)
+- Veja [BACKEND_REQUIREMENTS.md](./BACKEND_REQUIREMENTS.md) para implementação completa
 
-- **IBGE APIs** - Dados geográficos
+## 📦 Instalação e Desenvolvimento
+
+### Pré-requisitos
+
+- Node.js 18+ 
+- npm ou yarn
+
+### Instalação
+
+```bash
+# Clone o repositório
+git clone https://github.com/seu-usuario/app-weather-forecast.git
+cd app-weather-forecast
+
+# Instale as dependências
+npm install
+```
+
+### Desenvolvimento Local
+
+```bash
+# Inicie o servidor de desenvolvimento
+npm run dev
+
+# Acesse http://localhost:5173/
+```
 
 ### Build para Produção
 
-## 📁 Estrutura do Projeto
-
 ```bash
+# Build otimizado
+npm run build
 
-```# Build otimizado
+# Preview do build
+npm run preview
+```
 
-src/npm run build
+## 🏗️ Estrutura do Projeto
 
+```
+src/
 ├── components/
+│   └── WeatherMap.vue          # Componente principal do mapa
+├── services/
+│   ├── apiService.ts           # Comunicação com backend
+│   ├── mockService.ts          # Dados simulados para desenvolvimento
+│   └── ibgeService.ts          # Busca malhas do IBGE
+├── config/
+│   └── app.ts                  # Configurações centralizadas
+├── types/
+│   └── weather.ts              # Tipos TypeScript
+├── App.vue                     # Componente raiz
+└── main.ts                     # Entry point
+```
 
-│   └── WeatherMap.vue      # Componente principal do mapa# Preview do build
+## 🎮 Como Usar
 
-├── services/npm run preview
+1. **Ajustar Raio de Busca** - Use o slider no topo para alterar o raio (10-150 km)
+2. **Navegar no Mapa** - Clique e arraste para mover, scroll para zoom
+3. **Ver Detalhes da Cidade** - Clique em uma malha municipal
+4. **Abrir/Fechar Painel** - Use o botão flutuante no canto inferior direito
+5. **Acompanhar Intensidade** - Observe o gradiente de azul nas malhas
 
-│   ├── ibgeService.ts      # Integração com API do IBGE```
+## 🎨 Gradiente de Intensidade de Chuva
 
-│   └── weatherService.ts   # Serviço de dados meteorológicos
+| Intensidade | Cor | Descrição |
+|-------------|-----|-----------|
+| 0% | Cinza claro | Sem chuva |
+| 1-25% | Azul claro | Chuva fraca |
+| 25-50% | Azul médio | Chuva moderada |
+| 50-75% | Azul escuro | Chuva forte |
+| 75-100% | Azul intenso | Chuva muito forte |
 
-├── types/## 🏗️ Estrutura do Projeto
+## 🗺️ Cidades da Região
 
-│   └── weather.ts          # Tipos TypeScript
+Cidades vizinhas de **Ribeirão do Sul** (Microrregião de Ourinhos - SP):
 
-└── utils/```
+| Código IBGE | Nome | Distância Aprox. |
+|-------------|------|------------------|
+| 3543204 | **Ribeirão do Sul** | 0 km (centro) |
+| 3550506 | São Pedro do Turvo | ~18 km |
+| 3545407 | Salto Grande | ~18 km |
+| 3534708 | Ourinhos | ~25 km |
+| 3510153 | Canitar | ~30 km |
+| 3546405 | Santa Cruz do Rio Pardo | ~36 km |
+| 3538808 | Piraju | ~47 km |
 
-    └── geoUtils.ts         # Utilitários geográficos (Haversine)src/
+## ⚙️ Configuração
 
-```├── components/
+### Variáveis de Ambiente
 
-│   └── WeatherMap.vue      # Componente principal do mapa
+Crie um arquivo `.env` na raiz do projeto:
 
-## 🌐 APIs Utilizadas├── services/
+```env
+# URL do backend (quando implementado)
+VITE_API_BASE_URL=http://localhost:3000
 
-│   ├── ibgeService.ts      # Integração com API do IBGE
+# Modo mock (true = dados simulados, false = backend real)
+VITE_USE_MOCK=true
+```
 
-### IBGE│   └── weatherService.ts   # Serviço de dados meteorológicos
+### Configuração Centralizada
 
-- **Malhas Municipais (GeoJSON)** - Geometrias dos municípios├── types/
+Edite `src/config/app.ts` para ajustar:
 
-- **Localidades** - Informações dos municípios│   └── weather.ts          # Tipos TypeScript
+```typescript
+export const APP_CONFIG = {
+  CENTER_CITY_ID: '3543204',    // Código IBGE da cidade centro
+  API_BASE_URL: '...',           // URL do backend
+  USE_MOCK: true,                // Usar dados mockados
+  RADIUS: {
+    DEFAULT: 50,                 // Raio padrão (km)
+    MIN: 10,                     // Raio mínimo
+    MAX: 150,                    // Raio máximo
+  },
+  UPDATE_INTERVAL: 5 * 60 * 1000, // Intervalo de atualização (ms)
+}
+```
 
-├── App.vue                 # Componente raiz
+## 📡 Backend
 
-### Leaflet└── main.ts                 # Entry point
+A aplicação frontend está **preparada para integração com backend**, mas funciona com dados mockados por padrão.
 
-- **OpenStreetMap** - Mapa base```
+### Documentação Completa
+Veja [BACKEND_REQUIREMENTS.md](./BACKEND_REQUIREMENTS.md) para:
+- ✅ Especificação completa das 3 rotas de API
+- ✅ Parâmetros, tipos e exemplos de retorno
+- ✅ Implementação de exemplo em Express + TypeScript
+- ✅ Integração com APIs meteorológicas (OpenWeatherMap, INMET)
+- ✅ Cálculo de distância com Haversine
+- ✅ Instruções de deploy
 
+### Rotas Necessárias
 
+```http
+GET  /api/cities/neighbors/:cityId?radius=50
+GET  /api/weather/city/:cityId
+POST /api/weather/regional
+```
 
-## 📊 Dados Mockados## 🌐 Deploy na AWS
+### Alternando entre Mock e Backend Real
 
+```typescript
+// src/config/app.ts
+USE_MOCK: false  // Desativa mock, usa backend real
+```
 
+## 🌐 APIs do IBGE
 
-Atualmente a aplicação usa **dados simulados** para demonstração. Para usar dados reais:Veja a documentação completa em [DEPLOY_AWS.md](./DEPLOY_AWS.md).
+### Malhas Municipais
+Busca geometria GeoJSON dos municípios:
 
+```
+GET https://servicodados.ibge.gov.br/api/v3/malhas/municipios/{id}?formato=application/vnd.geo+json
+```
 
-
-1. Implementar o backend (veja `BACKEND_REQUIREMENTS.md`)**Resumo:**
-
-2. Descomentar as chamadas de API em `src/services/weatherService.ts`- S3 para hospedagem estática
-
-3. Configurar variável de ambiente `VITE_API_URL`- CloudFront para CDN global
-
-- Route 53 para DNS
-
-## 🔧 Adicionar Mais Cidades- Terraform para infraestrutura como código
-
-
-
-Edite `src/services/ibgeService.ts` e adicione as coordenadas:**Deploy rápido:**
-
+**Exemplo:** Malha de Ribeirão do Sul
 ```bash
+curl "https://servicodados.ibge.gov.br/api/v3/malhas/municipios/3543204?formato=application/vnd.geo+json"
+```
 
-```typescriptcd terraform
+## 🚀 Deploy
 
-const MUNICIPALITY_COORDS: Record<number, { lat: number; lon: number }> = {terraform init
+### Deploy na AWS
 
-  3543204: { lat: -22.7572, lon: -49.9439 }, // Ribeirão do Sulterraform apply
+Veja [DEPLOY_AWS.md](./DEPLOY_AWS.md) para instruções completas usando:
+- **S3** - Hospedagem estática
+- **CloudFront** - CDN global
+- **Route 53** - DNS customizado
+- **Terraform** - Infraestrutura como código
 
-  // Adicione aqui:
+**Deploy rápido:**
+```bash
+# Build da aplicação
+npm run build
 
-  3503208: { lat: -22.6622, lon: -50.4128 }, // Assis# Após criar infraestrutura
+# Deploy no S3
+aws s3 sync dist/ s3://seu-bucket-name/ --delete
 
-};npm run build
-
-```aws s3 sync dist/ s3://seu-bucket-name/
-
+# Invalidar cache do CloudFront
 aws cloudfront create-invalidation --distribution-id XXX --paths "/*"
-
-### Como Buscar Coordenadas```
-
-
-
-1. **Google Maps** - Click direito → "O que há aqui?"## 🔧 Backend
-
-2. **LatLong.net** - https://www.latlong.net/
-
-3. **API Nominatim** - https://nominatim.openstreetmap.org/O frontend está preparado para integração com backend. Veja [BACKEND_REQUIREMENTS.md](./BACKEND_REQUIREMENTS.md) para detalhes completos.
-
-
-
-## 📝 Backend### APIs Meteorológicas Recomendadas:
-
-1. **INMET** (gratuito) - Dados oficiais brasileiros
-
-Veja `BACKEND_REQUIREMENTS.md` para:2. **OpenWeatherMap** (free tier) - Backup
-
-- Rotas necessárias3. **CPTEC/INPE** (gratuito) - Imagens de satélite
-
-- Exemplos de implementação
-
-- Fontes de dados meteorológicos### Endpoints Esperados:
-
-- Integração com o frontend```typescript
-
-GET  /api/weather/current/:cityId
-
-### Rotas EsperadasPOST /api/weather/regional
-
-GET  /api/weather/forecast/:cityId?hours=24
-
-```httpGET  /api/weather/history/:cityId?start=DATE&end=DATE
-
-GET  /api/weather/city/:cityIdWS   /api/ws/weather/:cityId
-
-POST /api/weather/regional```
-
-GET  /api/weather/forecast/:cityId?hours=24
-
-```## 🎨 Visualização
-
-
-
-## 🗺️ Cálculo de Distâncias### Gradiente de Chuva (Azul)
-
-- **Sem chuva**: Cinza claro `rgba(200, 200, 200, 0.3)`
-
-Usa a **fórmula de Haversine** para calcular distâncias geográficas precisas entre coordenadas (implementada em `src/utils/geoUtils.ts`).- **Chuva fraca (0-25%)**: Azul claro `rgba(150, 150, 255, 0.4)`
-
-- **Chuva moderada (25-50%)**: Azul médio `rgba(100, 100, 255, 0.5)`
-
-## 📄 Deploy- **Chuva forte (50-75%)**: Azul escuro `rgba(50, 50, 255, 0.6)`
-
-- **Chuva intensa (75-100%)**: Azul intenso `rgba(0, 0, 255, 0.8)`
-
-Veja `DEPLOY_AWS.md` para instruções de deploy na AWS usando:
-
-- S3 para hospedagem### Malhas Municipais
-
-- CloudFront para CDNAs malhas são obtidas da API do IBGE:
-
-- Route 53 para DNS```
-
-https://servicodados.ibge.gov.br/api/v3/malhas/municipios/{id}?formato=application/vnd.geo+json
-
-## 👨‍💻 Desenvolvimento```
-
-
-
-```bash## 📊 Dados
-
-# Type checking
-
-npm run type-check### Modo Mock (Desenvolvimento)
-
-Por padrão, a aplicação usa dados mockados para desenvolvimento sem backend.
-
-# Build
-
-npm run buildPara habilitar/desabilitar:
-
-```env
-
-# Preview da build# .env
-
-npm run previewVITE_USE_MOCK_DATA=true  # Dados mockados
-
-```VITE_USE_MOCK_DATA=false # Backend real
-
 ```
 
-## 📝 Licença
+### Outras Opções de Deploy
 
-### Cidades da Região
-
-MIT- **Ribeirão do Sul** (3543204) - Cidade focal
-
-- Ourinhos (3539103)
-- Bernardino de Campos (3506300)
-- Canitar (3510153)
-- Santa Cruz do Rio Pardo (3552601)
-
-Microrregião de Ourinhos - SP (código IBGE: 35040)
-
-## 🔐 Variáveis de Ambiente
-
-```env
-VITE_API_URL=http://localhost:3000/api
-VITE_USE_MOCK_DATA=true
-VITE_UPDATE_INTERVAL=300000
-VITE_MAP_DEFAULT_ZOOM=10
-VITE_FOCAL_CITY_LAT=-22.7572
-VITE_FOCAL_CITY_LON=-49.9439
-VITE_FOCAL_CITY_ID=3543204
+#### Vercel
+```bash
+npm install -g vercel
+vercel
 ```
 
-## 🧪 Testes
+#### Netlify
+```bash
+npm install -g netlify-cli
+netlify deploy --prod --dir=dist
+```
+
+#### Railway
+```bash
+railway login
+railway init
+railway up
+```
+
+## 🧪 Desenvolvimento
 
 ```bash
 # Type checking
 npm run type-check
+
+# Build
+npm run build
+
+# Preview da build
+npm run preview
 ```
 
 ## 📱 Responsividade
 
 A aplicação é totalmente responsiva:
-- Desktop: Painel lateral fixo
-- Mobile: Painel inferior deslizante
+
+- **Desktop** - Painel de informações flutuante no canto inferior direito
+- **Mobile** - Painel adaptativo com largura total
+- **Tablet** - Layout intermediário otimizado
+
+## 🔧 Adicionar Novas Cidades
+
+Para adicionar mais cidades ao mock:
+
+1. Edite `src/services/mockService.ts`
+2. Adicione coordenadas em `getMockNeighborCities()`
+3. Adicione dados climáticos em `getMockWeatherData()`
+
+```typescript
+// Exemplo:
+{
+  id: '3503208',
+  name: 'Assis',
+  latitude: -22.6622,
+  longitude: -50.4128,
+  distance: 60.5,
+}
+```
 
 ## 🤝 Contribuindo
 
@@ -332,13 +285,12 @@ A aplicação é totalmente responsiva:
 
 Este projeto está sob a licença MIT.
 
-## 👤 Autor
-
-**Regis**
-
 ## 🙏 Agradecimentos
 
-- IBGE pela API de malhas municipais
-- INMET pelos dados meteorológicos
-- OpenStreetMap pelos mapas base
-- Leaflet pela biblioteca de mapas
+- **IBGE** - API de malhas municipais
+- **OpenStreetMap** - Tiles do mapa base
+- **Leaflet** - Biblioteca de mapas
+- **Vue.js** - Framework frontend
+
+---
+

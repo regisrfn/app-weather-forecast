@@ -13,8 +13,8 @@
               id="radius-slider"
               type="range"
               v-model.number="searchRadius"
-              min="10"
-              max="150"
+              :min="APP_CONFIG.RADIUS.MIN"
+              :max="APP_CONFIG.RADIUS.MAX"
               step="10"
               @input="updateRegionalData"
             />
@@ -101,23 +101,21 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { IBGEService, type MunicipalityWithCoords } from '../services/ibgeService';
-import { WeatherService } from '../services/weatherService';
-import type { RainfallData } from '../types/weather';
+import { APP_CONFIG } from '../config/app';
+import { getNeighborCities, getRegionalWeather } from '../services/apiService';
+import { getMunicipalityMesh } from '../services/ibgeService';
+import { getRainfallColor, getRainfallDescription, type WeatherData } from '../services/mockService';
 
 const mapContainer = ref<HTMLElement | null>(null);
 let map: L.Map | null = null;
-const selectedCity = ref<RainfallData | null>(null);
-const regionalData = ref<RainfallData[]>([]);
+const selectedCity = ref<WeatherData | null>(null);
+const regionalData = ref<WeatherData[]>([]);
 const geoJsonLayers: L.GeoJSON[] = [];
 let updateInterval: number | null = null;
 let radiusCircle: L.Circle | null = null;
 
-// Coordenadas de Ribeirão do Sul
-const RIBEIRAO_DO_SUL_COORDS: [number, number] = [-22.7572, -49.9439];
-
 // Controle de raio de busca (em km)
-const searchRadius = ref<number>(50);
+const searchRadius = ref<number>(APP_CONFIG.RADIUS.DEFAULT);
 
 // Controle de abertura do painel
 const isPanelOpen = ref<boolean>(false);
@@ -133,16 +131,8 @@ const legendItems = [
   { color: 'rgba(10, 10, 200, 0.9)', label: 'Intensa' },
 ];
 
-const getRainfallColor = (intensity: number): string => {
-  return WeatherService.getRainfallColor(intensity);
-};
-
-const getRainfallDescription = (intensity: number): string => {
-  return WeatherService.getRainfallDescription(intensity);
-};
-
-const formatTime = (date: Date): string => {
-  return new Date(date).toLocaleString('pt-BR', {
+const formatTime = (timestamp: string): string => {
+  return new Date(timestamp).toLocaleString('pt-BR', {
     day: '2-digit',
     month: '2-digit',
     hour: '2-digit',
@@ -154,16 +144,20 @@ const initMap = () => {
   if (!mapContainer.value) return;
 
   // Inicializar mapa centrado em Ribeirão do Sul
-  map = L.map(mapContainer.value).setView(RIBEIRAO_DO_SUL_COORDS, 10);
+  map = L.map(mapContainer.value).setView(
+    [APP_CONFIG.MAP.CENTER.lat, APP_CONFIG.MAP.CENTER.lng],
+    APP_CONFIG.MAP.DEFAULT_ZOOM
+  );
 
   // Adicionar camada base do OpenStreetMap
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors',
-    maxZoom: 18,
+    maxZoom: APP_CONFIG.MAP.MAX_ZOOM,
+    minZoom: APP_CONFIG.MAP.MIN_ZOOM,
   }).addTo(map);
 
   // Marcar Ribeirão do Sul como centro
-  L.marker(RIBEIRAO_DO_SUL_COORDS)
+  L.marker([APP_CONFIG.MAP.CENTER.lat, APP_CONFIG.MAP.CENTER.lng])
     .addTo(map)
     .bindPopup('<b>Ribeirão do Sul</b><br>Cidade focal')
     .openPopup();
@@ -181,7 +175,7 @@ const updateRadiusCircle = () => {
   }
   
   // Adicionar novo círculo
-  radiusCircle = L.circle(RIBEIRAO_DO_SUL_COORDS, {
+  radiusCircle = L.circle([APP_CONFIG.MAP.CENTER.lat, APP_CONFIG.MAP.CENTER.lng], {
     color: '#667eea',
     fillColor: '#667eea',
     fillOpacity: 0.1,
@@ -193,34 +187,34 @@ const updateRadiusCircle = () => {
 
 const loadRegionalData = async () => {
   try {
-    // Buscar cidades dentro do raio especificado
-    const citiesInRadius = await IBGEService.getCitiesByRadius(
-      RIBEIRAO_DO_SUL_COORDS[0],
-      RIBEIRAO_DO_SUL_COORDS[1],
-      searchRadius.value
-    );
+    // 1. Buscar cidades vizinhas do backend (ou mock)
+    const response = await getNeighborCities(APP_CONFIG.CENTER_CITY_ID, searchRadius.value);
     
-    if (citiesInRadius.length > 0) {
-      // Buscar dados de chuva para as cidades
-      const cityIds = citiesInRadius.map(c => c.id.toString());
-      const rainfallData = await WeatherService.getRegionalRainfall(cityIds);
-      regionalData.value = rainfallData;
-      
-      // Renderizar malhas no mapa
-      await renderCityMeshes(citiesInRadius, rainfallData);
-      
-      // Selecionar Ribeirão do Sul por padrão
-      const ribeiraoData = rainfallData.find(d => d.cityId === '3543204');
-      if (ribeiraoData) {
-        selectedCity.value = ribeiraoData;
-      }
+    // Incluir a cidade centro na lista
+    const allCities = [response.centerCity, ...response.neighbors];
+    const cityIds = allCities.map(c => c.id);
+    
+    // 2. Buscar dados climáticos do backend (ou mock)
+    const weatherData = await getRegionalWeather(cityIds);
+    regionalData.value = weatherData;
+    
+    // 3. Renderizar malhas no mapa
+    await renderCityMeshes(allCities, weatherData);
+    
+    // 4. Selecionar Ribeirão do Sul por padrão
+    const ribeiraoData = weatherData.find(d => d.cityId === APP_CONFIG.CENTER_CITY_ID);
+    if (ribeiraoData) {
+      selectedCity.value = ribeiraoData;
     }
   } catch (error) {
     console.error('Erro ao carregar dados regionais:', error);
   }
 };
 
-const renderCityMeshes = async (cities: MunicipalityWithCoords[], rainfallData: RainfallData[]) => {
+const renderCityMeshes = async (
+  cities: Array<{ id: string; name: string; latitude: number; longitude: number }>,
+  weatherData: WeatherData[]
+) => {
   if (!map) return;
 
   // Limpar camadas anteriores
@@ -228,11 +222,11 @@ const renderCityMeshes = async (cities: MunicipalityWithCoords[], rainfallData: 
   geoJsonLayers.length = 0;
 
   for (const city of cities) {
-    const geometry = await IBGEService.getMunicipalityGeometry(city.id);
-    const rainfall = rainfallData.find(r => r.cityId === city.id.toString());
+    const geometry = await getMunicipalityMesh(city.id);
+    const weather = weatherData.find(w => w.cityId === city.id);
     
-    if (geometry && rainfall) {
-      const color = getRainfallColor(rainfall.rainfallIntensity);
+    if (geometry && weather) {
+      const color = getRainfallColor(weather.rainfallIntensity);
       
       const geoJsonLayer = L.geoJSON(geometry, {
         style: {
@@ -244,7 +238,7 @@ const renderCityMeshes = async (cities: MunicipalityWithCoords[], rainfallData: 
         onEachFeature: (_feature, layer) => {
           layer.on({
             click: () => {
-              selectedCity.value = rainfall;
+              selectedCity.value = weather;
               isPanelOpen.value = true; // Abrir painel ao clicar
             },
             mouseover: (e) => {
@@ -264,7 +258,7 @@ const renderCityMeshes = async (cities: MunicipalityWithCoords[], rainfallData: 
           });
           
           layer.bindTooltip(
-            `<b>${city.nome}</b><br>Chuva: ${rainfall.rainfallIntensity.toFixed(1)}% - ${getRainfallDescription(rainfall.rainfallIntensity)}`,
+            `<b>${city.name}</b><br>Chuva: ${weather.rainfallIntensity.toFixed(1)}% - ${getRainfallDescription(weather.rainfallIntensity)}`,
             { permanent: false, direction: 'top' }
           );
         },
@@ -285,8 +279,8 @@ onMounted(async () => {
   initMap();
   await loadRegionalData();
   
-  // Atualizar dados a cada 5 minutos
-  updateInterval = window.setInterval(() => loadRegionalData(), 5 * 60 * 1000);
+  // Atualizar dados automaticamente
+  updateInterval = window.setInterval(() => loadRegionalData(), APP_CONFIG.UPDATE_INTERVAL);
 });
 
 onUnmounted(() => {
