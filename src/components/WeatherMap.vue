@@ -1,9 +1,17 @@
 <template>
   <div class="weather-map-container">
-    <div class="map-header">
-      <div class="header-content">
+    <!-- Header com Menu Hamburger -->
+    <div class="map-header" :class="{ 'menu-open': isMenuOpen }">
+      <div class="header-top">
         <h1>Previsão do Tempo - Ribeirão do Sul</h1>
-        
+        <button class="hamburger-btn" @click="toggleMenu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+
+      <div class="header-content">
         <div class="controls">
           <div class="radius-control">
             <label for="radius-slider">
@@ -20,14 +28,14 @@
             />
           </div>
         </div>
-      </div>
-      
-      <div class="legend">
-        <span class="legend-title">Intensidade:</span>
-        <div class="legend-scale">
-          <div class="legend-item" v-for="item in legendItems" :key="item.label">
-            <div class="legend-color" :style="{ backgroundColor: item.color }"></div>
-            <span>{{ item.label }}</span>
+        
+        <div class="legend">
+          <span class="legend-title">Intensidade:</span>
+          <div class="legend-scale">
+            <div class="legend-item" v-for="item in legendItems" :key="item.label">
+              <div class="legend-color" :style="{ backgroundColor: item.color }"></div>
+              <span>{{ item.label }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -35,7 +43,20 @@
     
     <div id="map" ref="mapContainer"></div>
     
-    <!-- Botão Flutuante -->
+    <!-- Stats Panel (canto inferior esquerdo) -->
+    <div class="stats-panel">
+      <div class="stat-item">
+        <span class="stat-value">{{ regionalData.length }}</span>
+        <span class="stat-label">cidades</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-value">{{ searchRadius }} km</span>
+        <span class="stat-label">raio</span>
+      </div>
+    </div>
+    
+    <!-- Botão Flutuante (canto inferior direito) -->
     <button 
       v-if="selectedCity" 
       class="info-toggle-btn"
@@ -82,18 +103,6 @@
         Atualizado: {{ formatTime(selectedCity.timestamp) }}
       </div>
     </div>
-    
-    <div class="stats-panel">
-      <div class="stat-item">
-        <span class="stat-value">{{ regionalData.length }}</span>
-        <span class="stat-label">cidades</span>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat-item">
-        <span class="stat-value">{{ searchRadius }} km</span>
-        <span class="stat-label">raio</span>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -120,8 +129,15 @@ const searchRadius = ref<number>(APP_CONFIG.RADIUS.DEFAULT);
 // Controle de abertura do painel
 const isPanelOpen = ref<boolean>(false);
 
+// Controle do menu hamburger (mobile)
+const isMenuOpen = ref<boolean>(false);
+
 const togglePanel = () => {
   isPanelOpen.value = !isPanelOpen.value;
+};
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
 };
 
 const legendItems = [
@@ -310,13 +326,13 @@ onUnmounted(() => {
   padding: 1rem 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  transition: all 0.3s ease;
 }
 
-.header-content {
+.header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 2rem;
   margin-bottom: 0.75rem;
 }
 
@@ -324,7 +340,46 @@ onUnmounted(() => {
   margin: 0;
   font-size: 1.3rem;
   font-weight: 600;
-  white-space: nowrap;
+}
+
+/* Menu Hamburger */
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  z-index: 1001;
+}
+
+.hamburger-btn span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.menu-open .hamburger-btn span:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.menu-open .hamburger-btn span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-open .hamburger-btn span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
 }
 
 .controls {
@@ -592,9 +647,24 @@ onUnmounted(() => {
 }
 
 @media (max-width: 768px) {
+  /* Menu Hamburger visível em mobile */
+  .hamburger-btn {
+    display: flex;
+  }
+
   .header-content {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
     flex-direction: column;
     gap: 0.75rem;
+    transition: all 0.3s ease;
+  }
+
+  .menu-open .header-content {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: 1rem;
   }
   
   .map-header h1 {
@@ -616,24 +686,27 @@ onUnmounted(() => {
     gap: 0.5rem;
   }
   
+  /* Stats panel - canto inferior esquerdo */
+  .stats-panel {
+    left: 20px;
+    bottom: 20px;
+  }
+  
+  /* Botão info - canto inferior direito */
   .info-toggle-btn {
-    left: 50%;
-    transform: translateX(-50%);
-    right: auto;
+    right: 20px;
+    bottom: 20px;
   }
   
   .info-panel {
     width: calc(100% - 40px);
     left: 20px;
     right: 20px;
+    bottom: 20px;
   }
   
   .info-panel.is-open {
-    transform: translateY(-60px);
-  }
-  
-  .stats-panel {
-    bottom: 80px;
+    transform: translateY(-80px);
   }
 }
 </style>
