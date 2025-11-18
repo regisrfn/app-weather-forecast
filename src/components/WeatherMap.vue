@@ -2,6 +2,28 @@
   <div class="weather-map-container">
     <div class="map-header">
       <h1>Previsão do Tempo - Ribeirão do Sul e Região</h1>
+      
+      <div class="controls">
+        <div class="radius-control">
+          <label for="radius-slider">
+            Raio de Busca: <strong>{{ searchRadius }} km</strong>
+          </label>
+          <input
+            id="radius-slider"
+            type="range"
+            v-model.number="searchRadius"
+            min="10"
+            max="150"
+            step="10"
+            @input="updateRegionalData"
+          />
+          <div class="radius-info">
+            <span>10 km</span>
+            <span>150 km</span>
+          </div>
+        </div>
+      </div>
+      
       <div class="legend">
         <h3>Intensidade de Chuva</h3>
         <div class="legend-scale">
@@ -18,36 +40,36 @@
     <div class="info-panel" v-if="selectedCity">
       <h2>{{ selectedCity.cityName }}</h2>
       <div class="weather-info">
-        <p><strong>Intensidade de Chuva:</strong> {{ selectedCity.rainfallIntensity.toFixed(1) }}%</p>
+        <p><strong>Intensidade de Chuva:</strong> {{ selectedCity.rainfallIntensity.toFixed(1) }}% 
+          <span class="intensity-badge" :style="{ backgroundColor: getRainfallColor(selectedCity.rainfallIntensity) }">
+            {{ getRainfallDescription(selectedCity.rainfallIntensity) }}
+          </span>
+        </p>
         <p><strong>Temperatura:</strong> {{ selectedCity.temperature.toFixed(1) }}°C</p>
         <p><strong>Umidade:</strong> {{ selectedCity.humidity.toFixed(1) }}%</p>
         <p><strong>Vento:</strong> {{ selectedCity.windSpeed.toFixed(1) }} km/h</p>
         <p class="timestamp"><strong>Atualizado:</strong> {{ formatTime(selectedCity.timestamp) }}</p>
       </div>
-      
-      <div class="subdivisions" v-if="selectedCity.subdivisions && selectedCity.subdivisions.length > 0">
-        <h3>Subdivisões da Cidade</h3>
-        <div class="subdivision-list">
-          <div 
-            v-for="sub in sortedSubdivisions" 
-            :key="sub.id"
-            class="subdivision-item"
-            :style="{ borderLeft: `4px solid ${getRainfallColor(sub.rainfallIntensity)}` }"
-          >
-            <span class="subdivision-name">{{ sub.name }}</span>
-            <span class="subdivision-intensity">{{ sub.rainfallIntensity.toFixed(1) }}%</span>
-          </div>
-        </div>
+    </div>
+    
+    <div class="stats-panel">
+      <div class="stat-item">
+        <span class="stat-label">Cidades Monitoradas</span>
+        <span class="stat-value">{{ regionalData.length }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Raio de Busca</span>
+        <span class="stat-value">{{ searchRadius }} km</span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { IBGEService, type IBGEMunicipality } from '../services/ibgeService';
+import { IBGEService, type MunicipalityWithCoords } from '../services/ibgeService';
 import { WeatherService } from '../services/weatherService';
 import type { RainfallData } from '../types/weather';
 
@@ -57,25 +79,29 @@ const selectedCity = ref<RainfallData | null>(null);
 const regionalData = ref<RainfallData[]>([]);
 const geoJsonLayers: L.GeoJSON[] = [];
 let updateInterval: number | null = null;
+let radiusCircle: L.Circle | null = null;
 
 // Coordenadas de Ribeirão do Sul
 const RIBEIRAO_DO_SUL_COORDS: [number, number] = [-22.7572, -49.9439];
 
-const legendItems = [
-  { color: 'rgba(200, 200, 200, 0.3)', label: 'Sem chuva' },
-  { color: 'rgba(150, 150, 255, 0.4)', label: 'Chuva fraca (0-25%)' },
-  { color: 'rgba(100, 100, 255, 0.5)', label: 'Chuva moderada (25-50%)' },
-  { color: 'rgba(50, 50, 255, 0.6)', label: 'Chuva forte (50-75%)' },
-  { color: 'rgba(0, 0, 255, 0.8)', label: 'Chuva intensa (75-100%)' },
-];
+// Controle de raio de busca (em km)
+const searchRadius = ref<number>(50);
 
-const sortedSubdivisions = computed(() => {
-  if (!selectedCity.value?.subdivisions) return [];
-  return [...selectedCity.value.subdivisions].sort((a, b) => b.rainfallIntensity - a.rainfallIntensity);
-});
+const legendItems = [
+  { color: 'rgba(220, 220, 220, 0.2)', label: 'Sem chuva' },
+  { color: 'rgba(180, 200, 255, 0.4)', label: 'Nublado (0-20%)' },
+  { color: 'rgba(120, 140, 255, 0.5)', label: 'Chuva fraca (20-40%)' },
+  { color: 'rgba(70, 80, 255, 0.6)', label: 'Chuva moderada (40-60%)' },
+  { color: 'rgba(30, 40, 220, 0.75)', label: 'Chuva forte (60-80%)' },
+  { color: 'rgba(10, 10, 200, 0.9)', label: 'Chuva intensa (80-100%)' },
+];
 
 const getRainfallColor = (intensity: number): string => {
   return WeatherService.getRainfallColor(intensity);
+};
+
+const getRainfallDescription = (intensity: number): string => {
+  return WeatherService.getRainfallDescription(intensity);
 };
 
 const formatTime = (date: Date): string => {
@@ -104,24 +130,47 @@ const initMap = () => {
     .addTo(map)
     .bindPopup('<b>Ribeirão do Sul</b><br>Cidade focal')
     .openPopup();
+  
+  // Adicionar círculo de raio
+  updateRadiusCircle();
+};
+
+const updateRadiusCircle = () => {
+  if (!map) return;
+  
+  // Remover círculo anterior
+  if (radiusCircle) {
+    map.removeLayer(radiusCircle);
+  }
+  
+  // Adicionar novo círculo
+  radiusCircle = L.circle(RIBEIRAO_DO_SUL_COORDS, {
+    color: '#667eea',
+    fillColor: '#667eea',
+    fillOpacity: 0.1,
+    radius: searchRadius.value * 1000, // Converter km para metros
+    weight: 2,
+    dashArray: '5, 10',
+  }).addTo(map);
 };
 
 const loadRegionalData = async () => {
   try {
-    // Buscar informações do IBGE
-    const ribeiraoInfo = await IBGEService.getRibeiraoDoSulInfo();
+    // Buscar cidades dentro do raio especificado
+    const citiesInRadius = await IBGEService.getCitiesByRadius(
+      RIBEIRAO_DO_SUL_COORDS[0],
+      RIBEIRAO_DO_SUL_COORDS[1],
+      searchRadius.value
+    );
     
-    if (ribeiraoInfo) {
-      // Buscar cidades da região
-      const cities = await IBGEService.getRegionalCities();
-      
+    if (citiesInRadius.length > 0) {
       // Buscar dados de chuva para as cidades
-      const cityIds = cities.map(c => c.id.toString());
+      const cityIds = citiesInRadius.map(c => c.id.toString());
       const rainfallData = await WeatherService.getRegionalRainfall(cityIds);
       regionalData.value = rainfallData;
       
       // Renderizar malhas no mapa
-      await renderCityMeshes(cities, rainfallData);
+      await renderCityMeshes(citiesInRadius, rainfallData);
       
       // Selecionar Ribeirão do Sul por padrão
       const ribeiraoData = rainfallData.find(d => d.cityId === '3543204');
@@ -134,7 +183,7 @@ const loadRegionalData = async () => {
   }
 };
 
-const renderCityMeshes = async (cities: IBGEMunicipality[], rainfallData: RainfallData[]) => {
+const renderCityMeshes = async (cities: MunicipalityWithCoords[], rainfallData: RainfallData[]) => {
   if (!map) return;
 
   // Limpar camadas anteriores
@@ -151,7 +200,7 @@ const renderCityMeshes = async (cities: IBGEMunicipality[], rainfallData: Rainfa
       const geoJsonLayer = L.geoJSON(geometry, {
         style: {
           fillColor: color,
-          fillOpacity: 0.6,
+          fillOpacity: 0.7,
           color: '#2c3e50',
           weight: 2,
         },
@@ -177,7 +226,7 @@ const renderCityMeshes = async (cities: IBGEMunicipality[], rainfallData: Rainfa
           });
           
           layer.bindTooltip(
-            `<b>${city.nome}</b><br>Chuva: ${rainfall.rainfallIntensity.toFixed(1)}%`,
+            `<b>${city.nome}</b><br>Chuva: ${rainfall.rainfallIntensity.toFixed(1)}% - ${getRainfallDescription(rainfall.rainfallIntensity)}`,
             { permanent: false, direction: 'top' }
           );
         },
@@ -189,7 +238,8 @@ const renderCityMeshes = async (cities: IBGEMunicipality[], rainfallData: Rainfa
   }
 };
 
-const updateData = async () => {
+const updateRegionalData = async () => {
+  updateRadiusCircle();
   await loadRegionalData();
 };
 
@@ -198,7 +248,7 @@ onMounted(async () => {
   await loadRegionalData();
   
   // Atualizar dados a cada 5 minutos
-  updateInterval = window.setInterval(updateData, 5 * 60 * 1000);
+  updateInterval = window.setInterval(() => loadRegionalData(), 5 * 60 * 1000);
 });
 
 onUnmounted(() => {
@@ -234,6 +284,63 @@ onUnmounted(() => {
   margin: 0 0 1rem 0;
   font-size: 1.8rem;
   font-weight: 600;
+}
+
+.controls {
+  margin-bottom: 1rem;
+}
+
+.radius-control {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.radius-control label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.radius-control input[type="range"] {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.radius-control input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.radius-control input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.radius-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  opacity: 0.8;
 }
 
 .legend {
@@ -305,6 +412,17 @@ onUnmounted(() => {
   font-size: 0.95rem;
 }
 
+.intensity-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+  margin-left: 0.5rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 .timestamp {
   font-size: 0.85rem;
   color: #7f8c8d;
@@ -313,42 +431,35 @@ onUnmounted(() => {
   border-top: 1px solid #ecf0f1;
 }
 
-.subdivisions h3 {
-  margin: 0 0 1rem 0;
-  color: #2c3e50;
-  font-size: 1.1rem;
+.stats-panel {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 1rem 1.5rem;
+  z-index: 1000;
+  display: flex;
+  gap: 2rem;
 }
 
-.subdivision-list {
+.stat-item {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
-.subdivision-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem;
-  background: #f8f9fa;
-  border-radius: 6px;
-  transition: all 0.2s;
-}
-
-.subdivision-item:hover {
-  background: #e9ecef;
-  transform: translateX(4px);
-}
-
-.subdivision-name {
+.stat-label {
+  font-size: 0.8rem;
+  color: #7f8c8d;
   font-weight: 500;
-  color: #2c3e50;
 }
 
-.subdivision-intensity {
-  font-weight: 600;
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
   color: #667eea;
-  font-size: 1.1rem;
 }
 
 @media (max-width: 768px) {
@@ -366,7 +477,18 @@ onUnmounted(() => {
     top: auto;
     bottom: 20px;
     right: 20px;
+    left: 20px;
     max-height: 40vh;
+  }
+  
+  .stats-panel {
+    position: static;
+    margin: 1rem;
+    width: calc(100% - 2rem);
+  }
+  
+  .controls {
+    font-size: 0.9rem;
   }
 }
 </style>

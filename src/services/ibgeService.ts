@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { filterByRadius, type GeoPoint } from '../utils/geoUtils';
 
 const IBGE_API_BASE = 'https://servicodados.ibge.gov.br/api/v1';
 
@@ -19,6 +20,26 @@ export interface IBGEMunicipality {
     };
   };
 }
+
+export interface MunicipalityWithCoords extends IBGEMunicipality {
+  latitude: number;
+  longitude: number;
+}
+
+// Coordenadas aproximadas dos municípios da região
+// Em produção, buscar via API ou banco de dados
+const MUNICIPALITY_COORDS: Record<number, { lat: number; lon: number }> = {
+  3543204: { lat: -22.7572, lon: -49.9439 }, // Ribeirão do Sul
+  3539103: { lat: -22.9789, lon: -49.8708 }, // Ourinhos
+  3506300: { lat: -23.0117, lon: -49.4683 }, // Bernardino de Campos
+  3510153: { lat: -23.0028, lon: -49.7817 }, // Canitar
+  3552601: { lat: -22.8997, lon: -49.6336 }, // Santa Cruz do Rio Pardo
+  3543907: { lat: -22.7367, lon: -49.7028 }, // Salto Grande
+  3548708: { lat: -22.9378, lon: -50.2189 }, // Santa Cruz da Conceição
+  3541406: { lat: -23.1192, lon: -49.9453 }, // Piraju
+  3542800: { lat: -22.6431, lon: -50.2289 }, // Presidente Prudente (região)
+  3535408: { lat: -22.9458, lon: -49.6128 }, // Óleo
+};
 
 export class IBGEService {
   /**
@@ -74,5 +95,78 @@ export class IBGEService {
   static async getRegionalCities(): Promise<IBGEMunicipality[]> {
     // Microrregião de Ourinhos (código: 35040)
     return this.getNeighboringCities(35040);
+  }
+
+  /**
+   * Busca municípios dentro de um raio específico de distância
+   * @param centerLat Latitude do ponto central
+   * @param centerLon Longitude do ponto central
+   * @param radiusKm Raio em quilômetros
+   * @returns Lista de municípios dentro do raio ordenados por distância
+   */
+  static async getCitiesByRadius(
+    centerLat: number,
+    centerLon: number,
+    radiusKm: number
+  ): Promise<Array<MunicipalityWithCoords & { distance: number }>> {
+    try {
+      // Buscar todos os municípios de São Paulo
+      const response = await axios.get<IBGEMunicipality[]>(
+        `${IBGE_API_BASE}/localidades/estados/SP/municipios`
+      );
+      
+      const municipalities = response.data;
+      
+      // Adicionar coordenadas aos municípios
+      const municipalitiesWithCoords: MunicipalityWithCoords[] = municipalities
+        .map(municipality => {
+          const coords = MUNICIPALITY_COORDS[municipality.id];
+          if (!coords) return null;
+          
+          return {
+            ...municipality,
+            latitude: coords.lat,
+            longitude: coords.lon,
+          };
+        })
+        .filter((m): m is MunicipalityWithCoords => m !== null);
+      
+      // Filtrar por raio usando a função de geoUtils
+      const centerPoint: GeoPoint = {
+        id: 'center',
+        latitude: centerLat,
+        longitude: centerLon,
+      };
+      
+      return filterByRadius(centerPoint, municipalitiesWithCoords, radiusKm);
+    } catch (error) {
+      console.error('Erro ao buscar municípios por raio:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Busca as coordenadas de um município específico
+   */
+  static getMunicipalityCoords(municipioId: number): { lat: number; lon: number } | null {
+    return MUNICIPALITY_COORDS[municipioId] || null;
+  }
+
+  /**
+   * Adiciona coordenadas a uma lista de municípios
+   */
+  static enrichWithCoordinates(municipalities: IBGEMunicipality[]): MunicipalityWithCoords[] {
+    return municipalities
+      .map(municipality => {
+        const coords = MUNICIPALITY_COORDS[municipality.id];
+        if (!coords) return null;
+        
+        return {
+          ...municipality,
+          latitude: coords.lat,
+          longitude: coords.lon,
+        };
+      })
+      .filter((m): m is MunicipalityWithCoords => m !== null);
   }
 }

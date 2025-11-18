@@ -16,16 +16,6 @@ export interface RainfallData {
   temperature: number;
   humidity: number;
   windSpeed: number;
-  subdivisions?: SubdivisionRainfall[]; // Subdivisões dentro da cidade
-}
-
-export interface SubdivisionRainfall {
-  id: string;
-  name: string;
-  latitude: number;
-  longitude: number;
-  rainfallIntensity: number; // 0-100
-  geometry?: GeoJSON.Polygon | GeoJSON.MultiPolygon;
 }
 
 export interface WeatherForecast {

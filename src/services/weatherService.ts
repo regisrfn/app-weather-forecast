@@ -1,11 +1,12 @@
-import type { RainfallData, SubdivisionRainfall, WeatherForecast } from '../types/weather';
+import type { RainfallData, WeatherForecast } from '../types/weather';
 
 /**
  * Serviço para consumir dados meteorológicos do backend
  * Por enquanto retorna dados mockados para desenvolvimento
  */
 export class WeatherService {
-  private static API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+  // TODO: Descomentar quando integrar com backend real
+  // private static API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
   /**
    * Busca dados atuais de chuva para uma cidade
@@ -69,7 +70,20 @@ export class WeatherService {
       '3552601': { name: 'Santa Cruz do Rio Pardo', lat: -22.8997, lon: -49.6336 },
     };
 
-    const city = mockCities[cityId] || mockCities['3543204'];
+    const city = mockCities[cityId];
+    if (!city) {
+      // Retornar dados padrão se a cidade não for encontrada
+      return {
+        cityId,
+        cityName: 'Cidade Desconhecida',
+        timestamp: new Date(),
+        rainfallIntensity: Math.random() * 100,
+        temperature: 20 + Math.random() * 10,
+        humidity: 60 + Math.random() * 30,
+        windSpeed: 5 + Math.random() * 15,
+      };
+    }
+    
     const baseIntensity = Math.random() * 100;
 
     return {
@@ -80,23 +94,7 @@ export class WeatherService {
       temperature: 20 + Math.random() * 10,
       humidity: 60 + Math.random() * 30,
       windSpeed: 5 + Math.random() * 15,
-      subdivisions: this.getMockSubdivisions(cityId, baseIntensity),
     };
-  }
-
-  /**
-   * Gera subdivisões mockadas dentro de uma cidade
-   */
-  private static getMockSubdivisions(cityId: string, baseIntensity: number): SubdivisionRainfall[] {
-    const subdivisions = ['Centro', 'Norte', 'Sul', 'Leste', 'Oeste'];
-    
-    return subdivisions.map((name, index) => ({
-      id: `${cityId}-${index}`,
-      name,
-      latitude: -22.7572 + (Math.random() - 0.5) * 0.1,
-      longitude: -49.9439 + (Math.random() - 0.5) * 0.1,
-      rainfallIntensity: Math.max(0, Math.min(100, baseIntensity + (Math.random() - 0.5) * 40)),
-    }));
   }
 
   /**
@@ -123,21 +121,68 @@ export class WeatherService {
 
   /**
    * Calcula a cor baseada na intensidade da chuva
-   * Retorna um gradiente de azul (mais escuro = mais chuva)
+   * Retorna um gradiente de azul (mais claro para mais escuro conforme aumenta a intensidade)
    */
   static getRainfallColor(intensity: number): string {
-    if (intensity === 0) return 'rgba(200, 200, 200, 0.3)'; // Sem chuva - cinza claro
+    if (intensity === 0) return 'rgba(220, 220, 220, 0.2)'; // Sem chuva - cinza muito claro
     
-    // Escala de azul: 0-100
-    const minBlue = 150; // Azul claro
-    const maxBlue = 255; // Azul intenso
-    const alpha = 0.3 + (intensity / 100) * 0.5; // Transparência aumenta com intensidade
+    // Gradiente de azul progressivo:
+    // 0-20%: Azul muito claro (céu nublado)
+    // 20-40%: Azul claro (chuva fraca)
+    // 40-60%: Azul médio (chuva moderada)
+    // 60-80%: Azul escuro (chuva forte)
+    // 80-100%: Azul muito escuro/intenso (chuva intensa)
     
-    // Quanto maior a intensidade, mais escuro o azul
-    const blue = maxBlue;
-    const green = Math.floor(minBlue * (1 - intensity / 100));
-    const red = Math.floor(minBlue * (1 - intensity / 100));
+    let red: number, green: number, blue: number, alpha: number;
+    
+    if (intensity <= 20) {
+      // Azul muito claro - início das nuvens
+      red = 180;
+      green = 200;
+      blue = 255;
+      alpha = 0.3 + (intensity / 20) * 0.1;
+    } else if (intensity <= 40) {
+      // Azul claro - chuva fraca
+      const t = (intensity - 20) / 20;
+      red = Math.floor(180 - t * 60);
+      green = Math.floor(200 - t * 80);
+      blue = 255;
+      alpha = 0.4 + t * 0.1;
+    } else if (intensity <= 60) {
+      // Azul médio - chuva moderada
+      const t = (intensity - 40) / 20;
+      red = Math.floor(120 - t * 50);
+      green = Math.floor(120 - t * 60);
+      blue = 255;
+      alpha = 0.5 + t * 0.1;
+    } else if (intensity <= 80) {
+      // Azul escuro - chuva forte
+      const t = (intensity - 60) / 20;
+      red = Math.floor(70 - t * 40);
+      green = Math.floor(60 - t * 40);
+      blue = Math.floor(255 - t * 35);
+      alpha = 0.6 + t * 0.15;
+    } else {
+      // Azul muito escuro/intenso - chuva intensa
+      const t = (intensity - 80) / 20;
+      red = Math.floor(30 - t * 20);
+      green = Math.floor(20 - t * 10);
+      blue = Math.floor(220 - t * 20);
+      alpha = 0.75 + t * 0.2;
+    }
     
     return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+  }
+
+  /**
+   * Retorna uma descrição textual da intensidade da chuva
+   */
+  static getRainfallDescription(intensity: number): string {
+    if (intensity === 0) return 'Sem chuva';
+    if (intensity <= 20) return 'Nublado';
+    if (intensity <= 40) return 'Chuva fraca';
+    if (intensity <= 60) return 'Chuva moderada';
+    if (intensity <= 80) return 'Chuva forte';
+    return 'Chuva intensa';
   }
 }
