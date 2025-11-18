@@ -64,10 +64,12 @@ export class WeatherService {
   private static getMockRainfallData(cityId: string): RainfallData {
     const mockCities: Record<string, { name: string; lat: number; lon: number }> = {
       '3543204': { name: 'Ribeirão do Sul', lat: -22.7572, lon: -49.9439 },
-      '3539103': { name: 'Ourinhos', lat: -22.9789, lon: -49.8708 },
-      '3506300': { name: 'Bernardino de Campos', lat: -23.0117, lon: -49.4683 },
+      '3534708': { name: 'Ourinhos', lat: -22.9789, lon: -49.8708 },
+      '3545407': { name: 'Salto Grande', lat: -22.8936, lon: -49.9853 },
+      '3550506': { name: 'São Pedro do Turvo', lat: -22.8978, lon: -49.7433 },
       '3510153': { name: 'Canitar', lat: -23.0028, lon: -49.7817 },
-      '3552601': { name: 'Santa Cruz do Rio Pardo', lat: -22.8997, lon: -49.6336 },
+      '3538808': { name: 'Piraju', lat: -23.1933, lon: -49.3847 },
+      '3546405': { name: 'Santa Cruz do Rio Pardo', lat: -22.8997, lon: -49.6336 },
     };
 
     const city = mockCities[cityId];

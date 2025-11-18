@@ -30,15 +30,12 @@ export interface MunicipalityWithCoords extends IBGEMunicipality {
 // Em produção, buscar via API ou banco de dados
 const MUNICIPALITY_COORDS: Record<number, { lat: number; lon: number }> = {
   3543204: { lat: -22.7572, lon: -49.9439 }, // Ribeirão do Sul
-  3539103: { lat: -22.9789, lon: -49.8708 }, // Ourinhos
-  3506300: { lat: -23.0117, lon: -49.4683 }, // Bernardino de Campos
+  3534708: { lat: -22.9789, lon: -49.8708 }, // Ourinhos
+  3545407: { lat: -22.8936, lon: -49.9853 }, // Salto Grande
+  3550506: { lat: -22.8978, lon: -49.7433 }, // São Pedro do Turvo
   3510153: { lat: -23.0028, lon: -49.7817 }, // Canitar
-  3552601: { lat: -22.8997, lon: -49.6336 }, // Santa Cruz do Rio Pardo
-  3543907: { lat: -22.7367, lon: -49.7028 }, // Salto Grande
-  3548708: { lat: -22.9378, lon: -50.2189 }, // Santa Cruz da Conceição
-  3541406: { lat: -23.1192, lon: -49.9453 }, // Piraju
-  3542800: { lat: -22.6431, lon: -50.2289 }, // Presidente Prudente (região)
-  3535408: { lat: -22.9458, lon: -49.6128 }, // Óleo
+  3538808: { lat: -23.1933, lon: -49.3847 }, // Piraju
+  3546405: { lat: -22.8997, lon: -49.6336 }, // Santa Cruz do Rio Pardo
 };
 
 export class IBGEService {

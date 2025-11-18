@@ -1,31 +1,29 @@
 <template>
   <div class="weather-map-container">
     <div class="map-header">
-      <h1>Previsão do Tempo - Ribeirão do Sul e Região</h1>
-      
-      <div class="controls">
-        <div class="radius-control">
-          <label for="radius-slider">
-            Raio de Busca: <strong>{{ searchRadius }} km</strong>
-          </label>
-          <input
-            id="radius-slider"
-            type="range"
-            v-model.number="searchRadius"
-            min="10"
-            max="150"
-            step="10"
-            @input="updateRegionalData"
-          />
-          <div class="radius-info">
-            <span>10 km</span>
-            <span>150 km</span>
+      <div class="header-content">
+        <h1>Previsão do Tempo - Ribeirão do Sul</h1>
+        
+        <div class="controls">
+          <div class="radius-control">
+            <label for="radius-slider">
+              Raio: <strong>{{ searchRadius }} km</strong>
+            </label>
+            <input
+              id="radius-slider"
+              type="range"
+              v-model.number="searchRadius"
+              min="10"
+              max="150"
+              step="10"
+              @input="updateRegionalData"
+            />
           </div>
         </div>
       </div>
       
       <div class="legend">
-        <h3>Intensidade de Chuva</h3>
+        <span class="legend-title">Intensidade:</span>
         <div class="legend-scale">
           <div class="legend-item" v-for="item in legendItems" :key="item.label">
             <div class="legend-color" :style="{ backgroundColor: item.color }"></div>
@@ -37,29 +35,63 @@
     
     <div id="map" ref="mapContainer"></div>
     
-    <div class="info-panel" v-if="selectedCity">
-      <h2>{{ selectedCity.cityName }}</h2>
-      <div class="weather-info">
-        <p><strong>Intensidade de Chuva:</strong> {{ selectedCity.rainfallIntensity.toFixed(1) }}% 
-          <span class="intensity-badge" :style="{ backgroundColor: getRainfallColor(selectedCity.rainfallIntensity) }">
-            {{ getRainfallDescription(selectedCity.rainfallIntensity) }}
-          </span>
-        </p>
-        <p><strong>Temperatura:</strong> {{ selectedCity.temperature.toFixed(1) }}°C</p>
-        <p><strong>Umidade:</strong> {{ selectedCity.humidity.toFixed(1) }}%</p>
-        <p><strong>Vento:</strong> {{ selectedCity.windSpeed.toFixed(1) }} km/h</p>
-        <p class="timestamp"><strong>Atualizado:</strong> {{ formatTime(selectedCity.timestamp) }}</p>
+    <!-- Botão Flutuante -->
+    <button 
+      v-if="selectedCity" 
+      class="info-toggle-btn"
+      @click="togglePanel"
+      :class="{ 'is-open': isPanelOpen }"
+    >
+      <span class="toggle-icon">{{ isPanelOpen ? '✕' : 'ℹ️' }}</span>
+      <span class="toggle-text">{{ selectedCity.cityName }}</span>
+    </button>
+    
+    <!-- Painel de Informações (Expansível) -->
+    <div 
+      v-if="selectedCity" 
+      class="info-panel"
+      :class="{ 'is-open': isPanelOpen }"
+    >
+      <div class="panel-header">
+        <h2>{{ selectedCity.cityName }}</h2>
+        <span class="intensity-badge" :style="{ backgroundColor: getRainfallColor(selectedCity.rainfallIntensity) }">
+          {{ getRainfallDescription(selectedCity.rainfallIntensity) }}
+        </span>
+      </div>
+      
+      <div class="weather-grid">
+        <div class="weather-item">
+          <span class="weather-label">Chuva</span>
+          <span class="weather-value">{{ selectedCity.rainfallIntensity.toFixed(0) }}%</span>
+        </div>
+        <div class="weather-item">
+          <span class="weather-label">Temp.</span>
+          <span class="weather-value">{{ selectedCity.temperature.toFixed(1) }}°C</span>
+        </div>
+        <div class="weather-item">
+          <span class="weather-label">Umidade</span>
+          <span class="weather-value">{{ selectedCity.humidity.toFixed(0) }}%</span>
+        </div>
+        <div class="weather-item">
+          <span class="weather-label">Vento</span>
+          <span class="weather-value">{{ selectedCity.windSpeed.toFixed(1) }} km/h</span>
+        </div>
+      </div>
+      
+      <div class="update-time">
+        Atualizado: {{ formatTime(selectedCity.timestamp) }}
       </div>
     </div>
     
     <div class="stats-panel">
       <div class="stat-item">
-        <span class="stat-label">Cidades Monitoradas</span>
         <span class="stat-value">{{ regionalData.length }}</span>
+        <span class="stat-label">cidades</span>
       </div>
+      <div class="stat-divider"></div>
       <div class="stat-item">
-        <span class="stat-label">Raio de Busca</span>
         <span class="stat-value">{{ searchRadius }} km</span>
+        <span class="stat-label">raio</span>
       </div>
     </div>
   </div>
@@ -87,13 +119,18 @@ const RIBEIRAO_DO_SUL_COORDS: [number, number] = [-22.7572, -49.9439];
 // Controle de raio de busca (em km)
 const searchRadius = ref<number>(50);
 
+// Controle de abertura do painel
+const isPanelOpen = ref<boolean>(false);
+
+const togglePanel = () => {
+  isPanelOpen.value = !isPanelOpen.value;
+};
+
 const legendItems = [
   { color: 'rgba(220, 220, 220, 0.2)', label: 'Sem chuva' },
-  { color: 'rgba(180, 200, 255, 0.4)', label: 'Nublado (0-20%)' },
-  { color: 'rgba(120, 140, 255, 0.5)', label: 'Chuva fraca (20-40%)' },
-  { color: 'rgba(70, 80, 255, 0.6)', label: 'Chuva moderada (40-60%)' },
-  { color: 'rgba(30, 40, 220, 0.75)', label: 'Chuva forte (60-80%)' },
-  { color: 'rgba(10, 10, 200, 0.9)', label: 'Chuva intensa (80-100%)' },
+  { color: 'rgba(180, 200, 255, 0.4)', label: 'Fraca' },
+  { color: 'rgba(70, 80, 255, 0.6)', label: 'Moderada' },
+  { color: 'rgba(10, 10, 200, 0.9)', label: 'Intensa' },
 ];
 
 const getRainfallColor = (intensity: number): string => {
@@ -208,6 +245,7 @@ const renderCityMeshes = async (cities: MunicipalityWithCoords[], rainfallData: 
           layer.on({
             click: () => {
               selectedCity.value = rainfall;
+              isPanelOpen.value = true; // Abrir painel ao clicar
             },
             mouseover: (e) => {
               const layer = e.target;
@@ -275,40 +313,49 @@ onUnmounted(() => {
 .map-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 1.5rem;
+  padding: 1rem 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
 }
 
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 0.75rem;
+}
+
 .map-header h1 {
-  margin: 0 0 1rem 0;
-  font-size: 1.8rem;
+  margin: 0;
+  font-size: 1.3rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .controls {
-  margin-bottom: 1rem;
+  flex: 1;
+  max-width: 300px;
 }
 
 .radius-control {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
 }
 
 .radius-control label {
   display: block;
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
 }
 
 .radius-control input[type="range"] {
   width: 100%;
-  height: 6px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.2);
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.3);
   outline: none;
   -webkit-appearance: none;
   appearance: none;
@@ -317,8 +364,8 @@ onUnmounted(() => {
 .radius-control input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: white;
   cursor: pointer;
@@ -326,8 +373,8 @@ onUnmounted(() => {
 }
 
 .radius-control input[type="range"]::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: white;
   cursor: pointer;
@@ -335,25 +382,20 @@ onUnmounted(() => {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.radius-info {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
-  opacity: 0.8;
-}
-
 .legend {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
-  padding: 1rem;
-  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-.legend h3 {
-  margin: 0 0 0.75rem 0;
-  font-size: 1rem;
+.legend-title {
+  font-size: 0.85rem;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .legend-scale {
@@ -365,14 +407,18 @@ onUnmounted(() => {
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
 .legend-color {
-  width: 30px;
-  height: 20px;
-  border-radius: 4px;
+  width: 20px;
+  height: 16px;
+  border-radius: 3px;
   border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.legend-item span {
+  font-size: 0.8rem;
 }
 
 #map {
@@ -380,55 +426,134 @@ onUnmounted(() => {
   z-index: 1;
 }
 
+.info-toggle-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  z-index: 1001;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.info-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+}
+
+.info-toggle-btn.is-open {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.toggle-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.toggle-text {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .info-panel {
   position: absolute;
-  top: 180px;
+  bottom: 20px;
   right: 20px;
-  width: 320px;
+  width: 280px;
   background: white;
-  border-radius: 12px;
+  border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  padding: 1.5rem;
+  overflow: hidden;
   z-index: 1000;
-  max-height: calc(100vh - 220px);
-  overflow-y: auto;
+  transform: translateY(calc(100% + 20px));
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.info-panel h2 {
-  margin: 0 0 1rem 0;
-  color: #2c3e50;
-  font-size: 1.5rem;
-  border-bottom: 2px solid #667eea;
-  padding-bottom: 0.5rem;
+.info-panel.is-open {
+  transform: translateY(-60px);
+  opacity: 1;
+  pointer-events: auto;
 }
 
-.weather-info {
-  margin-bottom: 1.5rem;
+.panel-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.weather-info p {
-  margin: 0.5rem 0;
-  color: #34495e;
-  font-size: 0.95rem;
+.panel-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  flex: 1;
 }
 
 .intensity-badge {
   display: inline-block;
-  padding: 0.2rem 0.6rem;
+  padding: 0.25rem 0.6rem;
   border-radius: 12px;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: white;
-  margin-left: 0.5rem;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: brightness(0.8);
 }
 
-.timestamp {
-  font-size: 0.85rem;
-  color: #7f8c8d;
-  margin-top: 1rem !important;
-  padding-top: 1rem;
-  border-top: 1px solid #ecf0f1;
+.weather-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f8f9fa;
+}
+
+.weather-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.weather-label {
+  font-size: 0.75rem;
+  color: #6c757d;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.weather-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.update-time {
+  padding: 0.6rem 1rem;
+  font-size: 0.75rem;
+  color: #6c757d;
+  text-align: center;
+  background: #ffffff;
+  border-top: 1px solid #e9ecef;
 }
 
 .stats-panel {
@@ -436,35 +561,60 @@ onUnmounted(() => {
   bottom: 20px;
   left: 20px;
   background: white;
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1.25rem;
   z-index: 1000;
   display: flex;
-  gap: 2rem;
+  align-items: center;
+  gap: 1rem;
 }
 
 .stat-item {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  align-items: center;
+  gap: 0.15rem;
 }
 
 .stat-label {
-  font-size: 0.8rem;
-  color: #7f8c8d;
+  font-size: 0.7rem;
+  color: #6c757d;
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .stat-value {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: #667eea;
 }
 
+.stat-divider {
+  width: 1px;
+  height: 35px;
+  background: #dee2e6;
+}
+
 @media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
   .map-header h1 {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
+  }
+  
+  .controls {
+    max-width: 100%;
+  }
+  
+  .legend {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
   
   .legend-scale {
@@ -472,23 +622,24 @@ onUnmounted(() => {
     gap: 0.5rem;
   }
   
+  .info-toggle-btn {
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+  }
+  
   .info-panel {
     width: calc(100% - 40px);
-    top: auto;
-    bottom: 20px;
-    right: 20px;
     left: 20px;
-    max-height: 40vh;
+    right: 20px;
+  }
+  
+  .info-panel.is-open {
+    transform: translateY(-60px);
   }
   
   .stats-panel {
-    position: static;
-    margin: 1rem;
-    width: calc(100% - 2rem);
-  }
-  
-  .controls {
-    font-size: 0.9rem;
+    bottom: 80px;
   }
 }
 </style>
