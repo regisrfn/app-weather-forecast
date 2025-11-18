@@ -324,9 +324,11 @@ onUnmounted(() => {
 .weather-map-container {
   width: 100%;
   height: 100vh;
+  height: 100dvh; /* Dynamic viewport height para mobile */
   display: flex;
   flex-direction: column;
   position: relative;
+  overflow: hidden;
 }
 
 .map-header {
@@ -519,6 +521,7 @@ onUnmounted(() => {
 #map {
   flex: 1;
   z-index: 1;
+  min-height: 0; /* Importante para flex no mobile */
 }
 
 .info-toggle-btn {
@@ -739,27 +742,72 @@ onUnmounted(() => {
     justify-content: flex-start;
   }
   
-  /* Stats panel - canto inferior esquerdo */
+  /* Stats panel - menor e no canto inferior esquerdo */
   .stats-panel {
-    left: 20px;
-    bottom: 20px;
+    position: fixed;
+    left: 10px;
+    bottom: 10px;
+    padding: 0.5rem 0.75rem;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .stat-value {
+    font-size: 1rem;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+  }
+
+  .stat-divider {
+    height: 28px;
   }
   
-  /* Botão info - canto inferior direito */
+  /* Botão info - menor e no canto inferior direito */
   .info-toggle-btn {
-    right: 20px;
-    bottom: 20px;
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.8rem;
+    border-radius: 20px;
+  }
+
+  .toggle-icon {
+    font-size: 1rem;
+  }
+
+  .toggle-text {
+    max-width: 100px;
+    font-size: 0.8rem;
   }
   
+  /* Painel de informações - ocupa quase toda a largura */
   .info-panel {
-    width: calc(100% - 40px);
-    left: 20px;
-    right: 20px;
-    bottom: 20px;
+    position: fixed;
+    width: calc(100% - 20px);
+    left: 10px;
+    right: auto;
+    bottom: 10px;
+    max-width: 400px;
   }
   
   .info-panel.is-open {
-    transform: translateY(-80px);
+    transform: translateY(-60px);
+  }
+
+  .panel-header h2 {
+    font-size: 1rem;
+  }
+
+  .weather-grid {
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .weather-value {
+    font-size: 1.1rem;
   }
 }
 </style>
