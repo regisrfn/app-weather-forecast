@@ -20,6 +20,13 @@
             <h1>Previsão do Tempo</h1>
             <span class="subtitle">Ribeirão do Sul</span>
           </div>
+          
+          <!-- Toggle Mobile -->
+          <button class="hamburger-btn" @click="toggleMenu" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
         </div>
         
         <div class="header-controls">
@@ -80,13 +87,6 @@
               </div>
             </div>
           </div>
-          
-          <!-- Toggle Mobile -->
-          <button class="hamburger-btn" @click="toggleMenu" aria-label="Menu">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
         </div>
       </div>
     </header>
@@ -95,7 +95,6 @@
     
     <!-- Legenda Flutuante no Rodapé -->
     <div class="legend-footer">
-      <span class="legend-title">Intensidade de Chuva</span>
       <div class="legend-scale">
         <div class="legend-item" v-for="item in legendItems" :key="item.label">
           <div class="legend-color" :style="{ backgroundColor: item.color }"></div>

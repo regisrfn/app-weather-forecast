@@ -24,9 +24,39 @@
   }
 
   @include md {
-    left: 3rem;
-    right: 3rem;
-    top: 15px;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    border-radius: $radius-md;
+  }
+}
+
+// Quando o menu está aberto (mobile)
+.floating-header.menu-open {
+  .header-controls {
+    @include md {
+      max-height: 400px !important;
+      opacity: 1 !important;
+      margin-top: $spacing-md;
+      padding-top: $spacing-md;
+      border-top: 1px solid $border-medium;
+    }
+  }
+
+  .hamburger-btn {
+    span:nth-child(1) {
+      top: 18px;
+      transform: rotate(45deg);
+    }
+
+    span:nth-child(2) {
+      opacity: 0;
+    }
+
+    span:nth-child(3) {
+      top: 18px;
+      transform: rotate(-45deg);
+    }
   }
 }
 
@@ -35,6 +65,7 @@
   @include flex-between;
   gap: $header-gap;
   color: $text-white;
+  flex-wrap: wrap;
 
   @include md {
     padding: 0.75rem 1rem;
@@ -65,6 +96,7 @@
 }
 
 .header-title {
+
   h1 {
     margin: 0;
     font-size: $font-3xl;
@@ -76,6 +108,11 @@
     @include md {
       font-size: $font-2xl;
     }
+  }
+
+  @include md {
+    text-align: right;
+    flex: 1;
   }
 }
 
@@ -96,22 +133,17 @@
   gap: $spacing-lg;
 
   @include md {
+    width: 100%;
     max-height: 0;
     overflow: hidden;
     opacity: 0;
-    transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+    transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease, padding 0.3s ease;
     flex-direction: column;
     align-items: stretch;
     gap: $spacing-md;
     padding: 0;
-
-    .menu-open & {
-      max-height: 400px;
-      opacity: 1;
-      margin-top: $spacing-md;
-      padding-top: $spacing-md;
-      border-top: 1px solid $border-medium;
-    }
+    margin: 0;
+    border-top: 1px solid transparent;
   }
 }
 
