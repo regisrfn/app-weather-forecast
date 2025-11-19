@@ -17,7 +17,7 @@ import {
 
 const api = axios.create({
   baseURL: APP_CONFIG.API_BASE_URL,
-  timeout: 10000,
+  timeout: 60000, // 60 segundos para previsões meteorológicas
   headers: {
     'Content-Type': 'application/json',
   },
