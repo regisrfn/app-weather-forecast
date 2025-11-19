@@ -66,23 +66,24 @@ export async function getCityWeather(cityId: string): Promise<WeatherData> {
  * Backend: POST /api/weather/regional
  */
 export async function getRegionalWeather(
-  cityIds: string[]
+  cityIds: string[],
+  date?: string,
+  time?: string
 ): Promise<WeatherData[]> {
   if (APP_CONFIG.USE_MOCK) {
     await new Promise((resolve) => setTimeout(resolve, 400));
     return getMockRegionalWeather(cityIds);
   }
 
-  // Obter data e hora atual
-  const now = new Date();
-  const date = now.toISOString().split('T')[0]; // YYYY-MM-DD
-  const time = now.toTimeString().substring(0, 5); // HH:MM
+  // Usar data/hora fornecida ou atual
+  const finalDate = date || new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const finalTime = time || new Date().toTimeString().substring(0, 5); // HH:MM
 
   const response = await api.post<WeatherData[]>(
     '/api/weather/regional',
     { cityIds },
     {
-      params: { date, time }
+      params: { date: finalDate, time: finalTime }
     }
   );
 

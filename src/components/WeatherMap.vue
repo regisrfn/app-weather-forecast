@@ -27,6 +27,43 @@
               @input="updateRegionalData"
             />
           </div>
+          
+          <!-- Controle de Data/Hora -->
+          <div class="datetime-control">
+            <div class="datetime-header">
+              <label class="datetime-toggle">
+                <input 
+                  type="checkbox" 
+                  v-model="useForecastDateTime"
+                  @change="updateRegionalData"
+                />
+                <span>Previsão para data/hora específica</span>
+              </label>
+            </div>
+            
+            <div v-if="useForecastDateTime" class="datetime-inputs">
+              <div class="input-group">
+                <label for="forecast-date">Data:</label>
+                <input
+                  id="forecast-date"
+                  type="date"
+                  v-model="forecastDate"
+                  :min="new Date().toISOString().split('T')[0]"
+                  :max="getMaxDate()"
+                  @change="updateRegionalData"
+                />
+              </div>
+              <div class="input-group">
+                <label for="forecast-time">Hora:</label>
+                <input
+                  id="forecast-time"
+                  type="time"
+                  v-model="forecastTime"
+                  @change="updateRegionalData"
+                />
+              </div>
+            </div>
+          </div>
         </div>
         
         <div class="legend">
@@ -136,6 +173,11 @@ const layerColors = new Map<L.Layer, string>(); // Guardar cores originais
 // Controle de raio de busca (em km)
 const searchRadius = ref<number>(APP_CONFIG.RADIUS.DEFAULT);
 
+// Controle de data/hora da previsão
+const forecastDate = ref<string>(''); // YYYY-MM-DD
+const forecastTime = ref<string>(''); // HH:MM
+const useForecastDateTime = ref<boolean>(false); // Se deve usar data/hora específica
+
 // Controle de abertura do painel
 const isPanelOpen = ref<boolean>(false);
 
@@ -165,6 +207,13 @@ const formatTime = (timestamp: string): string => {
     hour: '2-digit',
     minute: '2-digit',
   });
+};
+
+const getMaxDate = (): string => {
+  // OpenWeather retorna previsões até 5 dias
+  const maxDate = new Date();
+  maxDate.setDate(maxDate.getDate() + 5);
+  return maxDate.toISOString().split('T')[0] || '';
 };
 
 const initMap = () => {
@@ -222,7 +271,14 @@ const loadRegionalData = async () => {
     const cityIds = allCities.map(c => c.id);
     
     // 2. Buscar dados climáticos do backend (ou mock)
-    const weatherData = await getRegionalWeather(cityIds);
+    // Se useForecastDateTime estiver ativo, passa data e hora específica
+    let weatherData;
+    if (useForecastDateTime.value && forecastDate.value && forecastTime.value) {
+      weatherData = await getRegionalWeather(cityIds, forecastDate.value, forecastTime.value);
+    } else {
+      weatherData = await getRegionalWeather(cityIds);
+    }
+    
     regionalData.value = weatherData;
     
     // 3. Renderizar malhas no mapa
@@ -336,6 +392,11 @@ const updateRegionalData = async () => {
 };
 
 onMounted(async () => {
+  // Inicializar data e hora padrão (agora)
+  const now = new Date();
+  forecastDate.value = now.toISOString().split('T')[0] || '';
+  forecastTime.value = now.toTimeString().substring(0, 5);
+  
   initMap();
   await loadRegionalData();
   
@@ -507,6 +568,81 @@ onUnmounted(() => {
 
 .radius-control input[type="range"]::-moz-range-thumb:hover {
   transform: scale(1.1);
+}
+
+.datetime-control {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-top: 0.75rem;
+}
+
+.datetime-header {
+  margin-bottom: 0.75rem;
+}
+
+.datetime-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.datetime-toggle input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+.datetime-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.input-group label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-group input[type="date"],
+.input-group input[type="time"] {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.9);
+  color: #2c3e50;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.input-group input[type="date"]:hover,
+.input-group input[type="time"]:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.input-group input[type="date"]:focus,
+.input-group input[type="time"]:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
 }
 
 .legend {
@@ -758,6 +894,10 @@ onUnmounted(() => {
   
   .controls {
     max-width: 100%;
+  }
+  
+  .datetime-inputs {
+    grid-template-columns: 1fr;
   }
   
   .legend {
