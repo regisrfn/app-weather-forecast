@@ -73,9 +73,18 @@ export async function getRegionalWeather(
     return getMockRegionalWeather(cityIds);
   }
 
-  const response = await api.post<WeatherData[]>('/api/weather/regional', {
-    cityIds,
-  });
+  // Obter data e hora atual
+  const now = new Date();
+  const date = now.toISOString().split('T')[0]; // YYYY-MM-DD
+  const time = now.toTimeString().substring(0, 5); // HH:MM
+
+  const response = await api.post<WeatherData[]>(
+    '/api/weather/regional',
+    { cityIds },
+    {
+      params: { date, time }
+    }
+  );
 
   return response.data;
 }

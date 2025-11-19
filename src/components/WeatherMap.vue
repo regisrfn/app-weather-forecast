@@ -100,7 +100,7 @@
       </div>
       
       <div class="update-time">
-        Atualizado: {{ formatTime(selectedCity.timestamp) }}
+        Previsão para: {{ formatTime(selectedCity.timestamp) }}
       </div>
     </div>
   </div>
