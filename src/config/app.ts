@@ -25,8 +25,8 @@ export const APP_CONFIG = {
    */
   MAP: {
     DEFAULT_ZOOM: 10,
-    MIN_ZOOM: 8,
-    MAX_ZOOM: 14,
+    MIN_ZOOM: 5,
+    MAX_ZOOM: 18,
     CENTER: {
       lat: -22.7572,
       lng: -49.9439,
@@ -45,5 +45,5 @@ export const APP_CONFIG = {
   /**
    * Intervalo de atualização dos dados (ms)
    */
-  UPDATE_INTERVAL: 5 * 60 * 1000, // 5 minutos
+  UPDATE_INTERVAL: 60 * 60 * 1000, // 60 minutos
 } as const;

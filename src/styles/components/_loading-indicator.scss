@@ -1,0 +1,77 @@
+// =================================
+// COMPONENTE: LOADING INDICATOR
+// =================================
+
+@import '../abstracts/colors';
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+@import '../abstracts/breakpoints';
+
+.loading-indicator {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  @include glass-effect(rgba(255, 255, 255, 0.9), 16px, 0.15);
+  padding: $spacing-xs $spacing-md;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  z-index: $z-loading;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  animation: slideDown 0.3s ease;
+  backdrop-filter: blur(16px);
+
+  @include md {
+    top: 70px;
+    padding: $spacing-xs $spacing-sm;
+    gap: $spacing-xs;
+  }
+
+  span {
+    font-size: $font-sm;
+    font-weight: $font-semibold;
+    color: $text-dark;
+    white-space: nowrap;
+    opacity: 0.85;
+
+    @include md {
+      font-size: $font-xs;
+    }
+  }
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  border-top-color: $primary-gradient-start;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  flex-shrink: 0;
+
+  @include md {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}

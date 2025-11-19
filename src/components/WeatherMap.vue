@@ -57,7 +57,6 @@
               <input 
                 type="checkbox" 
                 v-model="useForecastDateTime"
-                @change="updateRegionalData"
               />
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
@@ -90,6 +89,12 @@
         </div>
       </div>
     </header>
+    
+    <!-- Indicador de Carregamento -->
+    <div v-if="isLoading" class="loading-indicator">
+      <div class="spinner"></div>
+      <span>Carregando dados...</span>
+    </div>
     
     <div id="map" ref="mapContainer"></div>
     
@@ -227,6 +232,9 @@ const isPanelOpen = ref<boolean>(false);
 // Controle do menu hamburger (mobile)
 const isMenuOpen = ref<boolean>(false);
 
+// Controle de carregamento
+const isLoading = ref<boolean>(false);
+
 const togglePanel = () => {
   isPanelOpen.value = !isPanelOpen.value;
 };
@@ -305,6 +313,7 @@ const updateRadiusCircle = () => {
 };
 
 const loadRegionalData = async () => {
+  isLoading.value = true;
   try {
     // 1. Buscar cidades vizinhas do backend (ou mock)
     const response = await getNeighborCities(APP_CONFIG.CENTER_CITY_ID, searchRadius.value);
@@ -334,6 +343,8 @@ const loadRegionalData = async () => {
     }
   } catch (error) {
     console.error('Erro ao carregar dados regionais:', error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
