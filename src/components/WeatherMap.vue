@@ -130,6 +130,8 @@ const regionalData = ref<WeatherData[]>([]);
 const geoJsonLayers: L.GeoJSON[] = [];
 let updateInterval: number | null = null;
 let radiusCircle: L.Circle | null = null;
+let selectedLayer: L.Layer | null = null; // Camada atualmente selecionada
+const layerColors = new Map<L.Layer, string>(); // Guardar cores originais
 
 // Controle de raio de busca (em km)
 const searchRadius = ref<number>(APP_CONFIG.RADIUS.DEFAULT);
@@ -245,6 +247,7 @@ const renderCityMeshes = async (
   // Limpar camadas anteriores
   geoJsonLayers.forEach(layer => map?.removeLayer(layer));
   geoJsonLayers.length = 0;
+  layerColors.clear(); // Limpar cores guardadas
 
   for (const city of cities) {
     const geometry = await getMunicipalityMesh(city.id);
@@ -261,24 +264,55 @@ const renderCityMeshes = async (
           weight: 2,
         },
         onEachFeature: (_feature, layer) => {
+          // Guardar cor original da camada
+          layerColors.set(layer, color);
+          
           layer.on({
             click: () => {
+              // Resetar estilo da camada anteriormente selecionada
+              if (selectedLayer && selectedLayer !== layer) {
+                const originalColor = layerColors.get(selectedLayer);
+                if (originalColor) {
+                  (selectedLayer as any).setStyle({
+                    fillColor: originalColor,
+                    fillOpacity: 0.7,
+                    weight: 2,
+                    color: '#2c3e50',
+                  });
+                }
+              }
+              
+              // Destacar camada selecionada com verde suave
+              (layer as any).setStyle({
+                fillColor: '#52c41a', // Verde suave no preenchimento
+                fillOpacity: 0.6,
+                weight: 3,
+                color: '#27ae60', // Verde mais escuro na borda
+              });
+              
+              selectedLayer = layer;
               selectedCity.value = weather;
               isPanelOpen.value = true; // Abrir painel ao clicar
             },
             mouseover: (e) => {
               const layer = e.target;
-              layer.setStyle({
-                weight: 3,
-                color: '#34495e',
-              });
+              // Não alterar se for a camada selecionada
+              if (selectedLayer !== layer) {
+                layer.setStyle({
+                  weight: 3,
+                  color: '#34495e',
+                });
+              }
             },
             mouseout: (e) => {
               const layer = e.target;
-              layer.setStyle({
-                weight: 2,
-                color: '#2c3e50',
-              });
+              // Não alterar se for a camada selecionada
+              if (selectedLayer !== layer) {
+                layer.setStyle({
+                  weight: 2,
+                  color: '#2c3e50',
+                });
+              }
             },
           });
           
@@ -297,6 +331,7 @@ const renderCityMeshes = async (
 
 const updateRegionalData = async () => {
   updateRadiusCircle();
+  selectedLayer = null; // Resetar seleção ao mudar raio
   await loadRegionalData();
 };
 
