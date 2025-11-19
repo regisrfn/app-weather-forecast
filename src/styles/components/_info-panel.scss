@@ -79,7 +79,7 @@
   position: absolute;
   bottom: 90px;
   right: 20px;
-  width: 300px;
+  min-width: 21.5rem;
   max-height: calc(100vh - 120px); // Evitar que ultrapasse a tela
   @include glass-effect(rgba(255, 255, 255, 0.98), 20px, 0.1);
   border-radius: $radius-lg;
