@@ -10,12 +10,13 @@
 .stats-group {
   display: flex;
   align-items: stretch;
-  gap: 0; // Sem espaço entre os componentes
+  gap: 0;
   height: 60px;
 
   @include md {
-    flex-direction: column;
+    flex-direction: row;
     height: auto;
-    gap: $spacing-md;
+    gap: $spacing-xs;
+    width: 100%;
   }
 }

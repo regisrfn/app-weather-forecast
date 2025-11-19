@@ -66,10 +66,10 @@ $transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 // Z-index
 $z-map: 1;
 $z-stats: 998;
-$z-info-panel: 998;
-$z-info-toggle: 998;
 $z-legend: 999;
-$z-header: 1000;
+$z-info-toggle: 999;
+$z-info-panel: 1000;
+$z-header: 1001;
 
 // Dimensões
 $header-padding: 0.875rem 1.25rem;

@@ -18,21 +18,18 @@
   padding: $spacing-xl;
   pointer-events: none;
   z-index: $z-legend;
-  gap: 0; // Remove o gap para grudar os componentes
+  gap: $spacing-md;
 
   @include md {
-    padding: $spacing-md;
-    flex-wrap: wrap;
-    gap: $spacing-md;
+    padding: $spacing-sm;
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-sm;
   }
 
   // Permitir cliques nos elementos filhos
   > * {
     pointer-events: auto;
-    
-    @include md {
-      height: auto;
-    }
   }
 
   // Legenda e stats-group com altura definida
@@ -42,6 +39,19 @@
     
     @include md {
       height: auto;
+    }
+  }
+
+  // Em mobile: legenda por último
+  .legend-footer {
+    @include md {
+      order: 2;
+    }
+  }
+
+  .stats-group {
+    @include md {
+      order: 1;
     }
   }
 }
