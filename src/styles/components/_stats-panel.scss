@@ -8,30 +8,28 @@
 @import '../abstracts/breakpoints';
 
 .stats-panel {
-  position: absolute;
-  bottom: 60px;
-  left: 20px;
-  @include glass-effect($bg-dark-primary, 20px, 0.1);
-  border-radius: $radius-md;
-  box-shadow: $shadow-xl;
-  padding: 0.625rem $font-2xl;
-  z-index: $z-stats;
+  @include glass-effect(rgba(255, 255, 255, 0.95), 16px, 0.1);
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-lg;
+  box-shadow: none; // Removido para unificar com o botão
   display: flex;
-  align-items: center;
   gap: $spacing-md;
-  transition: $transition-normal;
-
-  &:hover {
-    background: $bg-dark-secondary;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
-    transform: translateY(-2px);
-  }
+  align-items: center;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: none;
+  height: 100%;
 
   @include md {
-    bottom: 85px;
-    left: 10px;
-    padding: $spacing-sm $spacing-md;
+    padding: $spacing-md;
     gap: $spacing-md;
+    order: 1;
+    border-radius: $radius-lg;
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: $shadow-xl;
+    height: auto !important;
   }
 }
 
@@ -44,7 +42,7 @@
 
 .stat-label {
   font-size: $font-sm;
-  color: $text-gray;
+  color: $text-dark;
   font-weight: $font-semibold;
   text-transform: uppercase;
   letter-spacing: $letter-spacing-wide;

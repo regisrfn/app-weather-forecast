@@ -1,0 +1,21 @@
+// =================================
+// COMPONENTE: STATS GROUP
+// =================================
+
+@import '../abstracts/colors';
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+@import '../abstracts/breakpoints';
+
+.stats-group {
+  display: flex;
+  align-items: stretch;
+  gap: 0; // Sem espaço entre os componentes
+  height: 60px;
+
+  @include md {
+    flex-direction: column;
+    height: auto;
+    gap: $spacing-md;
+  }
+}

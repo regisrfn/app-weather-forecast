@@ -1,5 +1,5 @@
 // =================================
-// COMPONENTE: LEGEND FOOTER
+// COMPONENTE: LEGEND (RODAPÉ)
 // =================================
 
 @import '../abstracts/colors';
@@ -8,39 +8,20 @@
 @import '../abstracts/breakpoints';
 
 .legend-footer {
-  position: absolute;
-  bottom: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  @include glass-effect($bg-dark-primary, 20px, 0.1);
-  padding: $spacing-sm $spacing-lg;
-  border-radius: $radius-md;
+  @include glass-effect(rgba(255, 255, 255, 0.95), 16px, 0.1);
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-lg;
   box-shadow: $shadow-xl;
-  z-index: $z-legend;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   display: flex;
   align-items: center;
-  gap: $spacing-lg;
-  transition: $transition-normal;
-
-  &:hover {
-    background: $bg-dark-secondary;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
-    transform: translateX(-50%) translateY(-2px);
-  }
 
   @include md {
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    transform: none;
-    flex-direction: column;
-    gap: $spacing-sm;
-    align-items: center;
     padding: $spacing-sm $spacing-md;
-
-    &:hover {
-      transform: translateY(-2px);
-    }
+    order: 3;
+    width: 100%;
+    height: auto !important;
   }
 }
 
@@ -77,7 +58,7 @@
   span {
     font-size: 0.72rem;
     font-weight: $font-semibold;
-    color: $text-light;
+    color: $text-dark;
     white-space: nowrap;
 
     @include md {

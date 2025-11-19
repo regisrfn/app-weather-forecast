@@ -1,0 +1,47 @@
+// =================================
+// COMPONENTE: BOTTOM CONTAINER
+// =================================
+
+@import '../abstracts/colors';
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+@import '../abstracts/breakpoints';
+
+.bottom-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: $spacing-xl;
+  pointer-events: none;
+  z-index: $z-legend;
+  gap: 0; // Remove o gap para grudar os componentes
+
+  @include md {
+    padding: $spacing-md;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+  }
+
+  // Permitir cliques nos elementos filhos
+  > * {
+    pointer-events: auto;
+    
+    @include md {
+      height: auto;
+    }
+  }
+
+  // Legenda e stats-group com altura definida
+  .legend-footer,
+  .stats-group {
+    height: 60px;
+    
+    @include md {
+      height: auto;
+    }
+  }
+}

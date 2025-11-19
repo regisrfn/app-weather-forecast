@@ -93,39 +93,52 @@
     
     <div id="map" ref="mapContainer"></div>
     
-    <!-- Legenda Flutuante no Rodapé -->
-    <div class="legend-footer">
-      <div class="legend-scale">
-        <div class="legend-item" v-for="item in legendItems" :key="item.label">
-          <div class="legend-color" :style="{ backgroundColor: item.color }"></div>
-          <span>{{ item.label }}</span>
+    <!-- Bottom Container -->
+    <div class="bottom-container">
+      <!-- Legenda Flutuante -->
+      <div class="legend-footer">
+        <div class="legend-scale">
+          <div class="legend-item" v-for="item in legendItems" :key="item.label">
+            <div class="legend-color" :style="{ backgroundColor: item.color }"></div>
+            <span>{{ item.label }}</span>
+          </div>
         </div>
       </div>
-    </div>
-    
-    <!-- Stats Panel (canto inferior esquerdo) -->
-    <div class="stats-panel">
-      <div class="stat-item">
-        <span class="stat-value">{{ regionalData.length }}</span>
-        <span class="stat-label">cidades</span>
+      
+      <!-- Grupo Stats + Botão -->
+      <div class="stats-group">
+        <!-- Stats Panel -->
+        <div class="stats-panel">
+          <div class="stat-item">
+            <span class="stat-value">{{ regionalData.length }}</span>
+            <span class="stat-label">cidades</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-value">{{ searchRadius }} km</span>
+            <span class="stat-label">raio</span>
+          </div>
+        </div>
+        
+        <!-- Botão Flutuante -->
+        <button 
+          v-if="selectedCity" 
+          class="info-toggle-btn"
+          @click="togglePanel"
+          :class="{ 'is-open': isPanelOpen }"
+        >
+          <div class="btn-content">
+            <svg v-if="!isPanelOpen" class="toggle-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/>
+            </svg>
+            <svg v-else class="toggle-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+            </svg>
+            <span class="toggle-text">{{ selectedCity.cityName }}</span>
+          </div>
+        </button>
       </div>
-      <div class="stat-divider"></div>
-      <div class="stat-item">
-        <span class="stat-value">{{ searchRadius }} km</span>
-        <span class="stat-label">raio</span>
-      </div>
     </div>
-    
-    <!-- Botão Flutuante (canto inferior direito) -->
-    <button 
-      v-if="selectedCity" 
-      class="info-toggle-btn"
-      @click="togglePanel"
-      :class="{ 'is-open': isPanelOpen }"
-    >
-      <span class="toggle-icon">{{ isPanelOpen ? '✕' : 'ℹ️' }}</span>
-      <span class="toggle-text">{{ selectedCity.cityName }}</span>
-    </button>
     
     <!-- Painel de Informações (Expansível) -->
     <div 
