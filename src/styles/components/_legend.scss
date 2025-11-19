@@ -2,10 +2,10 @@
 // COMPONENTE: LEGEND (RODAPÉ)
 // =================================
 
-@import '../abstracts/colors';
-@import '../abstracts/variables';
-@import '../abstracts/mixins';
-@import '../abstracts/breakpoints';
+@use '../abstracts/colors' as *;
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+@use '../abstracts/breakpoints' as *;
 
 .legend-footer {
   @include glass-effect(rgba(255, 255, 255, 0.95), 16px, 0.1);

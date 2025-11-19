@@ -2,7 +2,7 @@
 // BASE - Reset & Globals
 // =================================
 
-@import '../abstracts/breakpoints';
+@use '../abstracts/breakpoints' as *;
 
 // Ajuste do tamanho base do rem por breakpoint
 :root {

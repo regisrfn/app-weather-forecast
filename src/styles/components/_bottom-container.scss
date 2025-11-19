@@ -2,10 +2,10 @@
 // COMPONENTE: BOTTOM CONTAINER
 // =================================
 
-@import '../abstracts/colors';
-@import '../abstracts/variables';
-@import '../abstracts/mixins';
-@import '../abstracts/breakpoints';
+@use '../abstracts/colors' as *;
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+@use '../abstracts/breakpoints' as *;
 
 .bottom-container {
   position: absolute;

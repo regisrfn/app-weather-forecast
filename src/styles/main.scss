@@ -3,23 +3,23 @@
 // =================================
 
 // 1. Abstracts (variáveis, mixins, funções)
-@import 'abstracts/colors';
-@import 'abstracts/variables';
-@import 'abstracts/mixins';
-@import 'abstracts/breakpoints';
+@use 'abstracts/colors';
+@use 'abstracts/variables';
+@use 'abstracts/mixins';
+@use 'abstracts/breakpoints';
 
 // 2. Base (reset, tipografia, elementos base)
-@import 'base/reset';
+@use 'base/reset';
 
 // 3. Components (componentes reutilizáveis)
-@import 'components/weather-map';
-@import 'components/header';
-@import 'components/radius-control';
-@import 'components/datetime-control';
-@import 'components/hamburger';
-@import 'components/bottom-container';
-@import 'components/stats-group';
-@import 'components/legend';
-@import 'components/info-panel';
-@import 'components/stats-panel';
-@import 'components/loading-indicator';
+@use 'components/weather-map';
+@use 'components/header';
+@use 'components/radius-control';
+@use 'components/datetime-control';
+@use 'components/hamburger';
+@use 'components/bottom-container';
+@use 'components/stats-group';
+@use 'components/legend';
+@use 'components/info-panel';
+@use 'components/stats-panel';
+@use 'components/loading-indicator';
