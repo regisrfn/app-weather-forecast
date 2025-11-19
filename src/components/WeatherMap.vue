@@ -229,11 +229,11 @@ const toggleMenu = () => {
 };
 
 const legendItems = [
-  { color: 'rgba(200, 200, 200, 0.3)', label: 'Sem chuva' },
-  { color: 'rgba(173, 216, 230, 0.6)', label: 'Fraca' },
-  { color: 'rgba(100, 149, 237, 0.7)', label: 'Moderada' },
-  { color: 'rgba(30, 144, 255, 0.8)', label: 'Forte' },
-  { color: 'rgba(0, 0, 139, 0.9)', label: 'Intensa' },
+  { color: 'rgba(200, 200, 200, 0.3)', label: '0% - Sem chuva' },
+  { color: 'rgba(173, 216, 230, 0.6)', label: '< 25% - Baixa' },
+  { color: 'rgba(100, 149, 237, 0.7)', label: '25-50% - Média' },
+  { color: 'rgba(30, 144, 255, 0.8)', label: '50-75% - Alta' },
+  { color: 'rgba(0, 0, 139, 0.9)', label: '> 75% - Muito alta' },
 ];
 
 const formatTime = (timestamp: string): string => {

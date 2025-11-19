@@ -205,12 +205,12 @@ export function getRainfallColor(intensity: number): string {
 }
 
 /**
- * Utilitário: Descrição textual da intensidade
+ * Utilitário: Descrição textual da probabilidade de chuva
  */
 export function getRainfallDescription(intensity: number): string {
   if (intensity === 0) return 'Sem chuva';
-  if (intensity < 25) return 'Chuva fraca';
-  if (intensity < 50) return 'Chuva moderada';
-  if (intensity < 75) return 'Chuva forte';
-  return 'Chuva muito forte';
+  if (intensity < 25) return 'Probabilidade baixa';
+  if (intensity < 50) return 'Probabilidade média';
+  if (intensity < 75) return 'Probabilidade alta';
+  return 'Probabilidade muito alta';
 }
