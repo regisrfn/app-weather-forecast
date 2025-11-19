@@ -60,12 +60,17 @@
 }
 
 .toggle-text {
-  @include truncate(150px);
+  @include truncate(200px);
   font-size: $font-base;
 
   @include md {
-    max-width: 70px;
+    max-width: none;
     font-size: 0.7rem;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.2;
   }
 }
 
@@ -119,6 +124,11 @@
   @include flex-between;
   gap: $spacing-md;
 
+  @include md {
+    padding: $spacing-md $spacing-sm;
+    gap: $spacing-xs;
+  }
+
   h2 {
     margin: 0;
     font-size: $font-3xl;
@@ -126,7 +136,7 @@
     flex: 1;
 
     @include md {
-      font-size: $font-2xl;
+      font-size: $font-xl;
     }
   }
 }
@@ -135,6 +145,10 @@
   display: flex;
   align-items: center;
   gap: $spacing-sm;
+
+  @include md {
+    gap: $spacing-xs;
+  }
 }
 
 .close-panel-btn {
@@ -175,8 +189,8 @@
   backdrop-filter: brightness(0.8);
 
   @include md {
-    font-size: $font-sm;
-    padding: 0.25rem $spacing-sm;
+    font-size: 0.65rem;
+    padding: 0.2rem $spacing-xs;
   }
 }
 
@@ -188,8 +202,8 @@
   background: rgba(248, 250, 252, 0.5);
 
   @include md {
-    gap: $spacing-md;
-    padding: $font-2xl;
+    gap: $spacing-xs;
+    padding: $spacing-sm;
   }
 }
 
@@ -197,6 +211,10 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+
+  @include md {
+    gap: 0.15rem;
+  }
 }
 
 .weather-label {
@@ -218,7 +236,7 @@
   @include text-gradient;
 
   @include md {
-    font-size: $font-5xl;
+    font-size: $font-4xl;
   }
 }
 
@@ -231,4 +249,9 @@
   border-top: 1px solid rgba(226, 232, 240, 0.8);
   font-weight: $font-regular;
   opacity: 0.8;
+
+  @include md {
+    padding: $spacing-sm;
+    font-size: $font-sm;
+  }
 }
