@@ -1,0 +1,65 @@
+// =================================
+// CORES DO PROJETO
+// =================================
+
+// Cores Primárias (Gradiente)
+$primary-gradient-start: #667eea;
+$primary-gradient-end: #764ba2;
+
+// Cores de Background
+$bg-dark-primary: rgba(30, 30, 30, 0.9);
+$bg-dark-secondary: rgba(40, 40, 40, 0.95);
+$bg-dark-tertiary: rgba(20, 20, 20, 0.5);
+$bg-dark-footer: rgba(15, 15, 15, 0.8);
+
+// Cores de Background com Blur
+$bg-header: rgba(100, 97, 97, 0.65);
+$bg-header-hover: rgba(124, 124, 124, 0.9);
+
+// Cores de Texto
+$text-white: #ffffff;
+$text-light: #f0f0f0;
+$text-muted: #e0e0e0;
+$text-gray: #b0b0b0;
+
+// Cores de Borda
+$border-light: rgba(255, 255, 255, 0.1);
+$border-medium: rgba(255, 255, 255, 0.2);
+$border-dark: rgba(255, 255, 255, 0.25);
+
+// Cores de Overlay
+$overlay-light: rgba(255, 255, 255, 0.15);
+$overlay-medium: rgba(255, 255, 255, 0.2);
+$overlay-dark: rgba(0, 0, 0, 0.25);
+
+// Cores de Intensidade de Chuva (Legenda)
+$rainfall-none: rgba(200, 200, 200, 0.3);
+$rainfall-light: rgba(173, 216, 230, 0.6);
+$rainfall-moderate: rgba(100, 149, 237, 0.7);
+$rainfall-strong: rgba(30, 144, 255, 0.8);
+$rainfall-intense: rgba(0, 0, 139, 0.9);
+
+// Cores de Mapa
+$map-border: #2c3e50;
+$map-border-hover: #34495e;
+$map-highlight-fill: #52c41a;
+$map-highlight-border: #27ae60;
+
+// Cores do Círculo de Raio
+$radius-circle-color: #667eea;
+
+// Gradientes
+@mixin gradient-primary {
+  background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
+}
+
+@mixin gradient-primary-reverse {
+  background: linear-gradient(135deg, $primary-gradient-end 0%, $primary-gradient-start 100%);
+}
+
+@mixin text-gradient {
+  background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

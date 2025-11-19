@@ -1,21 +1,37 @@
 <template>
   <div class="weather-map-container">
-    <!-- Header com Menu Hamburger -->
-    <div class="map-header" :class="{ 'menu-open': isMenuOpen }">
-      <div class="header-top">
-        <h1>Previsão do Tempo - Ribeirão do Sul</h1>
-        <button class="hamburger-btn" @click="toggleMenu">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-      </div>
-
-      <div class="header-content">
-        <div class="controls">
-          <div class="radius-control">
+    <!-- Header Flutuante -->
+    <header class="floating-header" :class="{ 'menu-open': isMenuOpen }">
+      <div class="header-wrapper">
+        <div class="header-left">
+          <!-- Ícone SVG de nuvem com sol -->
+          <svg class="weather-icon" width="36" height="36" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Sol -->
+            <circle cx="38" cy="20" r="8" fill="#FDB813" opacity="0.9"/>
+            <line x1="38" y1="6" x2="38" y2="10" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/>
+            <line x1="52" y1="20" x2="48" y2="20" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/>
+            <line x1="46.5" y1="11.5" x2="43.5" y2="14.5" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/>
+            <line x1="46.5" y1="28.5" x2="43.5" y2="25.5" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/>
+            <!-- Nuvem -->
+            <path d="M18 32c-6 0-10 4-10 9s4 9 10 9h24c5.5 0 10-4.5 10-10 0-5-4-9-9-9-1 0-2 0-3 1-1-6-6-10-12-10-5 0-9 3-11 7-3 0-5 1-5 3z" fill="white" stroke="#E0E0E0" stroke-width="1.5"/>
+            <ellipse cx="28" cy="38" rx="10" ry="8" fill="#F5F5F5"/>
+          </svg>
+          <div class="header-title">
+            <h1>Previsão do Tempo</h1>
+            <span class="subtitle">Ribeirão do Sul</span>
+          </div>
+        </div>
+        
+        <div class="header-controls">
+          <!-- Controle de Raio -->
+          <div class="control-item radius-control">
             <label for="radius-slider">
-              Raio: <strong>{{ searchRadius }} km</strong>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="12" r="6" stroke="currentColor" stroke-width="2" stroke-dasharray="2 2"/>
+                <circle cx="12" cy="12" r="2" fill="currentColor"/>
+              </svg>
+              <strong>{{ searchRadius }} km</strong>
             </label>
             <input
               id="radius-slider"
@@ -24,26 +40,27 @@
               :min="APP_CONFIG.RADIUS.MIN"
               :max="APP_CONFIG.RADIUS.MAX"
               step="10"
-              @input="updateRegionalData"
+              @input="debouncedUpdateRegionalData"
             />
           </div>
           
           <!-- Controle de Data/Hora -->
-          <div class="datetime-control">
-            <div class="datetime-header">
-              <label class="datetime-toggle">
-                <input 
-                  type="checkbox" 
-                  v-model="useForecastDateTime"
-                  @change="updateRegionalData"
-                />
-                <span>Previsão para data/hora específica</span>
-              </label>
-            </div>
+          <div class="control-item datetime-control">
+            <label class="datetime-toggle">
+              <input 
+                type="checkbox" 
+                v-model="useForecastDateTime"
+                @change="updateRegionalData"
+              />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+                <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span>Data/Hora</span>
+            </label>
             
             <div v-if="useForecastDateTime" class="datetime-inputs">
-              <div class="input-group">
-                <label for="forecast-date">Data:</label>
+              <div class="input-wrapper">
                 <input
                   id="forecast-date"
                   type="date"
@@ -53,8 +70,7 @@
                   @change="updateRegionalData"
                 />
               </div>
-              <div class="input-group">
-                <label for="forecast-time">Hora:</label>
+              <div class="input-wrapper">
                 <input
                   id="forecast-time"
                   type="time"
@@ -64,21 +80,29 @@
               </div>
             </div>
           </div>
+          
+          <!-- Toggle Mobile -->
+          <button class="hamburger-btn" @click="toggleMenu" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
         </div>
-        
-        <div class="legend">
-          <span class="legend-title">Intensidade:</span>
-          <div class="legend-scale">
-            <div class="legend-item" v-for="item in legendItems" :key="item.label">
-              <div class="legend-color" :style="{ backgroundColor: item.color }"></div>
-              <span>{{ item.label }}</span>
-            </div>
-          </div>
+      </div>
+    </header>
+    
+    <div id="map" ref="mapContainer"></div>
+    
+    <!-- Legenda Flutuante no Rodapé -->
+    <div class="legend-footer">
+      <span class="legend-title">Intensidade de Chuva</span>
+      <div class="legend-scale">
+        <div class="legend-item" v-for="item in legendItems" :key="item.label">
+          <div class="legend-color" :style="{ backgroundColor: item.color }"></div>
+          <span>{{ item.label }}</span>
         </div>
       </div>
     </div>
-    
-    <div id="map" ref="mapContainer"></div>
     
     <!-- Stats Panel (canto inferior esquerdo) -->
     <div class="stats-panel">
@@ -385,6 +409,23 @@ const renderCityMeshes = async (
   }
 };
 
+// Debounce para evitar múltiplas chamadas no slider
+let debounceTimer: number | null = null;
+const debouncedUpdateRegionalData = () => {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer);
+  }
+  
+  // Atualizar círculo imediatamente para feedback visual
+  updateRadiusCircle();
+  
+  // Aguardar 500ms antes de fazer a chamada API
+  debounceTimer = window.setTimeout(async () => {
+    selectedLayer = null;
+    await loadRegionalData();
+  }, 500);
+};
+
 const updateRegionalData = async () => {
   updateRadiusCircle();
   selectedLayer = null; // Resetar seleção ao mudar raio
@@ -415,574 +456,3 @@ onUnmounted(() => {
   }
 });
 </script>
-
-<style scoped>
-.weather-map-container {
-  width: 100%;
-  height: 100vh;
-  height: 100dvh; /* Dynamic viewport height para mobile */
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-}
-
-.map-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 1rem 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  transition: all 0.3s ease;
-}
-
-.header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.75rem;
-}
-
-.map-header h1 {
-  margin: 0;
-  font-size: 1.3rem;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-/* Menu Hamburger */
-.hamburger-btn {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 4px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  width: 40px;
-  height: 40px;
-  position: relative;
-  z-index: 1001;
-}
-
-.hamburger-btn span {
-  display: block;
-  width: 24px;
-  height: 2.5px;
-  background: white;
-  border-radius: 2px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: absolute;
-}
-
-.hamburger-btn span:nth-child(1) {
-  top: 12px;
-}
-
-.hamburger-btn span:nth-child(2) {
-  top: 18.75px;
-}
-
-.hamburger-btn span:nth-child(3) {
-  top: 25.5px;
-}
-
-.menu-open .hamburger-btn span:nth-child(1) {
-  top: 18.75px;
-  transform: rotate(45deg);
-}
-
-.menu-open .hamburger-btn span:nth-child(2) {
-  opacity: 0;
-}
-
-.menu-open .hamburger-btn span:nth-child(3) {
-  top: 18.75px;
-  transform: rotate(-45deg);
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 2rem;
-}
-
-.controls {
-  flex: 1;
-  max-width: 320px;
-}
-
-.radius-control {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-}
-
-.radius-control label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.radius-control input[type="range"] {
-  width: 100%;
-  height: 6px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.3);
-  outline: none;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.radius-control input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: white;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s ease;
-}
-
-.radius-control input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.1);
-}
-
-.radius-control input[type="range"]::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: white;
-  cursor: pointer;
-  border: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s ease;
-}
-
-.radius-control input[type="range"]::-moz-range-thumb:hover {
-  transform: scale(1.1);
-}
-
-.datetime-control {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  margin-top: 0.75rem;
-}
-
-.datetime-header {
-  margin-bottom: 0.75rem;
-}
-
-.datetime-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.datetime-toggle input[type="checkbox"] {
-  cursor: pointer;
-  width: 16px;
-  height: 16px;
-}
-
-.datetime-inputs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.input-group label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.input-group input[type="date"],
-.input-group input[type="time"] {
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.9);
-  color: #2c3e50;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.input-group input[type="date"]:hover,
-.input-group input[type="time"]:hover {
-  background: rgba(255, 255, 255, 1);
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
-.input-group input[type="date"]:focus,
-.input-group input[type="time"]:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-}
-
-.legend {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  flex-shrink: 0;
-}
-
-.legend-title {
-  font-size: 0.875rem;
-  font-weight: 600;
-  white-space: nowrap;
-  letter-spacing: 0.3px;
-}
-
-.legend-scale {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.legend-color {
-  width: 22px;
-  height: 18px;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.legend-item span {
-  font-size: 0.813rem;
-  font-weight: 500;
-}
-
-#map {
-  flex: 1;
-  z-index: 1;
-  min-height: 0; /* Importante para flex no mobile */
-}
-
-.info-toggle-btn {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 25px;
-  padding: 0.75rem 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-  z-index: 1001;
-  font-size: 0.9rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.info-toggle-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
-}
-
-.info-toggle-btn.is-open {
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-}
-
-.toggle-icon {
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-.toggle-text {
-  max-width: 150px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.info-panel {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 280px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  z-index: 1000;
-  transform: translateY(calc(100% + 20px));
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.info-panel.is-open {
-  transform: translateY(-60px);
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.panel-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 0.75rem 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.panel-header h2 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  flex: 1;
-}
-
-.intensity-badge {
-  display: inline-block;
-  padding: 0.25rem 0.6rem;
-  border-radius: 12px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  white-space: nowrap;
-  background: rgba(0, 0, 0, 0.2) !important;
-  backdrop-filter: brightness(0.8);
-}
-
-.weather-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-  padding: 1rem;
-  background: #f8f9fa;
-}
-
-.weather-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.weather-label {
-  font-size: 0.75rem;
-  color: #6c757d;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.weather-value {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #2c3e50;
-}
-
-.update-time {
-  padding: 0.6rem 1rem;
-  font-size: 0.75rem;
-  color: #6c757d;
-  text-align: center;
-  background: #ffffff;
-  border-top: 1px solid #e9ecef;
-}
-
-.stats-panel {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  padding: 0.75rem 1.25rem;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.15rem;
-}
-
-.stat-label {
-  font-size: 0.7rem;
-  color: #6c757d;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.stat-value {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #667eea;
-}
-
-.stat-divider {
-  width: 1px;
-  height: 35px;
-  background: #dee2e6;
-}
-
-@media (max-width: 768px) {
-  /* Menu Hamburger visível em mobile */
-  .hamburger-btn {
-    display: flex;
-  }
-
-  .header-content {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
-    transition: all 0.3s ease;
-  }
-
-  .menu-open .header-content {
-    max-height: 500px;
-    opacity: 1;
-    margin-top: 1rem;
-  }
-  
-  .map-header h1 {
-    font-size: 1.15rem;
-  }
-  
-  .controls {
-    max-width: 100%;
-  }
-  
-  .datetime-inputs {
-    grid-template-columns: 1fr;
-  }
-  
-  .legend {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.75rem;
-  }
-
-  .legend-title {
-    margin-bottom: 0.25rem;
-  }
-  
-  .legend-scale {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    justify-content: flex-start;
-  }
-  
-  /* Stats panel - menor e no canto inferior esquerdo */
-  .stats-panel {
-    position: fixed;
-    left: 10px;
-    bottom: 10px;
-    padding: 0.5rem 0.75rem;
-    gap: 0.75rem;
-    font-size: 0.85rem;
-  }
-
-  .stat-value {
-    font-size: 1rem;
-  }
-
-  .stat-label {
-    font-size: 0.65rem;
-  }
-
-  .stat-divider {
-    height: 28px;
-  }
-  
-  /* Botão info - menor e no canto inferior direito */
-  .info-toggle-btn {
-    position: fixed;
-    right: 10px;
-    bottom: 10px;
-    padding: 0.5rem 0.85rem;
-    font-size: 0.8rem;
-    border-radius: 20px;
-  }
-
-  .toggle-icon {
-    font-size: 1rem;
-  }
-
-  .toggle-text {
-    max-width: 100px;
-    font-size: 0.8rem;
-  }
-  
-  /* Painel de informações - ocupa quase toda a largura */
-  .info-panel {
-    position: fixed;
-    width: calc(100% - 20px);
-    left: 10px;
-    right: auto;
-    bottom: 10px;
-    max-width: 400px;
-  }
-  
-  .info-panel.is-open {
-    transform: translateY(-60px);
-  }
-
-  .panel-header h2 {
-    font-size: 1rem;
-  }
-
-  .weather-grid {
-    gap: 0.5rem;
-    padding: 0.75rem;
-  }
-
-  .weather-value {
-    font-size: 1.1rem;
-  }
-}
-</style>

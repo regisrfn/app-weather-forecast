@@ -1,0 +1,24 @@
+// =================================
+// COMPONENTE: WEATHER MAP CONTAINER
+// =================================
+
+@import '../abstracts/colors';
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+@import '../abstracts/breakpoints';
+
+.weather-map-container {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+#map {
+  flex: 1;
+  z-index: $z-map;
+  min-height: 0;
+}

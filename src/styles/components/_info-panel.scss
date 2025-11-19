@@ -1,0 +1,175 @@
+// =================================
+// COMPONENTE: INFO PANEL & TOGGLE
+// =================================
+
+@import '../abstracts/colors';
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+@import '../abstracts/breakpoints';
+
+// Botão de Toggle
+.info-toggle-btn {
+  position: absolute;
+  bottom: 60px;
+  right: 20px;
+  @include gradient-primary;
+  color: $text-white;
+  border: 1px solid $border-medium;
+  border-radius: $radius-2xl;
+  padding: 0.625rem 1.125rem;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  cursor: pointer;
+  box-shadow: $shadow-lg;
+  z-index: $z-info-toggle;
+  font-size: $font-xl;
+  font-weight: $font-bold;
+  transition: $transition-normal;
+  @include button-hover(-2px, $shadow-2xl);
+
+  &.is-open {
+    @include gradient-primary-reverse;
+  }
+
+  @include md {
+    bottom: 85px;
+    right: 10px;
+    padding: $spacing-sm 0.95rem;
+    font-size: $font-lg;
+    border-radius: $radius-xl;
+  }
+}
+
+.toggle-icon {
+  font-size: $font-2xl;
+  line-height: $line-height-tight;
+}
+
+.toggle-text {
+  @include truncate(140px);
+
+  @include md {
+    max-width: 90px;
+    font-size: $font-lg;
+  }
+}
+
+// Painel de Informações
+.info-panel {
+  position: absolute;
+  top: 100px;
+  right: 20px;
+  width: 300px;
+  @include glass-effect($bg-dark-primary, 20px, 0.1);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-4xl;
+  overflow: hidden;
+  z-index: $z-info-panel;
+  transform: translateX(calc(100% + 40px));
+  opacity: 0;
+  pointer-events: none;
+  transition: $transition-slow;
+
+  &.is-open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  @include md {
+    top: auto;
+    bottom: 135px;
+    right: 10px;
+    width: calc(100vw - 20px);
+    max-width: $legend-max-mobile;
+    transform: translateY(calc(100% + 20px));
+
+    &.is-open {
+      transform: translateY(0);
+    }
+  }
+}
+
+.panel-header {
+  @include gradient-primary;
+  color: $text-white;
+  padding: $font-2xl $spacing-lg;
+  @include flex-between;
+  gap: $spacing-md;
+
+  h2 {
+    margin: 0;
+    font-size: $font-3xl;
+    font-weight: $font-bold;
+    flex: 1;
+
+    @include md {
+      font-size: $font-2xl;
+    }
+  }
+}
+
+.intensity-badge {
+  display: inline-block;
+  padding: 0.3rem $spacing-md;
+  border-radius: $radius-md;
+  font-size: $font-base;
+  font-weight: $font-bold;
+  color: $text-white;
+  @include text-shadow;
+  white-space: nowrap;
+  background: $overlay-dark !important;
+  backdrop-filter: brightness(0.8);
+}
+
+.weather-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $font-2xl;
+  padding: $spacing-lg;
+  background: $bg-dark-tertiary;
+
+  @include md {
+    gap: $spacing-md;
+    padding: $font-2xl;
+  }
+}
+
+.weather-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.weather-label {
+  font-size: $font-base;
+  color: $text-gray;
+  font-weight: $font-semibold;
+  text-transform: uppercase;
+  letter-spacing: $letter-spacing-wide;
+
+  @include md {
+    font-size: 0.68rem;
+  }
+}
+
+.weather-value {
+  font-size: $font-6xl;
+  font-weight: $font-extrabold;
+  @include text-gradient;
+
+  @include md {
+    font-size: $font-5xl;
+  }
+}
+
+.update-time {
+  padding: $spacing-md $spacing-lg;
+  font-size: $font-base;
+  color: $text-gray;
+  text-align: center;
+  background: $bg-dark-footer;
+  border-top: 1px solid $border-light;
+  font-weight: $font-regular;
+}

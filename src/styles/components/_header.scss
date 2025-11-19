@@ -1,0 +1,145 @@
+// =================================
+// COMPONENTE: FLOATING HEADER
+// =================================
+
+@import '../abstracts/colors';
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+@import '../abstracts/breakpoints';
+
+.floating-header {
+  position: absolute;
+  top: 20px;
+  left: 10rem;
+  right: 10rem;
+  @include glass-effect($bg-header, 20px, 0.1);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-3xl;
+  z-index: $z-header;
+  transition: $transition-slow;
+
+  &:hover {
+    background: $bg-header-hover;
+    box-shadow: $shadow-hover;
+  }
+
+  @include md {
+    left: 3rem;
+    right: 3rem;
+    top: 15px;
+  }
+}
+
+.header-wrapper {
+  padding: $header-padding;
+  @include flex-between;
+  gap: $header-gap;
+  color: $text-white;
+
+  @include md {
+    padding: 0.75rem 1rem;
+    gap: 0;
+  }
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  flex-shrink: 0;
+
+  @include md {
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+.weather-icon {
+  flex-shrink: 0;
+  @include drop-shadow;
+
+  @include md {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.header-title {
+  h1 {
+    margin: 0;
+    font-size: $font-3xl;
+    font-weight: $font-bold;
+    letter-spacing: $letter-spacing-tight;
+    line-height: $line-height-normal;
+    color: $text-white;
+
+    @include md {
+      font-size: $font-2xl;
+    }
+  }
+}
+
+.subtitle {
+  font-size: $font-md;
+  opacity: 0.7;
+  font-weight: $font-regular;
+  color: $text-muted;
+
+  @include md {
+    font-size: $font-base;
+  }
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+
+  @include md {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-md;
+    padding: 0;
+
+    .menu-open & {
+      max-height: 400px;
+      opacity: 1;
+      margin-top: $spacing-md;
+      padding-top: $spacing-md;
+      border-top: 1px solid $border-medium;
+    }
+  }
+}
+
+.control-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  @include md {
+    width: 100%;
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: $font-lg;
+    font-weight: $font-semibold;
+    cursor: pointer;
+    color: $text-light;
+
+    @include md {
+      font-size: $font-lg;
+    }
+
+    svg {
+      flex-shrink: 0;
+      opacity: 0.9;
+    }
+  }
+}

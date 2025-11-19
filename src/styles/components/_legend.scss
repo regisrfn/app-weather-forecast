@@ -1,0 +1,100 @@
+// =================================
+// COMPONENTE: LEGEND FOOTER
+// =================================
+
+@import '../abstracts/colors';
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+@import '../abstracts/breakpoints';
+
+.legend-footer {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  @include glass-effect($bg-dark-primary, 20px, 0.1);
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $radius-md;
+  box-shadow: $shadow-xl;
+  z-index: $z-legend;
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  transition: $transition-normal;
+
+  &:hover {
+    background: $bg-dark-secondary;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+    transform: translateX(-50%) translateY(-2px);
+  }
+
+  @include md {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    transform: none;
+    flex-direction: column;
+    gap: $spacing-sm;
+    align-items: center;
+    padding: $spacing-sm $spacing-md;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+.legend-title {
+  font-size: $font-md;
+  font-weight: $font-bold;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: $letter-spacing-wide;
+  white-space: nowrap;
+
+  @include md {
+    font-size: $font-base;
+  }
+}
+
+.legend-scale {
+  display: flex;
+  gap: $spacing-md;
+  align-items: center;
+
+  @include md {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.625rem;
+  }
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  span {
+    font-size: 0.72rem;
+    font-weight: $font-semibold;
+    color: $text-light;
+    white-space: nowrap;
+
+    @include md {
+      font-size: 0.68rem;
+    }
+  }
+}
+
+.legend-color {
+  width: 18px;
+  height: 14px;
+  border-radius: $radius-xs;
+  border: 1px solid $border-medium;
+  box-shadow: $shadow-sm;
+
+  @include md {
+    width: 16px;
+    height: 12px;
+  }
+}

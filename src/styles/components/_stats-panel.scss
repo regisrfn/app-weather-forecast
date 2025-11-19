@@ -1,0 +1,75 @@
+// =================================
+// COMPONENTE: STATS PANEL
+// =================================
+
+@import '../abstracts/colors';
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+@import '../abstracts/breakpoints';
+
+.stats-panel {
+  position: absolute;
+  bottom: 60px;
+  left: 20px;
+  @include glass-effect($bg-dark-primary, 20px, 0.1);
+  border-radius: $radius-md;
+  box-shadow: $shadow-xl;
+  padding: 0.625rem $font-2xl;
+  z-index: $z-stats;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  transition: $transition-normal;
+
+  &:hover {
+    background: $bg-dark-secondary;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+    transform: translateY(-2px);
+  }
+
+  @include md {
+    bottom: 85px;
+    left: 10px;
+    padding: $spacing-sm $spacing-md;
+    gap: $spacing-md;
+  }
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.stat-label {
+  font-size: $font-sm;
+  color: $text-gray;
+  font-weight: $font-semibold;
+  text-transform: uppercase;
+  letter-spacing: $letter-spacing-wide;
+
+  @include md {
+    font-size: $font-xs;
+  }
+}
+
+.stat-value {
+  font-size: $font-4xl;
+  font-weight: $font-extrabold;
+  @include text-gradient;
+
+  @include md {
+    font-size: 1.05rem;
+  }
+}
+
+.stat-divider {
+  width: 1px;
+  height: 30px;
+  background: linear-gradient(to bottom, transparent, $border-medium, transparent);
+
+  @include md {
+    height: 26px;
+  }
+}

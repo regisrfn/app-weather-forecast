@@ -1,0 +1,139 @@
+// =================================
+// MIXINS
+// =================================
+
+// Flexbox Center
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// Backdrop Filter (para efeitos de blur em backgrounds)
+@mixin backdrop-blur($amount: 20px) {
+  backdrop-filter: blur($amount);
+  -webkit-backdrop-filter: blur($amount);
+}
+
+// Truncate Text
+@mixin truncate($max-width: 100%) {
+  max-width: $max-width;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Glassmorphism Effect
+@mixin glass-effect($bg-color, $blur: 20px, $border-opacity: 0.1) {
+  background: $bg-color;
+  @include backdrop-blur($blur);
+  border: 1px solid rgba(255, 255, 255, $border-opacity);
+}
+
+// Button Hover Effect
+@mixin button-hover($translate-y: -2px, $shadow: null) {
+  &:hover {
+    transform: translateY($translate-y);
+    @if $shadow {
+      box-shadow: $shadow;
+    }
+  }
+}
+
+// Reset Button Styles
+@mixin reset-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+// Input Base Style
+@mixin input-base {
+  padding: 0.4rem 0.7rem;
+  border-radius: $radius-sm;
+  border: 1px solid $border-dark;
+  background: $overlay-light;
+  color: $text-white;
+  font-size: $font-lg;
+  font-weight: $font-semibold;
+  cursor: pointer;
+  transition: $transition-fast;
+  
+  &:hover {
+    background: $overlay-medium;
+    border-color: $border-medium;
+    transform: translateY(-1px);
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: $primary-gradient-start;
+    background: $overlay-medium;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+  }
+}
+
+// Scrollbar Custom
+@mixin custom-scrollbar($width: 8px, $thumb-color: rgba(255, 255, 255, 0.3)) {
+  &::-webkit-scrollbar {
+    width: $width;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: $thumb-color;
+    border-radius: $radius-xs;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+// Position Absolute Center
+@mixin absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+// Grid Auto Fit
+@mixin grid-auto-fit($min-width: 200px, $gap: 1rem) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax($min-width, 1fr));
+  gap: $gap;
+}
+
+// Text Shadow
+@mixin text-shadow($color: rgba(0, 0, 0, 0.3)) {
+  text-shadow: 0 1px 2px $color;
+}
+
+// Drop Shadow (para SVG e elementos)
+@mixin drop-shadow($color: rgba(0, 0, 0, 0.3)) {
+  filter: drop-shadow(0 2px 4px $color);
+}
+
+// Responsive Font Size
+@mixin fluid-font($min-size, $max-size, $min-width: 320px, $max-width: 1200px) {
+  font-size: calc(#{$min-size} + (#{$max-size} - #{$min-size}) * ((100vw - #{$min-width}) / (#{$max-width} - #{$min-width})));
+}
+
+// User Select None
+@mixin no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}

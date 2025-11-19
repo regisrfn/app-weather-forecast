@@ -1,0 +1,68 @@
+// =================================
+// COMPONENTE: DATETIME CONTROL
+// =================================
+
+@import '../abstracts/colors';
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+@import '../abstracts/breakpoints';
+
+.datetime-control {
+  .datetime-toggle {
+    @include no-select;
+
+    input[type="checkbox"] {
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+      accent-color: $primary-gradient-start;
+    }
+  }
+
+  .datetime-inputs {
+    display: flex;
+    gap: $spacing-sm;
+    align-items: center;
+
+    @include md {
+      flex-direction: row;
+      gap: $spacing-sm;
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+
+      @include md {
+        flex: 1;
+      }
+    }
+
+    input[type="date"],
+    input[type="time"] {
+      @include input-base;
+      width: $input-datetime-width;
+      text-align: center;
+
+      @include md {
+        width: 100%;
+        font-size: $font-md;
+        padding: 0.45rem 0.5rem;
+      }
+    }
+
+    // Estilização do calendário picker
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="time"]::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      filter: brightness(0) invert(1);
+      opacity: 0.8;
+      transition: opacity 0.2s;
+      padding: 2px;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}

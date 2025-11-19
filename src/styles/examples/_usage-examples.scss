@@ -1,0 +1,406 @@
+// =================================
+// EXEMPLO: Como usar os estilos SASS
+// =================================
+
+// Este é um arquivo de exemplo mostrando como usar
+// as variáveis, mixins e padrões do projeto
+
+@import '../abstracts/colors';
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+@import '../abstracts/breakpoints';
+
+// ===== EXEMPLO 1: Card com glassmorphism =====
+.exemplo-card {
+  // Usando mixin de glass effect
+  @include glass-effect($bg-dark-primary, 20px, 0.1);
+  
+  // Usando variáveis de espaçamento e bordas
+  padding: $spacing-lg;
+  border-radius: $radius-lg;
+  
+  // Usando variável de shadow
+  box-shadow: $shadow-xl;
+  
+  // Usando variável de transição
+  transition: $transition-normal;
+  
+  // Hover com mixin
+  @include button-hover(-3px, $shadow-2xl);
+  
+  // Responsivo
+  @include md {
+    padding: $spacing-md;
+    border-radius: $radius-md;
+  }
+}
+
+// ===== EXEMPLO 2: Botão com gradiente =====
+.exemplo-botao {
+  // Gradiente de fundo
+  @include gradient-primary;
+  
+  // Cores de texto
+  color: $text-white;
+  
+  // Espaçamentos
+  padding: $spacing-sm $spacing-lg;
+  
+  // Bordas
+  border-radius: $radius-2xl;
+  border: 1px solid $border-light;
+  
+  // Fontes
+  font-size: $font-xl;
+  font-weight: $font-bold;
+  
+  // Shadow
+  box-shadow: $shadow-lg;
+  
+  // Transition
+  transition: $transition-fast;
+  
+  // Hover state
+  &:hover {
+    @include gradient-primary-reverse;
+    transform: translateY(-2px);
+    box-shadow: $shadow-2xl;
+  }
+  
+  // Active state
+  &:active {
+    transform: translateY(0);
+  }
+  
+  // Disabled state
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ===== EXEMPLO 3: Input personalizado =====
+.exemplo-input {
+  // Usando mixin de input base
+  @include input-base;
+  
+  // Largura
+  width: 100%;
+  max-width: 300px;
+  
+  // Mobile
+  @include md {
+    max-width: 100%;
+  }
+}
+
+// ===== EXEMPLO 4: Texto com gradiente =====
+.exemplo-titulo {
+  @include text-gradient;
+  
+  font-size: $font-6xl;
+  font-weight: $font-extrabold;
+  letter-spacing: $letter-spacing-tight;
+  
+  @include md {
+    font-size: $font-5xl;
+  }
+}
+
+// ===== EXEMPLO 5: Container flexbox =====
+.exemplo-container {
+  // Flexbox centralizado
+  @include flex-center;
+  
+  // Espaçamento interno
+  padding: $spacing-2xl;
+  
+  // Altura mínima
+  min-height: 100vh;
+  
+  // Background
+  background: $bg-dark-primary;
+  
+  // Mobile
+  @include md {
+    padding: $spacing-lg;
+    flex-direction: column;
+  }
+}
+
+// ===== EXEMPLO 6: Grid responsivo =====
+.exemplo-grid {
+  // Grid auto-fit
+  @include grid-auto-fit(250px, $spacing-lg);
+  
+  // Padding
+  padding: $spacing-xl;
+  
+  // Mobile
+  @include md {
+    @include grid-auto-fit(200px, $spacing-md);
+    padding: $spacing-md;
+  }
+}
+
+// ===== EXEMPLO 7: Texto truncado =====
+.exemplo-texto-longo {
+  @include truncate(200px);
+  
+  color: $text-light;
+  font-size: $font-md;
+}
+
+// ===== EXEMPLO 8: Scrollbar customizada =====
+.exemplo-scroll {
+  @include custom-scrollbar(10px, $primary-gradient-start);
+  
+  height: 400px;
+  overflow-y: auto;
+  padding: $spacing-md;
+}
+
+// ===== EXEMPLO 9: Badge/Tag =====
+.exemplo-badge {
+  display: inline-block;
+  padding: $spacing-xs $spacing-md;
+  border-radius: $radius-full;
+  
+  // Usando cor de rainfall
+  background: $rainfall-moderate;
+  color: $text-white;
+  
+  // Fonte
+  font-size: $font-sm;
+  font-weight: $font-semibold;
+  letter-spacing: $letter-spacing-wide;
+  text-transform: uppercase;
+  
+  // Shadow para texto
+  @include text-shadow;
+  
+  // Variações de cor
+  &.success {
+    background: $map-highlight-fill;
+  }
+  
+  &.warning {
+    background: $rainfall-strong;
+  }
+  
+  &.danger {
+    background: $rainfall-intense;
+  }
+}
+
+// ===== EXEMPLO 10: Menu dropdown =====
+.exemplo-dropdown {
+  position: relative;
+  
+  .dropdown-trigger {
+    @include flex-between;
+    @include input-base;
+    cursor: pointer;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: $spacing-xs;
+    
+    @include glass-effect($bg-dark-secondary, 15px, 0.2);
+    border-radius: $radius-md;
+    box-shadow: $shadow-xl;
+    
+    // Animação
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: $transition-normal;
+    
+    &.is-open {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+  }
+  
+  .dropdown-item {
+    padding: $spacing-sm $spacing-md;
+    color: $text-light;
+    cursor: pointer;
+    transition: $transition-fast;
+    
+    &:hover {
+      background: $overlay-light;
+    }
+    
+    &:first-child {
+      border-radius: $radius-md $radius-md 0 0;
+    }
+    
+    &:last-child {
+      border-radius: 0 0 $radius-md $radius-md;
+    }
+  }
+}
+
+// ===== EXEMPLO 11: Skeleton loader =====
+.exemplo-skeleton {
+  background: linear-gradient(
+    90deg,
+    $bg-dark-tertiary 0%,
+    $bg-dark-secondary 50%,
+    $bg-dark-tertiary 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: $radius-md;
+  height: 20px;
+  
+  &.large {
+    height: 40px;
+  }
+  
+  &.circle {
+    border-radius: $radius-full;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// ===== EXEMPLO 12: Alert/Notification =====
+.exemplo-alert {
+  @include glass-effect($bg-dark-primary, 15px, 0.15);
+  padding: $spacing-md $spacing-lg;
+  border-radius: $radius-md;
+  border-left: 4px solid;
+  
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  
+  .alert-icon {
+    font-size: $font-3xl;
+    flex-shrink: 0;
+  }
+  
+  .alert-content {
+    flex: 1;
+    
+    .alert-title {
+      font-size: $font-lg;
+      font-weight: $font-bold;
+      color: $text-white;
+      margin-bottom: $spacing-xs;
+    }
+    
+    .alert-message {
+      font-size: $font-md;
+      color: $text-muted;
+    }
+  }
+  
+  // Variações
+  &.info {
+    border-color: $primary-gradient-start;
+  }
+  
+  &.success {
+    border-color: $map-highlight-fill;
+  }
+  
+  &.warning {
+    border-color: $rainfall-strong;
+  }
+  
+  &.error {
+    border-color: $rainfall-intense;
+  }
+}
+
+// ===== EXEMPLO 13: Modal/Dialog =====
+.exemplo-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  @include backdrop-blur(5px);
+  @include flex-center;
+  z-index: 9999;
+  
+  opacity: 0;
+  pointer-events: none;
+  transition: $transition-normal;
+  
+  &.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.exemplo-modal {
+  @include glass-effect($bg-dark-primary, 25px, 0.2);
+  border-radius: $radius-xl;
+  box-shadow: $shadow-4xl;
+  
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  
+  transform: scale(0.9);
+  transition: $transition-slow;
+  
+  .is-open & {
+    transform: scale(1);
+  }
+  
+  .modal-header {
+    @include gradient-primary;
+    padding: $spacing-lg;
+    color: $text-white;
+    @include flex-between;
+    
+    h2 {
+      margin: 0;
+      font-size: $font-3xl;
+      font-weight: $font-bold;
+    }
+    
+    .close-btn {
+      @include reset-button;
+      width: 32px;
+      height: 32px;
+      border-radius: $radius-full;
+      @include flex-center;
+      transition: $transition-fast;
+      
+      &:hover {
+        background: $overlay-dark;
+      }
+    }
+  }
+  
+  .modal-body {
+    padding: $spacing-lg;
+    color: $text-light;
+  }
+  
+  .modal-footer {
+    padding: $spacing-md $spacing-lg;
+    border-top: 1px solid $border-light;
+    @include flex-between;
+    gap: $spacing-md;
+  }
+}

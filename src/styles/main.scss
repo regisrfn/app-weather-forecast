@@ -1,0 +1,22 @@
+// =================================
+// MAIN SCSS - Weather Forecast App
+// =================================
+
+// 1. Abstracts (variáveis, cores, mixins, funções)
+@import './abstracts/variables';
+@import './abstracts/colors';
+@import './abstracts/mixins';
+@import './abstracts/breakpoints';
+
+// 2. Base (reset, tipografia, etc.)
+@import './base/reset';
+
+// 3. Components (estilos de componentes)
+@import './components/weather-map';
+@import './components/header';
+@import './components/radius-control';
+@import './components/datetime-control';
+@import './components/hamburger';
+@import './components/legend';
+@import './components/info-panel';
+@import './components/stats-panel';
