@@ -91,9 +91,40 @@
     </header>
     
     <!-- Indicador de Carregamento -->
+    <div v-if="isLoading" class="loading-overlay"></div>
     <div v-if="isLoading" class="loading-indicator">
-      <div class="spinner"></div>
-      <span>Carregando dados...</span>
+      <!-- Ícone de clima animado -->
+      <div class="weather-icon-loading">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Sol -->
+          <circle cx="38" cy="20" r="8" fill="#FDB813" opacity="0.9"/>
+          <line x1="38" y1="6" x2="38" y2="10" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/>
+          <line x1="52" y1="20" x2="48" y2="20" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/>
+          <line x1="46.5" y1="11.5" x2="43.5" y2="14.5" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/>
+          <line x1="46.5" y1="28.5" x2="43.5" y2="25.5" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/>
+          <!-- Nuvem -->
+          <path d="M18 32c-6 0-10 4-10 9s4 9 10 9h24c5.5 0 10-4.5 10-10 0-5-4-9-9-9-1 0-2 0-3 1-1-6-6-10-12-10-5 0-9 3-11 7-3 0-5 1-5 3z" fill="white" stroke="#E0E0E0" stroke-width="1.5"/>
+          <ellipse cx="28" cy="38" rx="10" ry="8" fill="#F5F5F5"/>
+        </svg>
+      </div>
+
+      <!-- Container do Spinner -->
+      <div class="spinner-container">
+        <div class="spinner"></div>
+      </div>
+
+      <!-- Texto de Loading -->
+      <div class="loading-text">
+        <div class="main-text">Carregando Previsão</div>
+        <div class="sub-text">
+          Buscando dados meteorológicos
+          <div class="dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
     </div>
     
     <div id="map" ref="mapContainer"></div>
