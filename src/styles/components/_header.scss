@@ -127,6 +127,82 @@
   }
 }
 
+.city-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .search-toggle-btn {
+    background: none;
+    border: none;
+    color: $text-white;
+    cursor: pointer;
+    padding: $spacing-xs;
+    border-radius: $radius-sm;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .search-container {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: $bg-header;
+    border-radius: $radius-md;
+    box-shadow: $shadow-xl;
+    min-width: 300px;
+    z-index: $z-dropdown;
+    margin-top: $spacing-sm;
+
+    .search-input {
+      width: 100%;
+      padding: $spacing-md;
+      border: none;
+      border-radius: $radius-md;
+      background: rgba(255, 255, 255, 0.1);
+      color: $text-white;
+      font-size: $font-base;
+
+      &::placeholder {
+        color: $text-muted;
+      }
+
+      &:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.2);
+      }
+    }
+
+    .search-results {
+      max-height: 200px;
+      overflow-y: auto;
+
+      .search-result-item {
+        padding: $spacing-sm $spacing-md;
+        cursor: pointer;
+        color: $text-white;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        &:not(:last-child) {
+          border-bottom: 1px solid $border-medium;
+        }
+      }
+    }
+  }
+}
+
 .header-controls {
   display: flex;
   align-items: center;

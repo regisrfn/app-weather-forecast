@@ -18,7 +18,37 @@
           </svg>
           <div class="header-title">
             <h1>Previsão do Tempo</h1>
-            <span class="subtitle">Ribeirão do Sul</span>
+            <span class="subtitle">{{ getCurrentCenterCityName() }}</span>
+          </div>
+          
+          <!-- Campo de Busca de Cidade -->
+          <div class="city-search">
+            <button class="search-toggle-btn" @click="toggleSearch" aria-label="Buscar cidade">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 21l-4.35-4.35M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div v-if="isSearchOpen" class="search-container">
+              <input
+                type="text"
+                v-model="searchQuery"
+                placeholder="Buscar cidade..."
+                @input="filterCities"
+                @keydown.enter="selectFirstCity"
+                ref="searchInput"
+                class="search-input"
+              />
+              <div v-if="filteredCities.length > 0" class="search-results">
+                <div
+                  v-for="city in filteredCities.slice(0, 10)"
+                  :key="city.id"
+                  class="search-result-item"
+                  @click="selectCity(city)"
+                >
+                  {{ city.name }}, {{ city.state }}
+                </div>
+              </div>
+            </div>
           </div>
           
           <!-- Toggle Mobile -->
@@ -249,6 +279,17 @@ let radiusCircle: L.Circle | null = null;
 let selectedLayer: L.Layer | null = null; // Camada atualmente selecionada
 const layerColors = new Map<L.Layer, string>(); // Guardar cores originais
 
+// Dados dos municípios
+const municipalities = ref<Array<{id: string, name: string, state: string, latitude: number, longitude: number}>>([]);
+const searchQuery = ref<string>('');
+const filteredCities = ref<Array<{id: string, name: string, state: string, latitude: number, longitude: number}>>([]);
+const isSearchOpen = ref<boolean>(false);
+
+// Cidade central (reativa)
+const centerCityId = ref<string>(APP_CONFIG.CENTER_CITY_ID);
+const centerLat = ref<number>(APP_CONFIG.MAP.CENTER.lat);
+const centerLng = ref<number>(APP_CONFIG.MAP.CENTER.lng);
+
 // Controle de raio de busca (em km)
 const searchRadius = ref<number>(APP_CONFIG.RADIUS.DEFAULT);
 
@@ -272,6 +313,79 @@ const togglePanel = () => {
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
+};
+
+const toggleSearch = () => {
+  isSearchOpen.value = !isSearchOpen.value;
+  if (isSearchOpen.value) {
+    // Focar no input quando abrir
+    setTimeout(() => {
+      const input = document.querySelector('.search-input') as HTMLInputElement;
+      if (input) input.focus();
+    }, 100);
+  } else {
+    searchQuery.value = '';
+    filteredCities.value = [];
+  }
+};
+
+const loadMunicipalities = async () => {
+  try {
+    const response = await fetch('/data/municipalities_db.json');
+    municipalities.value = await response.json();
+  } catch (error) {
+    console.error('Erro ao carregar municípios:', error);
+  }
+};
+
+const filterCities = () => {
+  if (searchQuery.value.length < 2) {
+    filteredCities.value = [];
+    return;
+  }
+  const query = searchQuery.value.toLowerCase();
+  filteredCities.value = municipalities.value.filter(city =>
+    city.name.toLowerCase().includes(query) ||
+    city.state.toLowerCase().includes(query)
+  );
+};
+
+const selectCity = (city: {id: string, name: string, state: string, latitude: number, longitude: number}) => {
+  centerCityId.value = city.id;
+  centerLat.value = city.latitude;
+  centerLng.value = city.longitude;
+  isSearchOpen.value = false;
+  searchQuery.value = '';
+  filteredCities.value = [];
+  
+  // Atualizar mapa e dados
+  updateMapCenter();
+  updateRadiusCircle();
+  selectedLayer = null;
+  loadRegionalData();
+};
+
+const selectFirstCity = () => {
+  if (filteredCities.value.length > 0) {
+    selectCity(filteredCities.value[0]!);
+  }
+};
+
+const updateMapCenter = () => {
+  if (map) {
+    map.setView([centerLat.value, centerLng.value], APP_CONFIG.MAP.DEFAULT_ZOOM);
+    
+    // Atualizar marcador
+    L.marker([centerLat.value, centerLng.value])
+      .addTo(map)
+      .bindPopup(`<b>${getCurrentCenterCityName()}</b><br>Cidade focal`)
+      .openPopup();
+  }
+};
+
+const getCurrentCenterCityName = (): string => {
+  const city = municipalities.value.find(c => c.id === centerCityId.value);
+  return city ? `${city.name}, ${city.state}` : 'Carregando...';
 };
 
 const legendItems = [
@@ -323,9 +437,9 @@ const getMaxDate = (): string => {
 const initMap = () => {
   if (!mapContainer.value) return;
 
-  // Inicializar mapa centrado em Ribeirão do Sul
+  // Inicializar mapa centrado na cidade atual
   map = L.map(mapContainer.value).setView(
-    [APP_CONFIG.MAP.CENTER.lat, APP_CONFIG.MAP.CENTER.lng],
+    [centerLat.value, centerLng.value],
     APP_CONFIG.MAP.DEFAULT_ZOOM
   );
 
@@ -336,10 +450,10 @@ const initMap = () => {
     minZoom: APP_CONFIG.MAP.MIN_ZOOM,
   }).addTo(map);
 
-  // Marcar Ribeirão do Sul como centro
-  L.marker([APP_CONFIG.MAP.CENTER.lat, APP_CONFIG.MAP.CENTER.lng])
+  // Marcar cidade central
+  L.marker([centerLat.value, centerLng.value])
     .addTo(map)
-    .bindPopup('<b>Ribeirão do Sul</b><br>Cidade focal')
+    .bindPopup(`<b>${getCurrentCenterCityName()}</b><br>Cidade focal`)
     .openPopup();
   
   // Adicionar círculo de raio
@@ -355,7 +469,7 @@ const updateRadiusCircle = () => {
   }
   
   // Adicionar novo círculo
-  radiusCircle = L.circle([APP_CONFIG.MAP.CENTER.lat, APP_CONFIG.MAP.CENTER.lng], {
+  radiusCircle = L.circle([centerLat.value, centerLng.value], {
     color: '#667eea',
     fillColor: '#667eea',
     fillOpacity: 0.1,
@@ -369,7 +483,7 @@ const loadRegionalData = async () => {
   isLoading.value = true;
   try {
     // 1. Buscar cidades vizinhas do backend (ou mock)
-    const response = await getNeighborCities(APP_CONFIG.CENTER_CITY_ID, searchRadius.value);
+    const response = await getNeighborCities(centerCityId.value, searchRadius.value);
     
     // Incluir a cidade centro na lista
     const allCities = [response.centerCity, ...response.neighbors];
@@ -392,10 +506,10 @@ const loadRegionalData = async () => {
     // 3. Renderizar malhas no mapa
     await renderCityMeshes(allCities, weatherData);
     
-    // 4. Selecionar Ribeirão do Sul por padrão
-    const ribeiraoData = weatherData.find(d => d.cityId === APP_CONFIG.CENTER_CITY_ID);
-    if (ribeiraoData) {
-      selectedCity.value = ribeiraoData;
+    // 4. Selecionar cidade central por padrão
+    const centerData = weatherData.find(d => d.cityId === centerCityId.value);
+    if (centerData) {
+      selectedCity.value = centerData;
     }
   } catch (error) {
     console.error('Erro ao carregar dados regionais:', error);
@@ -519,6 +633,9 @@ const updateRegionalData = async () => {
 };
 
 onMounted(async () => {
+  // Carregar dados dos municípios
+  await loadMunicipalities();
+  
   // Inicializar data e hora padrão (agora em horário Brasil)
   const now = new Date();
   
