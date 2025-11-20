@@ -5,6 +5,8 @@
  * Deve ser substituído pelas chamadas reais de API quando o backend estiver pronto
  */
 
+import type { WeatherAlert } from '../types/weather';
+
 export interface NeighborCity {
   id: string;
   name: string;
@@ -25,14 +27,20 @@ export interface NeighborCitiesResponse {
   neighbors: NeighborCity[];
 }
 
+// WeatherData deve ser compatível com o backend
 export interface WeatherData {
   cityId: string;
   cityName: string;
-  timestamp: string;
+  timestamp: string; // ISO string como vem do backend
   rainfallIntensity: number;
   temperature: number;
   humidity: number;
   windSpeed: number;
+  weatherAlert?: WeatherAlert[]; // Lista de alertas
+  description?: string;
+  feelsLike?: number;
+  pressure?: number;
+  visibility?: number;
 }
 
 /**
@@ -111,6 +119,8 @@ export function getMockNeighborCities(
  * Backend: GET /api/weather/city/:cityId
  */
 export function getMockWeatherData(cityId: string): WeatherData {
+  const now = new Date().toISOString();
+  
   const weatherMap: Record<string, Partial<WeatherData>> = {
     '3543204': {
       // Ribeirão do Sul
@@ -119,6 +129,7 @@ export function getMockWeatherData(cityId: string): WeatherData {
       temperature: 24.3,
       humidity: 72.5,
       windSpeed: 12.8,
+      weatherAlert: [],
     },
     '3534708': {
       // Ourinhos
@@ -127,6 +138,14 @@ export function getMockWeatherData(cityId: string): WeatherData {
       temperature: 23.1,
       humidity: 78.3,
       windSpeed: 15.2,
+      weatherAlert: [
+        {
+          code: 'RAIN_EXPECTED',
+          severity: 'warning',
+          description: '🌧️ Alta probabilidade de chuva',
+          timestamp: now,
+        },
+      ],
     },
     '3545407': {
       // Salto Grande
@@ -135,6 +154,7 @@ export function getMockWeatherData(cityId: string): WeatherData {
       temperature: 24.7,
       humidity: 74.1,
       windSpeed: 11.5,
+      weatherAlert: [],
     },
     '3550506': {
       // São Pedro do Turvo
@@ -143,6 +163,7 @@ export function getMockWeatherData(cityId: string): WeatherData {
       temperature: 25.2,
       humidity: 69.8,
       windSpeed: 9.3,
+      weatherAlert: [],
     },
     '3510153': {
       // Canitar
@@ -151,6 +172,14 @@ export function getMockWeatherData(cityId: string): WeatherData {
       temperature: 22.8,
       humidity: 81.2,
       windSpeed: 14.7,
+      weatherAlert: [
+        {
+          code: 'RAIN_EXPECTED',
+          severity: 'warning',
+          description: '🌧️ Alta probabilidade de chuva',
+          timestamp: now,
+        },
+      ],
     },
     '3546405': {
       // Santa Cruz do Rio Pardo
@@ -159,6 +188,7 @@ export function getMockWeatherData(cityId: string): WeatherData {
       temperature: 26.1,
       humidity: 65.4,
       windSpeed: 8.2,
+      weatherAlert: [],
     },
     '3538808': {
       // Piraju
@@ -167,6 +197,14 @@ export function getMockWeatherData(cityId: string): WeatherData {
       temperature: 21.9,
       humidity: 83.7,
       windSpeed: 16.8,
+      weatherAlert: [
+        {
+          code: 'HEAVY_RAIN',
+          severity: 'alert',
+          description: '⚠️ ALERTA: Chuva forte',
+          timestamp: now,
+        },
+      ],
     },
   };
 
@@ -176,11 +214,12 @@ export function getMockWeatherData(cityId: string): WeatherData {
     temperature: 20,
     humidity: 60,
     windSpeed: 10,
+    weatherAlert: [],
   };
 
   return {
     cityId,
-    timestamp: new Date().toISOString(),
+    timestamp: now,
     ...cityData,
   } as WeatherData;
 }

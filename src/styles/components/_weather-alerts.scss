@@ -1,0 +1,156 @@
+// =================================
+// WEATHER ALERTS COMPONENT
+// =================================
+
+@use '../abstracts/colors' as *;
+@use '../abstracts/mixins' as *;
+@use '../abstracts/breakpoints' as *;
+
+.weather-alerts {
+  margin-top: 20px;
+  background: linear-gradient(135deg, #fff8dc 0%, #fffaf0 100%);
+  border-radius: 12px;
+  padding: 16px;
+  border-left: 4px solid #ffa500;
+}
+
+.alerts-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: #d97706;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
+.alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alert-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: white;
+  border-left: 3px solid;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.alert-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.alert-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.alert-description {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.alert-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.alert-code {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.alert-time {
+  color: #666;
+}
+
+// Estilos por severidade
+.severity-danger {
+  border-left-color: #dc2626;
+
+  .alert-icon {
+    color: #dc2626;
+  }
+}
+
+.severity-alert {
+  border-left-color: #ea580c;
+
+  .alert-icon {
+    color: #ea580c;
+  }
+}
+
+.severity-warning {
+  border-left-color: #d97706;
+
+  .alert-icon {
+    color: #d97706;
+  }
+}
+
+.severity-info {
+  border-left-color: #0284c7;
+
+  .alert-icon {
+    color: #0284c7;
+  }
+}
+
+// Responsividade
+@include md {
+  .weather-alerts {
+    padding: 12px;
+  }
+  
+  .alerts-header h3 {
+    font-size: 14px;
+  }
+  
+  .alert-item {
+    padding: 10px;
+    gap: 10px;
+  }
+  
+  .alert-icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .alert-description {
+    font-size: 13px;
+  }
+  
+  .alert-meta {
+    font-size: 11px;
+    gap: 8px;
+  }
+}

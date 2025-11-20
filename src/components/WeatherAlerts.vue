@@ -1,0 +1,116 @@
+<template>
+  <div v-if="alerts && alerts.length > 0" class="weather-alerts">
+    <div class="alerts-header">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L1 21h22L12 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <h3>Alertas Meteorológicos</h3>
+    </div>
+    
+    <div class="alerts-list">
+      <div 
+        v-for="(alert, index) in alerts" 
+        :key="index"
+        class="alert-item"
+        :class="[`severity-${alert.severity}`]"
+      >
+        <div class="alert-icon">
+          <component :is="getAlertIcon(alert.severity)" />
+        </div>
+        <div class="alert-content">
+          <div class="alert-description">{{ alert.description }}</div>
+          <div class="alert-meta">
+            <span class="alert-code">{{ getAlertCodeLabel(alert.code) }}</span>
+            <span class="alert-time">{{ formatAlertTime(alert.timestamp) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { h } from 'vue';
+import type { WeatherAlert, AlertSeverity } from '../types/weather';
+
+interface Props {
+  alerts?: WeatherAlert[];
+}
+
+defineProps<Props>();
+
+const getAlertIcon = (severity: AlertSeverity) => {
+  const icons = {
+    danger: () => h('svg', {
+      width: 24,
+      height: 24,
+      viewBox: '0 0 24 24',
+      fill: 'none',
+      xmlns: 'http://www.w3.org/2000/svg'
+    }, [
+      h('circle', { cx: 12, cy: 12, r: 10, stroke: 'currentColor', 'stroke-width': 2 }),
+      h('path', { d: 'M12 8v4M12 16h.01', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round' })
+    ]),
+    alert: () => h('svg', {
+      width: 24,
+      height: 24,
+      viewBox: '0 0 24 24',
+      fill: 'none',
+      xmlns: 'http://www.w3.org/2000/svg'
+    }, [
+      h('path', { d: 'M12 2L1 21h22L12 2z', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+      h('path', { d: 'M12 9v4M12 17h.01', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round' })
+    ]),
+    warning: () => h('svg', {
+      width: 24,
+      height: 24,
+      viewBox: '0 0 24 24',
+      fill: 'none',
+      xmlns: 'http://www.w3.org/2000/svg'
+    }, [
+      h('circle', { cx: 12, cy: 12, r: 10, stroke: 'currentColor', 'stroke-width': 2 }),
+      h('path', { d: 'M12 8v4', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round' }),
+      h('circle', { cx: 12, cy: 16, r: 1, fill: 'currentColor' })
+    ]),
+    info: () => h('svg', {
+      width: 24,
+      height: 24,
+      viewBox: '0 0 24 24',
+      fill: 'none',
+      xmlns: 'http://www.w3.org/2000/svg'
+    }, [
+      h('circle', { cx: 12, cy: 12, r: 10, stroke: 'currentColor', 'stroke-width': 2 }),
+      h('path', { d: 'M12 16v-4M12 8h.01', stroke: 'currentColor', 'stroke-width': 2, 'stroke-linecap': 'round' })
+    ])
+  };
+  
+  return icons[severity] || icons.info;
+};
+
+const getAlertCodeLabel = (code: string): string => {
+  const labels: Record<string, string> = {
+    STORM: 'Tempestade',
+    STORM_RAIN: 'Tempestade',
+    HEAVY_RAIN: 'Chuva Forte',
+    RAIN_EXPECTED: 'Chuva Prevista',
+    RAIN_LIKELY: 'Chuva Provável',
+    STRONG_WIND: 'Vento Forte',
+    MODERATE_WIND: 'Vento Moderado',
+    SNOW: 'Neve'
+  };
+  
+  return labels[code] || code;
+};
+
+const formatAlertTime = (timestamp: string): string => {
+  return new Date(timestamp).toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'America/Sao_Paulo'
+  });
+};
+</script>
+

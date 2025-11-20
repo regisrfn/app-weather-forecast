@@ -8,6 +8,15 @@ export interface City {
   longitude: number;
 }
 
+export type AlertSeverity = 'info' | 'warning' | 'alert' | 'danger';
+
+export interface WeatherAlert {
+  code: string;
+  severity: AlertSeverity;
+  description: string;
+  timestamp: string;
+}
+
 export interface RainfallData {
   cityId: string;
   cityName: string;
@@ -16,6 +25,7 @@ export interface RainfallData {
   temperature: number;
   humidity: number;
   windSpeed: number;
+  weatherAlert?: WeatherAlert[]; // Lista de alertas meteorológicos
 }
 
 export interface WeatherForecast {

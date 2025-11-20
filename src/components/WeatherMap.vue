@@ -245,6 +245,9 @@
         </div>
       </div>
       
+      <!-- Alertas Meteorológicos -->
+      <WeatherAlerts :alerts="selectedCity.weatherAlert" />
+      
       <div class="update-time">
         Previsão para: {{ formatTime(selectedCity.timestamp) }}
       </div>
@@ -260,6 +263,7 @@ import { APP_CONFIG } from '../config/app';
 import { getNeighborCities, getRegionalWeather } from '../services/apiService';
 import { getMunicipalityMesh } from '../services/ibgeService';
 import { getRainfallColor, getRainfallDescription, type WeatherData } from '../services/mockService';
+import WeatherAlerts from './WeatherAlerts.vue';
 
 // Corrigir ícones do Leaflet para produção
 delete (L.Icon.Default.prototype as any)._getIconUrl;
