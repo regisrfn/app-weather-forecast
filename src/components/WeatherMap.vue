@@ -243,6 +243,10 @@
           <span class="weather-label">Vento</span>
           <span class="weather-value">{{ selectedCity.windSpeed.toFixed(1) }} km/h</span>
         </div>
+        <div class="weather-item" v-if="selectedCity.clouds !== undefined">
+          <span class="weather-label">Tempo</span>
+          <span class="weather-value">{{ getCloudsDescription(selectedCity.clouds) }}</span>
+        </div>
       </div>
       
       <!-- Alertas Meteorológicos -->
@@ -262,7 +266,7 @@ import 'leaflet/dist/leaflet.css';
 import { APP_CONFIG } from '../config/app';
 import { getNeighborCities, getRegionalWeather } from '../services/apiService';
 import { getMunicipalityMesh } from '../services/ibgeService';
-import { getRainfallColor, getRainfallDescription, type WeatherData } from '../services/mockService';
+import { getRainfallColor, getRainfallDescription, getCloudsDescription, type WeatherData } from '../services/mockService';
 import WeatherAlerts from './WeatherAlerts.vue';
 
 // Corrigir ícones do Leaflet para produção

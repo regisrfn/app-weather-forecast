@@ -25,6 +25,7 @@ export interface RainfallData {
   temperature: number;
   humidity: number;
   windSpeed: number;
+  clouds?: number; // 0-100 (% de cobertura de nuvens)
   weatherAlert?: WeatherAlert[]; // Lista de alertas meteorológicos
 }
 

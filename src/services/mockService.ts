@@ -36,6 +36,7 @@ export interface WeatherData {
   temperature: number;
   humidity: number;
   windSpeed: number;
+  clouds?: number; // Cobertura de nuvens (0-100%)
   weatherAlert?: WeatherAlert[]; // Lista de alertas
   description?: string;
   feelsLike?: number;
@@ -252,4 +253,15 @@ export function getRainfallDescription(intensity: number): string {
   if (intensity < 50) return 'Probabilidade média';
   if (intensity < 75) return 'Probabilidade alta';
   return 'Probabilidade muito alta';
+}
+
+/**
+ * Utilitário: Descrição da cobertura de nuvens baseada na porcentagem
+ */
+export function getCloudsDescription(clouds: number): string {
+  if (clouds <= 10) return 'Céu limpo';
+  if (clouds <= 25) return 'Poucas nuvens';
+  if (clouds <= 50) return 'Parcialmente nublado';
+  if (clouds <= 84) return 'Nublado';
+  return 'Céu encoberto';
 }
