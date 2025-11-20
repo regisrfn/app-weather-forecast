@@ -75,9 +75,28 @@ export async function getRegionalWeather(
     return getMockRegionalWeather(cityIds);
   }
 
-  // Usar data/hora fornecida ou atual
-  const finalDate = date || new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  const finalTime = time || new Date().toTimeString().substring(0, 5); // HH:MM
+  // Usar data/hora fornecida ou atual (timezone Brasil)
+  let finalDate = date;
+  let finalTime = time;
+  
+  if (!finalDate || !finalTime) {
+    // Fallback: usar horário atual do Brasil
+    const now = new Date();
+    const brasilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+    
+    if (!finalDate) {
+      const year = brasilTime.getFullYear();
+      const month = String(brasilTime.getMonth() + 1).padStart(2, '0');
+      const day = String(brasilTime.getDate()).padStart(2, '0');
+      finalDate = `${year}-${month}-${day}`;
+    }
+    
+    if (!finalTime) {
+      const hours = String(brasilTime.getHours()).padStart(2, '0');
+      const minutes = String(brasilTime.getMinutes()).padStart(2, '0');
+      finalTime = `${hours}:${minutes}`;
+    }
+  }
 
   const response = await api.post<WeatherData[]>(
     '/api/weather/regional',

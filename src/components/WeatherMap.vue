@@ -71,7 +71,7 @@
                   id="forecast-date"
                   type="date"
                   v-model="forecastDate"
-                  :min="new Date().toISOString().split('T')[0]"
+                  :min="getTodayBrasil()"
                   :max="getMaxDate()"
                   @change="updateRegionalData"
                 />
@@ -288,14 +288,36 @@ const formatTime = (timestamp: string): string => {
     month: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
+    timeZone: 'America/Sao_Paulo', // Garantir timezone do Brasil
   });
 };
 
+/**
+ * Retorna a data atual no timezone do Brasil (America/Sao_Paulo)
+ * Formato: YYYY-MM-DD
+ */
+const getTodayBrasil = (): string => {
+  const now = new Date();
+  const brasilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  
+  const year = brasilTime.getFullYear();
+  const month = String(brasilTime.getMonth() + 1).padStart(2, '0');
+  const day = String(brasilTime.getDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
+};
+
 const getMaxDate = (): string => {
-  // OpenWeather retorna previsões até 5 dias
-  const maxDate = new Date();
-  maxDate.setDate(maxDate.getDate() + 5);
-  return maxDate.toISOString().split('T')[0] || '';
+  // OpenWeather retorna previsões até 5 dias (usar timezone do Brasil)
+  const now = new Date();
+  const brasilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  brasilTime.setDate(brasilTime.getDate() + 5);
+  
+  const year = brasilTime.getFullYear();
+  const month = String(brasilTime.getMonth() + 1).padStart(2, '0');
+  const day = String(brasilTime.getDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
 };
 
 const initMap = () => {
@@ -354,12 +376,15 @@ const loadRegionalData = async () => {
     const cityIds = allCities.map(c => c.id);
     
     // 2. Buscar dados climáticos do backend (ou mock)
-    // Se useForecastDateTime estiver ativo, passa data e hora específica
+    // SEMPRE passa data e hora (inicializadas com horário Brasil correto)
+    // Isso garante que a busca inicial use o horário correto
     let weatherData;
     if (useForecastDateTime.value && forecastDate.value && forecastTime.value) {
+      // Usuário ativou controle de data/hora manualmente
       weatherData = await getRegionalWeather(cityIds, forecastDate.value, forecastTime.value);
     } else {
-      weatherData = await getRegionalWeather(cityIds);
+      // Busca automática: usa data/hora atuais do Brasil (já inicializadas no onMounted)
+      weatherData = await getRegionalWeather(cityIds, forecastDate.value, forecastTime.value);
     }
     
     regionalData.value = weatherData;
@@ -494,10 +519,22 @@ const updateRegionalData = async () => {
 };
 
 onMounted(async () => {
-  // Inicializar data e hora padrão (agora)
+  // Inicializar data e hora padrão (agora em horário Brasil)
   const now = new Date();
-  forecastDate.value = now.toISOString().split('T')[0] || '';
-  forecastTime.value = now.toTimeString().substring(0, 5);
+  
+  // Converter para timezone do Brasil (America/Sao_Paulo)
+  const brasilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  
+  // Formatar data YYYY-MM-DD
+  const year = brasilTime.getFullYear();
+  const month = String(brasilTime.getMonth() + 1).padStart(2, '0');
+  const day = String(brasilTime.getDate()).padStart(2, '0');
+  forecastDate.value = `${year}-${month}-${day}`;
+  
+  // Formatar hora HH:MM
+  const hours = String(brasilTime.getHours()).padStart(2, '0');
+  const minutes = String(brasilTime.getMinutes()).padStart(2, '0');
+  forecastTime.value = `${hours}:${minutes}`;
   
   initMap();
   await loadRegionalData();
