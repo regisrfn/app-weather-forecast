@@ -388,7 +388,7 @@ const updateMapCenter = () => {
     // Adicionar novo marcador
     centerMarker = L.marker([centerLat.value, centerLng.value])
       .addTo(map)
-      .bindPopup(`<b>${getCurrentCenterCityName()}</b><br>Cidade focal`)
+      .bindPopup(`<b>${getCurrentCenterCityName()}</b>`)
       .openPopup();
   }
 };
@@ -463,7 +463,7 @@ const initMap = () => {
   // Marcar cidade central
   centerMarker = L.marker([centerLat.value, centerLng.value])
     .addTo(map)
-    .bindPopup(`<b>${getCurrentCenterCityName()}</b><br>Cidade focal`)
+    .bindPopup(`<b>${getCurrentCenterCityName()}</b>`)
     .openPopup();
   
   // Adicionar círculo de raio
