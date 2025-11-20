@@ -38,11 +38,6 @@
     position: relative;
     width: 4rem;
     height: 4rem;
-
-    @include md {
-      width: 3.5rem;
-      height: 3.5rem;
-    }
   }
 
   // Spinner principal com gradiente
@@ -101,19 +96,19 @@
       text-align: center;
 
       @include md {
-        font-size: $font-base;
+        font-size: $font-md;
       }
     }
 
     .sub-text {
-      font-size: $font-sm;
+      font-size: $font-md;
       font-weight: $font-regular;
       color: $text-gray;
       text-align: center;
       opacity: 0.8;
 
       @include md {
-        font-size: $font-xs;
+        font-size: $font-sm;
       }
     }
 
@@ -138,14 +133,14 @@
 
   // Ícone de clima animado
   .weather-icon-loading {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 4rem;
+    height: 4rem;
     opacity: 0.8;
     animation: float 2s ease-in-out infinite;
 
     @include md {
-      width: 2rem;
-      height: 2rem;
+      width: 3rem;
+      height: 3rem;
     }
 
     svg {
