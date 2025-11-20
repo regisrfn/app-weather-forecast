@@ -278,6 +278,7 @@ let updateInterval: number | null = null;
 let radiusCircle: L.Circle | null = null;
 let selectedLayer: L.Layer | null = null; // Camada atualmente selecionada
 const layerColors = new Map<L.Layer, string>(); // Guardar cores originais
+let centerMarker: L.Marker | null = null; // Marcador da cidade central
 
 // Dados dos municípios
 const municipalities = ref<Array<{id: string, name: string, state: string, latitude: number, longitude: number}>>([]);
@@ -375,8 +376,13 @@ const updateMapCenter = () => {
   if (map) {
     map.setView([centerLat.value, centerLng.value], APP_CONFIG.MAP.DEFAULT_ZOOM);
     
-    // Atualizar marcador
-    L.marker([centerLat.value, centerLng.value])
+    // Remover marcador anterior
+    if (centerMarker) {
+      map.removeLayer(centerMarker);
+    }
+    
+    // Adicionar novo marcador
+    centerMarker = L.marker([centerLat.value, centerLng.value])
       .addTo(map)
       .bindPopup(`<b>${getCurrentCenterCityName()}</b><br>Cidade focal`)
       .openPopup();
@@ -451,7 +457,7 @@ const initMap = () => {
   }).addTo(map);
 
   // Marcar cidade central
-  L.marker([centerLat.value, centerLng.value])
+  centerMarker = L.marker([centerLat.value, centerLng.value])
     .addTo(map)
     .bindPopup(`<b>${getCurrentCenterCityName()}</b><br>Cidade focal`)
     .openPopup();
