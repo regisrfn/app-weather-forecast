@@ -351,16 +351,33 @@ const loadMunicipalities = async () => {
   }
 };
 
+/**
+ * Normaliza string removendo acentos, cedilha e convertendo para minúsculas
+ */
+const normalizeString = (str: string): string => {
+  return str
+    .toLowerCase()
+    .normalize('NFD') // Decompõe caracteres acentuados
+    .replace(/[\u0300-\u036f]/g, '') // Remove marcas diacríticas (acentos)
+    .replace(/ç/g, 'c') // Substitui ç por c
+    .replace(/[^a-z0-9\s]/g, ''); // Remove outros caracteres especiais
+};
+
 const filterCities = () => {
   if (searchQuery.value.length < 2) {
     filteredCities.value = [];
     return;
   }
-  const query = searchQuery.value.toLowerCase();
-  filteredCities.value = municipalities.value.filter(city =>
-    city.name.toLowerCase().includes(query) ||
-    city.state.toLowerCase().includes(query)
-  );
+  
+  const normalizedQuery = normalizeString(searchQuery.value);
+  
+  filteredCities.value = municipalities.value.filter(city => {
+    const normalizedName = normalizeString(city.name);
+    const normalizedState = normalizeString(city.state);
+    
+    return normalizedName.includes(normalizedQuery) || 
+           normalizedState.includes(normalizedQuery);
+  });
 };
 
 const selectCity = (city: {id: string, name: string, state: string, latitude: number, longitude: number}) => {
