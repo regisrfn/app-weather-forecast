@@ -67,14 +67,6 @@ O `apiService.ts` foi modificado para:
 - **Cache HIT**: Sem loading overlay (carregamento instantâneo)
 - **Cache MISS**: Loading overlay completo com animação
 
-#### Botão de Reload
-- Localização: Header do mapa, ao lado dos controles de data/hora
-- Funcionalidade: 
-  - Limpa todo o cache
-  - Força nova requisição à API
-  - Ícone animado durante loading
-- Visual: Ícone de refresh com animação de rotação ao hover
-
 ## Comportamento
 
 ### Navegação Entre Datas
@@ -102,13 +94,6 @@ Usuário volta para 21/11 14:00
 Quando o usuário altera o raio de busca:
 - Cache é verificado para a nova combinação de cidades
 - Se não houver cache para aquele raio, faz nova requisição
-
-### Reload Manual
-
-Botão de reload permite ao usuário:
-- Forçar atualização dos dados
-- Limpar cache completo
-- Útil para garantir dados mais recentes
 
 ## Logs de Debug
 
