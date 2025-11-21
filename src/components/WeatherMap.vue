@@ -83,38 +83,38 @@
           
           <!-- Controle de Data/Hora -->
           <div class="control-item datetime-control">
-            <label class="datetime-toggle">
-              <input 
-                type="checkbox" 
-                v-model="useForecastDateTime"
-              />
+            <button 
+              class="date-nav-btn prev" 
+              @click="navigatePrevDay"
+              :disabled="!canNavigatePrev()"
+              aria-label="Dia anterior"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            
+            <button 
+              class="date-btn"
+              @click="showDayCarousel = true"
+            >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
                 <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
-              <span>Data/Hora</span>
-            </label>
+              {{ formatDateButton() }}
+            </button>
             
-            <div v-if="useForecastDateTime" class="datetime-inputs">
-              <div class="input-wrapper">
-                <input
-                  id="forecast-date"
-                  type="date"
-                  v-model="forecastDate"
-                  :min="getTodayBrasil()"
-                  :max="getMaxDate()"
-                  @change="updateRegionalData"
-                />
-              </div>
-              <div class="input-wrapper">
-                <input
-                  id="forecast-time"
-                  type="time"
-                  v-model="forecastTime"
-                  @change="updateRegionalData"
-                />
-              </div>
-            </div>
+            <button 
+              class="date-nav-btn next" 
+              @click="navigateNextDay"
+              :disabled="!canNavigateNext()"
+              aria-label="Próximo dia"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -206,6 +206,16 @@
       </div>
     </div>
     
+    <!-- Carrossel de Dias -->
+    <DayCarousel
+      v-if="showDayCarousel"
+      :initialDate="forecastDate"
+      :initialTime="forecastTime"
+      :maxDays="5"
+      @close="showDayCarousel = false"
+      @select="handleDateTimeSelect"
+    />
+    
     <!-- Painel de Informações (Expansível) -->
     <div 
       v-if="selectedCity" 
@@ -272,6 +282,7 @@ import { getNeighborCities, getRegionalWeather } from '../services/apiService';
 import { getMunicipalityMesh } from '../services/ibgeService';
 import { getRainfallColor, getRainfallDescription, getCloudsDescription, type WeatherData } from '../services/mockService';
 import WeatherAlerts from './WeatherAlerts.vue';
+import DayCarousel from './DayCarousel.vue';
 
 // Corrigir ícones do Leaflet para produção
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -309,7 +320,7 @@ const searchRadius = ref<number>(APP_CONFIG.RADIUS.DEFAULT);
 // Controle de data/hora da previsão
 const forecastDate = ref<string>(''); // YYYY-MM-DD
 const forecastTime = ref<string>(''); // HH:MM
-const useForecastDateTime = ref<boolean>(false); // Se deve usar data/hora específica
+const showDayCarousel = ref<boolean>(false); // Controla exibição do carrossel
 
 // Controle de abertura do painel
 const isPanelOpen = ref<boolean>(false);
@@ -441,34 +452,6 @@ const formatTime = (timestamp: string): string => {
   });
 };
 
-/**
- * Retorna a data atual no timezone do Brasil (America/Sao_Paulo)
- * Formato: YYYY-MM-DD
- */
-const getTodayBrasil = (): string => {
-  const now = new Date();
-  const brasilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-  
-  const year = brasilTime.getFullYear();
-  const month = String(brasilTime.getMonth() + 1).padStart(2, '0');
-  const day = String(brasilTime.getDate()).padStart(2, '0');
-  
-  return `${year}-${month}-${day}`;
-};
-
-const getMaxDate = (): string => {
-  // OpenWeather retorna previsões até 5 dias (usar timezone do Brasil)
-  const now = new Date();
-  const brasilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-  brasilTime.setDate(brasilTime.getDate() + 5);
-  
-  const year = brasilTime.getFullYear();
-  const month = String(brasilTime.getMonth() + 1).padStart(2, '0');
-  const day = String(brasilTime.getDate()).padStart(2, '0');
-  
-  return `${year}-${month}-${day}`;
-};
-
 const initMap = () => {
   if (!mapContainer.value) return;
 
@@ -526,15 +509,7 @@ const loadRegionalData = async () => {
     
     // 2. Buscar dados climáticos do backend (ou mock)
     // SEMPRE passa data e hora (inicializadas com horário Brasil correto)
-    // Isso garante que a busca inicial use o horário correto
-    let weatherData;
-    if (useForecastDateTime.value && forecastDate.value && forecastTime.value) {
-      // Usuário ativou controle de data/hora manualmente
-      weatherData = await getRegionalWeather(cityIds, forecastDate.value, forecastTime.value);
-    } else {
-      // Busca automática: usa data/hora atuais do Brasil (já inicializadas no onMounted)
-      weatherData = await getRegionalWeather(cityIds, forecastDate.value, forecastTime.value);
-    }
+    const weatherData = await getRegionalWeather(cityIds, forecastDate.value, forecastTime.value);
     
     regionalData.value = weatherData;
     
@@ -665,6 +640,107 @@ const updateRegionalData = async () => {
   updateRadiusCircle();
   selectedLayer = null; // Resetar seleção ao mudar raio
   await loadRegionalData();
+};
+
+const handleDateTimeSelect = async (date: string, time: string) => {
+  forecastDate.value = date;
+  forecastTime.value = time;
+  await updateRegionalData();
+};
+
+const formatDateButton = (): string => {
+  if (!forecastDate.value) return 'Selecionar';
+  
+  const parts = forecastDate.value.split('-');
+  if (parts.length !== 3) return 'Selecionar';
+  
+  const [year, month, day] = parts;
+  if (!year || !month || !day) return 'Selecionar';
+  
+  const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  
+  const now = new Date();
+  const brasilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  brasilTime.setHours(0, 0, 0, 0);
+  date.setHours(0, 0, 0, 0);
+  
+  const diffDays = Math.floor((date.getTime() - brasilTime.getTime()) / (1000 * 60 * 60 * 24));
+  
+  let dayLabel = '';
+  if (diffDays === 0) dayLabel = 'Hoje';
+  else if (diffDays === 1) dayLabel = 'Amanhã';
+  else dayLabel = date.toLocaleDateString('pt-BR', { weekday: 'short' });
+  
+  return `${dayLabel}, ${day}/${month} ${forecastTime.value}`;
+};
+
+const canNavigatePrev = (): boolean => {
+  if (!forecastDate.value) return false;
+  
+  const now = new Date();
+  const brasilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  const todayStr = `${brasilTime.getFullYear()}-${String(brasilTime.getMonth() + 1).padStart(2, '0')}-${String(brasilTime.getDate()).padStart(2, '0')}`;
+  
+  return forecastDate.value > todayStr;
+};
+
+const canNavigateNext = (): boolean => {
+  if (!forecastDate.value) return false;
+  
+  const parts = forecastDate.value.split('-');
+  if (parts.length !== 3) return false;
+  
+  const [year, month, day] = parts;
+  if (!year || !month || !day) return false;
+  
+  const currentDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  
+  const now = new Date();
+  const brasilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  const maxDate = new Date(brasilTime);
+  maxDate.setDate(maxDate.getDate() + 4); // Máximo 5 dias (0-4)
+  
+  return currentDate < maxDate;
+};
+
+const navigatePrevDay = async () => {
+  if (!canNavigatePrev()) return;
+  
+  const parts = forecastDate.value.split('-');
+  if (parts.length !== 3) return;
+  
+  const [year, month, day] = parts;
+  if (!year || !month || !day) return;
+  
+  const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  date.setDate(date.getDate() - 1);
+  
+  const newYear = date.getFullYear();
+  const newMonth = String(date.getMonth() + 1).padStart(2, '0');
+  const newDay = String(date.getDate()).padStart(2, '0');
+  
+  forecastDate.value = `${newYear}-${newMonth}-${newDay}`;
+  await updateRegionalData();
+};
+
+const navigateNextDay = async () => {
+  if (!canNavigateNext()) return;
+  
+  const parts = forecastDate.value.split('-');
+  if (parts.length !== 3) return;
+  
+  const [year, month, day] = parts;
+  if (!year || !month || !day) return;
+  
+  const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  date.setDate(date.getDate() + 1);
+  
+  const newYear = date.getFullYear();
+  const newMonth = String(date.getMonth() + 1).padStart(2, '0');
+  const newDay = String(date.getDate()).padStart(2, '0');
+  
+  forecastDate.value = `${newYear}-${newMonth}-${newDay}`;
+  await updateRegionalData();
 };
 
 onMounted(async () => {
