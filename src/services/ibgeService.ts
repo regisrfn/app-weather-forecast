@@ -1,59 +1,182 @@
 /**
- * IBGE Service - Simplificado com Cache
+ * IBGE Service - Simplificado com Cache Persistente
  * 
  * Responsável APENAS por buscar malhas geométricas do IBGE
+ * Usa localforage para cache persistente com limite de tamanho
  * Lógica de cálculo de distância e dados climáticos movidos para o backend
  */
 
-import axios from 'axios';
+import localforage from 'localforage';
 
-// Cache de malhas em memória com limite de 100 cidades
-const CACHE_LIMIT = 100;
-const meshCache = new Map<string, GeoJSON.Feature>();
-const cacheOrder: string[] = []; // Para controlar a ordem de inserção (FIFO)
+// Store dedicado para malhas do IBGE
+const ibgeMeshStore = localforage.createInstance({
+  name: 'weather-forecast',
+  storeName: 'ibge_mesh_cache',
+});
+
+// Store para metadata do cache IBGE
+const ibgeMetadataStore = localforage.createInstance({
+  name: 'weather-forecast',
+  storeName: 'ibge_metadata',
+});
+
+interface CachedMesh {
+  data: GeoJSON.Feature;
+  timestamp: number;
+  size: number;
+}
+
+interface IBGEMetadata {
+  keys: string[];
+  totalSize: number;
+  lastAccessed: Record<string, number>;
+}
+
+// Limite de cache para malhas: 5MB (parte do total de 10MB)
+const IBGE_CACHE_LIMIT = 5 * 1024 * 1024;
+
+// Metadata em memória
+let ibgeMetadata: IBGEMetadata = {
+  keys: [],
+  totalSize: 0,
+  lastAccessed: {},
+};
 
 /**
- * Buscar malha geométrica de um município (com cache)
+ * Inicializa metadata do cache IBGE
+ */
+async function initIBGEMetadata(): Promise<void> {
+  try {
+    const stored = await ibgeMetadataStore.getItem<IBGEMetadata>('metadata');
+    if (stored) {
+      ibgeMetadata = stored;
+      console.log(`[IBGE Cache] Metadata carregado: ${ibgeMetadata.keys.length} malhas, ${formatBytes(ibgeMetadata.totalSize)}`);
+    }
+  } catch (error) {
+    console.error('[IBGE Cache] Erro ao carregar metadata:', error);
+  }
+}
+
+/**
+ * Salva metadata do cache IBGE
+ */
+async function saveIBGEMetadata(): Promise<void> {
+  try {
+    await ibgeMetadataStore.setItem('metadata', ibgeMetadata);
+  } catch (error) {
+    console.error('[IBGE Cache] Erro ao salvar metadata:', error);
+  }
+}
+
+/**
+ * Calcula tamanho em bytes de um objeto
+ */
+function calculateSize(data: unknown): number {
+  return new Blob([JSON.stringify(data)]).size;
+}
+
+/**
+ * Formata bytes para legibilidade
+ */
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+}
+
+/**
+ * Remove malhas menos recentemente usadas até liberar espaço
+ */
+async function evictLRU(requiredSpace: number): Promise<void> {
+  console.log(`[IBGE Cache] Evicção LRU necessária. Espaço requerido: ${formatBytes(requiredSpace)}`);
+  
+  // Ordenar chaves por último acesso
+  const sortedKeys = [...ibgeMetadata.keys].sort(
+    (a, b) => (ibgeMetadata.lastAccessed[a] || 0) - (ibgeMetadata.lastAccessed[b] || 0)
+  );
+  
+  // Remover até liberar espaço suficiente
+  for (const key of sortedKeys) {
+    if (ibgeMetadata.totalSize + requiredSpace <= IBGE_CACHE_LIMIT) {
+      break;
+    }
+    
+    try {
+      const cached = await ibgeMeshStore.getItem<CachedMesh>(key);
+      if (cached) {
+        await ibgeMeshStore.removeItem(key);
+        ibgeMetadata.totalSize -= cached.size;
+        ibgeMetadata.keys = ibgeMetadata.keys.filter(k => k !== key);
+        delete ibgeMetadata.lastAccessed[key];
+        console.log(`[IBGE Cache] Malha ${key} removida (LRU)`);
+      }
+    } catch (error) {
+      console.error(`[IBGE Cache] Erro ao remover ${key}:`, error);
+    }
+  }
+  
+  await saveIBGEMetadata();
+}
+
+/**
+ * Buscar malha geométrica de um município (com cache persistente)
  * API: https://servicodados.ibge.gov.br/api/v3/malhas/municipios/{id}
  */
 export async function getMunicipalityMesh(
   municipalityId: string
 ): Promise<GeoJSON.Feature | null> {
-  // Verificar se está no cache
-  if (meshCache.has(municipalityId)) {
-    console.log(`Cache hit: ${municipalityId}`);
-    return meshCache.get(municipalityId)!;
-  }
-
   try {
-    console.log(`Cache miss: ${municipalityId} - Buscando do IBGE`);
-    const response = await axios.get<GeoJSON.Feature>(
-      `https://servicodados.ibge.gov.br/api/v3/malhas/municipios/${municipalityId}`,
-      {
-        params: {
-          formato: 'application/vnd.geo+json',
-        },
-      }
-    );
-
-    const mesh = response.data;
-
-    // Adicionar ao cache
-    meshCache.set(municipalityId, mesh);
-    cacheOrder.push(municipalityId);
-
-    // Limpar cache se exceder o limite (FIFO - First In First Out)
-    if (cacheOrder.length > CACHE_LIMIT) {
-      const oldestId = cacheOrder.shift();
-      if (oldestId) {
-        meshCache.delete(oldestId);
-        console.log(`Cache evicted: ${oldestId}`);
-      }
+    // Verificar cache primeiro
+    const cached = await ibgeMeshStore.getItem<CachedMesh>(municipalityId);
+    
+    if (cached) {
+      console.log(`[IBGE Cache] HIT: ${municipalityId}`);
+      // Atualizar último acesso
+      ibgeMetadata.lastAccessed[municipalityId] = Date.now();
+      await saveIBGEMetadata();
+      return cached.data;
     }
-
+    
+    console.log(`[IBGE Cache] MISS: ${municipalityId} - Buscando do IBGE`);
+    
+    // Buscar da API do IBGE
+    const response = await fetch(
+      `https://servicodados.ibge.gov.br/api/v3/malhas/municipios/${municipalityId}?formato=application/vnd.geo+json`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    
+    const mesh: GeoJSON.Feature = await response.json();
+    const size = calculateSize(mesh);
+    
+    // Verificar se precisa fazer evicção
+    if (ibgeMetadata.totalSize + size > IBGE_CACHE_LIMIT) {
+      await evictLRU(size);
+    }
+    
+    // Salvar no cache
+    const cachedMesh: CachedMesh = {
+      data: mesh,
+      timestamp: Date.now(),
+      size,
+    };
+    
+    await ibgeMeshStore.setItem(municipalityId, cachedMesh);
+    
+    // Atualizar metadata
+    if (!ibgeMetadata.keys.includes(municipalityId)) {
+      ibgeMetadata.keys.push(municipalityId);
+    }
+    ibgeMetadata.totalSize += size;
+    ibgeMetadata.lastAccessed[municipalityId] = Date.now();
+    
+    await saveIBGEMetadata();
+    
     return mesh;
   } catch (error) {
-    console.error(`Erro ao buscar malha do município ${municipalityId}:`, error);
+    console.error(`[IBGE Cache] Erro ao buscar malha do município ${municipalityId}:`, error);
     return null;
   }
 }
@@ -61,20 +184,41 @@ export async function getMunicipalityMesh(
 /**
  * Limpar cache manualmente (útil para testes)
  */
-export function clearMeshCache(): void {
-  meshCache.clear();
-  cacheOrder.length = 0;
-  console.log('Cache de malhas limpo');
+export async function clearMeshCache(): Promise<void> {
+  try {
+    await ibgeMeshStore.clear();
+    ibgeMetadata = {
+      keys: [],
+      totalSize: 0,
+      lastAccessed: {},
+    };
+    await saveIBGEMetadata();
+    console.log('[IBGE Cache] Cache de malhas limpo');
+  } catch (error) {
+    console.error('[IBGE Cache] Erro ao limpar cache:', error);
+  }
 }
 
 /**
  * Obter informações do cache
  */
-export function getCacheInfo(): { size: number; limit: number; keys: string[] } {
+export function getCacheInfo(): { 
+  size: number; 
+  limit: number; 
+  keys: string[];
+  sizeFormatted: string;
+  limitFormatted: string;
+  usage: string;
+} {
+  const usagePercent = ((ibgeMetadata.totalSize / IBGE_CACHE_LIMIT) * 100).toFixed(2);
+  
   return {
-    size: meshCache.size,
-    limit: CACHE_LIMIT,
-    keys: Array.from(meshCache.keys()),
+    size: ibgeMetadata.totalSize,
+    limit: IBGE_CACHE_LIMIT,
+    keys: ibgeMetadata.keys,
+    sizeFormatted: formatBytes(ibgeMetadata.totalSize),
+    limitFormatted: formatBytes(IBGE_CACHE_LIMIT),
+    usage: `${usagePercent}%`,
   };
 }
 
@@ -97,3 +241,7 @@ export async function getMultipleMunicipalityMeshes(
 
   return meshMap;
 }
+
+// Inicializar metadata ao carregar o módulo
+initIBGEMetadata();
+

@@ -1,42 +1,152 @@
 /**
- * Cache Service - Gerenciamento de cache local para dados climáticos
+ * Cache Service - Gerenciamento de cache persistente para dados climáticos
  * 
- * Implementa cache em memória com TTL (Time To Live) para evitar
- * chamadas duplicadas à API ao navegar entre datas/horários.
+ * Implementa cache em localStorage com TTL (Time To Live) e limite de 10MB
+ * usando localforage para melhor performance e compatibilidade.
  * 
  * Estrutura da chave: `${cityId}_${date}_${time}`
  * Exemplo: "3550308_2025-11-21_14:00"
  */
 
+import localforage from 'localforage';
 import type { WeatherData } from './mockService';
 
 interface CacheEntry {
   data: WeatherData;
   timestamp: number; // Timestamp de quando foi cacheado
+  size: number; // Tamanho em bytes do dado serializado
 }
 
 interface RegionalCacheEntry {
   data: WeatherData[];
   timestamp: number;
+  size: number;
+}
+
+interface CacheMetadata {
+  keys: string[];
+  regionalKeys: string[];
+  totalSize: number;
+  lastAccessed: Record<string, number>; // Para implementar LRU
 }
 
 class WeatherCache {
-  // Cache para dados individuais de cidades
-  private cache: Map<string, CacheEntry>;
-  
-  // Cache para requisições regionais (múltiplas cidades)
-  private regionalCache: Map<string, RegionalCacheEntry>;
-  
   // TTL padrão: 30 minutos (em milissegundos)
   private readonly DEFAULT_TTL = 30 * 60 * 1000;
   
+  // Limite máximo de cache: 10MB
+  private readonly MAX_CACHE_SIZE = 10 * 1024 * 1024; // 10MB em bytes
+  
+  // Stores separados para melhor organização
+  private readonly weatherStore: LocalForage;
+  private readonly regionalStore: LocalForage;
+  private readonly metadataStore: LocalForage;
+  
+  // Cache de metadata em memória para performance
+  private metadata: CacheMetadata = {
+    keys: [],
+    regionalKeys: [],
+    totalSize: 0,
+    lastAccessed: {},
+  };
+  
   constructor() {
-    this.cache = new Map();
-    this.regionalCache = new Map();
+    // Configurar stores do localforage
+    this.weatherStore = localforage.createInstance({
+      name: 'weather-forecast',
+      storeName: 'weather_cache',
+    });
+    
+    this.regionalStore = localforage.createInstance({
+      name: 'weather-forecast',
+      storeName: 'regional_cache',
+    });
+    
+    this.metadataStore = localforage.createInstance({
+      name: 'weather-forecast',
+      storeName: 'cache_metadata',
+    });
+    
+    // Inicializar metadata
+    this.initMetadata();
     
     // Limpeza automática a cada 5 minutos
     setInterval(() => this.cleanup(), 5 * 60 * 1000);
   }
+  
+  /**
+   * Inicializa metadata do cache ao carregar
+   */
+  private async initMetadata(): Promise<void> {
+    try {
+      const stored = await this.metadataStore.getItem<CacheMetadata>('metadata');
+      if (stored) {
+        this.metadata = stored;
+        console.log(`[Cache] Metadata carregado: ${this.metadata.keys.length + this.metadata.regionalKeys.length} entradas, ${this.formatBytes(this.metadata.totalSize)}`);
+      }
+    } catch (error) {
+      console.error('[Cache] Erro ao carregar metadata:', error);
+    }
+  }
+  
+  /**
+   * Salva metadata no localStorage
+   */
+  private async saveMetadata(): Promise<void> {
+    try {
+      await this.metadataStore.setItem('metadata', this.metadata);
+    } catch (error) {
+      console.error('[Cache] Erro ao salvar metadata:', error);
+    }
+  }
+  
+  /**
+   * Calcula tamanho em bytes de um objeto JSON
+   */
+  private calculateSize(data: unknown): number {
+    return new Blob([JSON.stringify(data)]).size;
+  }
+  
+  /**
+   * Formata bytes para legibilidade
+   */
+  private formatBytes(bytes: number): string {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+  }
+  
+  /**
+   * Remove entradas menos recentemente usadas até liberar espaço suficiente
+   */
+  private async evictLRU(requiredSpace: number): Promise<void> {
+    console.log(`[Cache] Evicção LRU necessária. Espaço requerido: ${this.formatBytes(requiredSpace)}`);
+    
+    // Combinar todas as chaves com seus timestamps de último acesso
+    const allEntries = [
+      ...this.metadata.keys.map(key => ({ key, regional: false, lastAccess: this.metadata.lastAccessed[key] || 0 })),
+      ...this.metadata.regionalKeys.map(key => ({ key, regional: true, lastAccess: this.metadata.lastAccessed[key] || 0 })),
+    ];
+    
+    // Ordenar por último acesso (mais antigo primeiro)
+    allEntries.sort((a, b) => a.lastAccess - b.lastAccess);
+    
+    // Remover entradas até liberar espaço suficiente
+    for (const entry of allEntries) {
+      if (this.metadata.totalSize + requiredSpace <= this.MAX_CACHE_SIZE) {
+        break;
+      }
+      
+      if (entry.regional) {
+        await this.removeRegionalByKey(entry.key);
+      } else {
+        await this.removeByKey(entry.key);
+      }
+    }
+    
+    console.log(`[Cache] Evicção completa. Tamanho atual: ${this.formatBytes(this.metadata.totalSize)}`);
+  }
+  
   
   /**
    * Gera chave única para uma cidade em uma data/hora específica
@@ -88,149 +198,318 @@ class WeatherCache {
   }
   
   /**
+   * Atualiza timestamp de último acesso (para LRU)
+   */
+  private updateLastAccess(key: string): void {
+    this.metadata.lastAccessed[key] = Date.now();
+  }
+  
+  /**
    * Armazena dados climáticos de uma cidade no cache
    */
-  set(cityId: string, date: string, time: string, data: WeatherData): void {
+  async set(cityId: string, date: string, time: string, data: WeatherData): Promise<void> {
     const key = this.generateKey(cityId, date, time);
-    this.cache.set(key, {
+    const size = this.calculateSize(data);
+    
+    // Verificar se precisa fazer evicção
+    if (this.metadata.totalSize + size > this.MAX_CACHE_SIZE) {
+      await this.evictLRU(size);
+    }
+    
+    const entry: CacheEntry = {
       data,
       timestamp: Date.now(),
-    });
+      size,
+    };
+    
+    try {
+      await this.weatherStore.setItem(key, entry);
+      
+      // Atualizar metadata
+      if (!this.metadata.keys.includes(key)) {
+        this.metadata.keys.push(key);
+      }
+      this.metadata.totalSize += size;
+      this.updateLastAccess(key);
+      
+      await this.saveMetadata();
+    } catch (error) {
+      console.error(`[Cache] Erro ao salvar entrada ${key}:`, error);
+    }
   }
   
   /**
    * Recupera dados climáticos de uma cidade do cache
    * Retorna null se não existe ou expirou
    */
-  get(cityId: string, date: string, time: string): WeatherData | null {
+  async get(cityId: string, date: string, time: string): Promise<WeatherData | null> {
     const key = this.generateKey(cityId, date, time);
-    const entry = this.cache.get(key);
     
-    if (!entry) {
+    try {
+      const entry = await this.weatherStore.getItem<CacheEntry>(key);
+      
+      if (!entry) {
+        return null;
+      }
+      
+      if (!this.isValid(entry.timestamp)) {
+        await this.removeByKey(key);
+        return null;
+      }
+      
+      // Atualizar último acesso
+      this.updateLastAccess(key);
+      await this.saveMetadata();
+      
+      return entry.data;
+    } catch (error) {
+      console.error(`[Cache] Erro ao recuperar entrada ${key}:`, error);
       return null;
     }
-    
-    if (!this.isValid(entry.timestamp)) {
-      this.cache.delete(key);
-      return null;
-    }
-    
-    return entry.data;
   }
   
   /**
    * Verifica se dados de uma cidade estão no cache e são válidos
    */
-  has(cityId: string, date: string, time: string): boolean {
-    return this.get(cityId, date, time) !== null;
+  async has(cityId: string, date: string, time: string): Promise<boolean> {
+    const data = await this.get(cityId, date, time);
+    return data !== null;
   }
   
   /**
    * Armazena dados climáticos regionais (múltiplas cidades) no cache
    */
-  setRegional(cityIds: string[], date: string, time: string, data: WeatherData[], radius?: number): void {
+  async setRegional(cityIds: string[], date: string, time: string, data: WeatherData[], radius?: number): Promise<void> {
     const key = this.generateRegionalKey(cityIds, date, time, radius);
-    this.regionalCache.set(key, {
+    const size = this.calculateSize(data);
+    
+    // Verificar se precisa fazer evicção
+    if (this.metadata.totalSize + size > this.MAX_CACHE_SIZE) {
+      await this.evictLRU(size);
+    }
+    
+    const entry: RegionalCacheEntry = {
       data,
       timestamp: Date.now(),
-    });
+      size,
+    };
+    
+    try {
+      await this.regionalStore.setItem(key, entry);
+      
+      // Atualizar metadata
+      if (!this.metadata.regionalKeys.includes(key)) {
+        this.metadata.regionalKeys.push(key);
+      }
+      this.metadata.totalSize += size;
+      this.updateLastAccess(key);
+      
+      await this.saveMetadata();
+    } catch (error) {
+      console.error(`[Cache] Erro ao salvar entrada regional ${key}:`, error);
+    }
   }
   
   /**
    * Recupera dados climáticos regionais do cache
    * Retorna null se não existe ou expirou
    */
-  getRegional(cityIds: string[], date: string, time: string, radius?: number): WeatherData[] | null {
+  async getRegional(cityIds: string[], date: string, time: string, radius?: number): Promise<WeatherData[] | null> {
     const key = this.generateRegionalKey(cityIds, date, time, radius);
-    const entry = this.regionalCache.get(key);
     
-    if (!entry) {
+    try {
+      const entry = await this.regionalStore.getItem<RegionalCacheEntry>(key);
+      
+      if (!entry) {
+        return null;
+      }
+      
+      if (!this.isValid(entry.timestamp)) {
+        await this.removeRegionalByKey(key);
+        return null;
+      }
+      
+      // Atualizar último acesso
+      this.updateLastAccess(key);
+      await this.saveMetadata();
+      
+      return entry.data;
+    } catch (error) {
+      console.error(`[Cache] Erro ao recuperar entrada regional ${key}:`, error);
       return null;
     }
-    
-    if (!this.isValid(entry.timestamp)) {
-      this.regionalCache.delete(key);
-      return null;
-    }
-    
-    return entry.data;
   }
   
   /**
    * Verifica se dados regionais estão no cache e são válidos
    */
-  hasRegional(cityIds: string[], date: string, time: string, radius?: number): boolean {
-    return this.getRegional(cityIds, date, time, radius) !== null;
+  async hasRegional(cityIds: string[], date: string, time: string, radius?: number): Promise<boolean> {
+    const data = await this.getRegional(cityIds, date, time, radius);
+    return data !== null;
   }
   
   /**
    * Remove entrada específica do cache
    */
-  remove(cityId: string, date: string, time: string): void {
+  async remove(cityId: string, date: string, time: string): Promise<void> {
     const key = this.generateKey(cityId, date, time);
-    this.cache.delete(key);
+    await this.removeByKey(key);
+  }
+  
+  /**
+   * Remove entrada por chave
+   */
+  private async removeByKey(key: string): Promise<void> {
+    try {
+      const entry = await this.weatherStore.getItem<CacheEntry>(key);
+      if (entry) {
+        await this.weatherStore.removeItem(key);
+        this.metadata.totalSize -= entry.size;
+        this.metadata.keys = this.metadata.keys.filter(k => k !== key);
+        delete this.metadata.lastAccessed[key];
+        await this.saveMetadata();
+      }
+    } catch (error) {
+      console.error(`[Cache] Erro ao remover entrada ${key}:`, error);
+    }
   }
   
   /**
    * Remove entrada regional específica do cache
    */
-  removeRegional(cityIds: string[], date: string, time: string, radius?: number): void {
+  async removeRegional(cityIds: string[], date: string, time: string, radius?: number): Promise<void> {
     const key = this.generateRegionalKey(cityIds, date, time, radius);
-    this.regionalCache.delete(key);
+    await this.removeRegionalByKey(key);
+  }
+  
+  /**
+   * Remove entrada regional por chave
+   */
+  private async removeRegionalByKey(key: string): Promise<void> {
+    try {
+      const entry = await this.regionalStore.getItem<RegionalCacheEntry>(key);
+      if (entry) {
+        await this.regionalStore.removeItem(key);
+        this.metadata.totalSize -= entry.size;
+        this.metadata.regionalKeys = this.metadata.regionalKeys.filter(k => k !== key);
+        delete this.metadata.lastAccessed[key];
+        await this.saveMetadata();
+      }
+    } catch (error) {
+      console.error(`[Cache] Erro ao remover entrada regional ${key}:`, error);
+    }
   }
   
   /**
    * Limpa todo o cache (individual e regional)
    */
-  clear(): void {
-    this.cache.clear();
-    this.regionalCache.clear();
+  async clear(): Promise<void> {
+    try {
+      await this.weatherStore.clear();
+      await this.regionalStore.clear();
+      this.metadata = {
+        keys: [],
+        regionalKeys: [],
+        totalSize: 0,
+        lastAccessed: {},
+      };
+      await this.saveMetadata();
+      console.log('[Cache] Cache limpo completamente');
+    } catch (error) {
+      console.error('[Cache] Erro ao limpar cache:', error);
+    }
   }
   
   /**
    * Limpa apenas o cache individual
    */
-  clearIndividual(): void {
-    this.cache.clear();
+  async clearIndividual(): Promise<void> {
+    try {
+      for (const key of this.metadata.keys) {
+        await this.removeByKey(key);
+      }
+      console.log('[Cache] Cache individual limpo');
+    } catch (error) {
+      console.error('[Cache] Erro ao limpar cache individual:', error);
+    }
   }
   
   /**
    * Limpa apenas o cache regional
    */
-  clearRegional(): void {
-    this.regionalCache.clear();
+  async clearRegional(): Promise<void> {
+    try {
+      for (const key of this.metadata.regionalKeys) {
+        await this.removeRegionalByKey(key);
+      }
+      console.log('[Cache] Cache regional limpo');
+    } catch (error) {
+      console.error('[Cache] Erro ao limpar cache regional:', error);
+    }
   }
   
   /**
    * Remove entradas expiradas (limpeza automática)
    */
-  private cleanup(): void {
+  private async cleanup(): Promise<void> {
+    console.log('[Cache] Iniciando limpeza automática...');
+    let removed = 0;
+    
     // Limpar cache individual
-    for (const [key, entry] of this.cache.entries()) {
-      if (!this.isValid(entry.timestamp)) {
-        this.cache.delete(key);
+    for (const key of [...this.metadata.keys]) {
+      try {
+        const entry = await this.weatherStore.getItem<CacheEntry>(key);
+        if (entry && !this.isValid(entry.timestamp)) {
+          await this.removeByKey(key);
+          removed++;
+        }
+      } catch (error) {
+        console.error(`[Cache] Erro ao limpar entrada ${key}:`, error);
       }
     }
     
     // Limpar cache regional
-    for (const [key, entry] of this.regionalCache.entries()) {
-      if (!this.isValid(entry.timestamp)) {
-        this.regionalCache.delete(key);
+    for (const key of [...this.metadata.regionalKeys]) {
+      try {
+        const entry = await this.regionalStore.getItem<RegionalCacheEntry>(key);
+        if (entry && !this.isValid(entry.timestamp)) {
+          await this.removeRegionalByKey(key);
+          removed++;
+        }
+      } catch (error) {
+        console.error(`[Cache] Erro ao limpar entrada regional ${key}:`, error);
       }
+    }
+    
+    if (removed > 0) {
+      console.log(`[Cache] Limpeza completa: ${removed} entradas expiradas removidas. Tamanho: ${this.formatBytes(this.metadata.totalSize)}`);
     }
   }
   
   /**
    * Retorna estatísticas do cache para debug
    */
-  getStats(): { individual: number; regional: number; total: number } {
+  getStats(): { 
+    individual: number; 
+    regional: number; 
+    total: number;
+    size: string;
+    limit: string;
+    usage: string;
+  } {
+    const usagePercent = ((this.metadata.totalSize / this.MAX_CACHE_SIZE) * 100).toFixed(2);
+    
     return {
-      individual: this.cache.size,
-      regional: this.regionalCache.size,
-      total: this.cache.size + this.regionalCache.size,
+      individual: this.metadata.keys.length,
+      regional: this.metadata.regionalKeys.length,
+      total: this.metadata.keys.length + this.metadata.regionalKeys.length,
+      size: this.formatBytes(this.metadata.totalSize),
+      limit: this.formatBytes(this.MAX_CACHE_SIZE),
+      usage: `${usagePercent}%`,
     };
   }
 }
 
 // Singleton: exportar uma única instância
 export const weatherCache = new WeatherCache();
+

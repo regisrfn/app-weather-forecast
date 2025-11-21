@@ -96,8 +96,8 @@ export async function getRegionalWeather(
     }
   }
   
-  // Verificar se dados estão no cache
-  const cachedData = weatherCache.getRegional(cityIds, finalDate, finalTime);
+  // Verificar se dados estão no cache (AGORA ASSÍNCRONO)
+  const cachedData = await weatherCache.getRegional(cityIds, finalDate, finalTime);
   if (cachedData) {
     console.log(`[Cache HIT] Dados regionais para ${cityIds.length} cidades em ${finalDate} ${finalTime}`);
     return cachedData;
@@ -108,8 +108,8 @@ export async function getRegionalWeather(
   if (APP_CONFIG.USE_MOCK) {
     await new Promise((resolve) => setTimeout(resolve, 400));
     const data = getMockRegionalWeather(cityIds);
-    // Armazenar no cache
-    weatherCache.setRegional(cityIds, finalDate, finalTime, data);
+    // Armazenar no cache (AGORA ASSÍNCRONO)
+    await weatherCache.setRegional(cityIds, finalDate, finalTime, data);
     return data;
   }
 
@@ -121,8 +121,8 @@ export async function getRegionalWeather(
     }
   );
 
-  // Armazenar resposta no cache
-  weatherCache.setRegional(cityIds, finalDate, finalTime, response.data);
+  // Armazenar resposta no cache (AGORA ASSÍNCRONO)
+  await weatherCache.setRegional(cityIds, finalDate, finalTime, response.data);
   
   return response.data;
 }
