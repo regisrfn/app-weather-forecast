@@ -187,7 +187,12 @@ class WeatherCache {
     // Ordena cityIds para garantir que a mesma requisição sempre gere a mesma chave
     const sortedIds = [...cityIds].sort();
     const radiusPart = radius !== undefined ? `_${radius}` : '';
-    return `regional_${sortedIds.join('-')}_${date}_${roundedTime}${radiusPart}`;
+    const key = `regional_${sortedIds.join('-')}_${date}_${roundedTime}${radiusPart}`;
+    
+    // Log para debug - mostra transformação do tempo
+    console.log(`[Cache Key] ${cityIds.length} cidades, ${date} ${time} → ${roundedTime}`);
+    
+    return key;
   }
   
   /**
@@ -305,6 +310,7 @@ class WeatherCache {
       this.updateLastAccess(key);
       
       await this.saveMetadata();
+      console.log(`[Cache] Entrada regional salva com sucesso (${this.formatBytes(size)})`);
     } catch (error) {
       console.error(`[Cache] Erro ao salvar entrada regional ${key}:`, error);
     }
@@ -321,10 +327,12 @@ class WeatherCache {
       const entry = await this.regionalStore.getItem<RegionalCacheEntry>(key);
       
       if (!entry) {
+        console.log(`[Cache] Entry não encontrada no store`);
         return null;
       }
       
       if (!this.isValid(entry.timestamp)) {
+        console.log(`[Cache] Entry expirada (${Math.round((Date.now() - entry.timestamp) / 1000 / 60)} min atrás)`);
         await this.removeRegionalByKey(key);
         return null;
       }

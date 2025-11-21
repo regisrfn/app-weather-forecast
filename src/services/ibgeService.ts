@@ -124,9 +124,11 @@ async function evictLRU(requiredSpace: number): Promise<void> {
 /**
  * Buscar malha geométrica de um município (com cache persistente)
  * API: https://servicodados.ibge.gov.br/api/v3/malhas/municipios/{id}
+ * @param skipMetadataSave - Se true, não salva metadata (útil para batch operations)
  */
 export async function getMunicipalityMesh(
-  municipalityId: string
+  municipalityId: string,
+  skipMetadataSave: boolean = false
 ): Promise<GeoJSON.Feature | null> {
   try {
     // Verificar cache primeiro
@@ -142,12 +144,16 @@ export async function getMunicipalityMesh(
         ibgeMetadata.totalSize -= cached.size;
         ibgeMetadata.keys = ibgeMetadata.keys.filter(k => k !== municipalityId);
         delete ibgeMetadata.lastAccessed[municipalityId];
-        await saveIBGEMetadata();
+        if (!skipMetadataSave) {
+          await saveIBGEMetadata();
+        }
       } else {
         console.log(`[IBGE Cache] HIT: ${municipalityId}`);
         // Atualizar último acesso
         ibgeMetadata.lastAccessed[municipalityId] = Date.now();
-        await saveIBGEMetadata();
+        if (!skipMetadataSave) {
+          await saveIBGEMetadata();
+        }
         return cached.data;
       }
     }
@@ -187,7 +193,9 @@ export async function getMunicipalityMesh(
     ibgeMetadata.totalSize += size;
     ibgeMetadata.lastAccessed[municipalityId] = Date.now();
     
-    await saveIBGEMetadata();
+    if (!skipMetadataSave) {
+      await saveIBGEMetadata();
+    }
     
     return mesh;
   } catch (error) {
@@ -239,20 +247,27 @@ export function getCacheInfo(): {
 
 /**
  * Buscar malhas de múltiplos municípios em paralelo
+ * Otimizado: faz todas as requisições em paralelo e salva metadata uma única vez
  */
 export async function getMultipleMunicipalityMeshes(
   municipalityIds: string[]
 ): Promise<Map<string, GeoJSON.Feature>> {
   const meshMap = new Map<string, GeoJSON.Feature>();
 
+  // Buscar todas as malhas em paralelo, pulando save individual de metadata
   const promises = municipalityIds.map(async (id) => {
-    const mesh = await getMunicipalityMesh(id);
+    const mesh = await getMunicipalityMesh(id, true); // true = skip metadata save
     if (mesh) {
       meshMap.set(id, mesh);
     }
   });
 
   await Promise.all(promises);
+
+  // Salvar metadata uma única vez ao final (batch update)
+  await saveIBGEMetadata();
+  
+  console.log(`[IBGE Cache] Batch: ${municipalityIds.length} malhas processadas (${meshMap.size} sucessos)`);
 
   return meshMap;
 }
