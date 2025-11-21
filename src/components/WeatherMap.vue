@@ -116,6 +116,21 @@
               </svg>
             </button>
           </div>
+          
+          <!-- Botão de Reload -->
+          <div class="control-item reload-control">
+            <button 
+              class="reload-btn"
+              @click="reloadData"
+              :disabled="isLoading"
+              aria-label="Recarregar dados"
+              title="Recarregar dados (limpa cache)"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </header>
@@ -274,15 +289,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { APP_CONFIG } from '../config/app';
 import { getNeighborCities, getRegionalWeather } from '../services/apiService';
+import { weatherCache } from '../services/cacheService';
 import { getMunicipalityMesh } from '../services/ibgeService';
-import { getRainfallColor, getRainfallDescription, getCloudsDescription, type WeatherData } from '../services/mockService';
-import WeatherAlerts from './WeatherAlerts.vue';
+import { getCloudsDescription, getRainfallColor, getRainfallDescription, type WeatherData } from '../services/mockService';
 import DayCarousel from './DayCarousel.vue';
+import WeatherAlerts from './WeatherAlerts.vue';
 
 // Corrigir ícones do Leaflet para produção
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -498,7 +514,9 @@ const updateRadiusCircle = () => {
 };
 
 const loadRegionalData = async () => {
+  // Ativar loading imediatamente (delay visual é feito via CSS)
   isLoading.value = true;
+  
   try {
     // 1. Buscar cidades vizinhas do backend (ou mock)
     const response = await getNeighborCities(centerCityId.value, searchRadius.value);
@@ -507,7 +525,7 @@ const loadRegionalData = async () => {
     const allCities = [response.centerCity, ...response.neighbors];
     const cityIds = allCities.map(c => c.id);
     
-    // 2. Buscar dados climáticos do backend (ou mock)
+    // 2. Buscar dados climáticos do backend (ou mock) com cache
     // SEMPRE passa data e hora (inicializadas com horário Brasil correto)
     const weatherData = await getRegionalWeather(cityIds, forecastDate.value, forecastTime.value);
     
@@ -517,13 +535,14 @@ const loadRegionalData = async () => {
     await renderCityMeshes(allCities, weatherData);
     
     // 4. Selecionar cidade central por padrão
-    const centerData = weatherData.find(d => d.cityId === centerCityId.value);
+    const centerData = weatherData.find((d: WeatherData) => d.cityId === centerCityId.value);
     if (centerData) {
       selectedCity.value = centerData;
     }
   } catch (error) {
     console.error('Erro ao carregar dados regionais:', error);
   } finally {
+    // Sempre desativar loading ao final
     isLoading.value = false;
   }
 };
@@ -639,6 +658,13 @@ const debouncedUpdateRegionalData = () => {
 const updateRegionalData = async () => {
   updateRadiusCircle();
   selectedLayer = null; // Resetar seleção ao mudar raio
+  await loadRegionalData();
+};
+
+const reloadData = async () => {
+  console.log('[Cache] Limpando cache e recarregando dados...');
+  weatherCache.clear();
+  selectedLayer = null;
   await loadRegionalData();
 };
 

@@ -14,6 +14,7 @@ import {
   type NeighborCitiesResponse,
   type WeatherData,
 } from './mockService';
+import { weatherCache } from './cacheService';
 
 const api = axios.create({
   baseURL: APP_CONFIG.API_BASE_URL,
@@ -64,17 +65,14 @@ export async function getCityWeather(cityId: string): Promise<WeatherData> {
 /**
  * Buscar dados climáticos de múltiplas cidades
  * Backend: POST /api/weather/regional
+ * 
+ * Com cache integrado: verifica cache antes de fazer requisição
  */
 export async function getRegionalWeather(
   cityIds: string[],
   date?: string,
   time?: string
 ): Promise<WeatherData[]> {
-  if (APP_CONFIG.USE_MOCK) {
-    await new Promise((resolve) => setTimeout(resolve, 400));
-    return getMockRegionalWeather(cityIds);
-  }
-
   // Usar data/hora fornecida ou atual (timezone Brasil)
   let finalDate = date;
   let finalTime = time;
@@ -97,6 +95,23 @@ export async function getRegionalWeather(
       finalTime = `${hours}:${minutes}`;
     }
   }
+  
+  // Verificar se dados estão no cache
+  const cachedData = weatherCache.getRegional(cityIds, finalDate, finalTime);
+  if (cachedData) {
+    console.log(`[Cache HIT] Dados regionais para ${cityIds.length} cidades em ${finalDate} ${finalTime}`);
+    return cachedData;
+  }
+  
+  console.log(`[Cache MISS] Buscando dados regionais da API para ${cityIds.length} cidades`);
+  
+  if (APP_CONFIG.USE_MOCK) {
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    const data = getMockRegionalWeather(cityIds);
+    // Armazenar no cache
+    weatherCache.setRegional(cityIds, finalDate, finalTime, data);
+    return data;
+  }
 
   const response = await api.post<WeatherData[]>(
     '/api/weather/regional',
@@ -106,6 +121,9 @@ export async function getRegionalWeather(
     }
   );
 
+  // Armazenar resposta no cache
+  weatherCache.setRegional(cityIds, finalDate, finalTime, response.data);
+  
   return response.data;
 }
 
