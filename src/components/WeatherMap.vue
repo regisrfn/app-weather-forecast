@@ -235,6 +235,10 @@
           <span class="weather-label">Temp.</span>
           <span class="weather-value">{{ selectedCity.temperature.toFixed(1) }}°C</span>
         </div>
+        <div class="weather-item" v-if="selectedCity.tempMin !== undefined && selectedCity.tempMax !== undefined">
+          <span class="weather-label">Mín/Máx</span>
+          <span class="weather-value">{{ selectedCity.tempMin.toFixed(1) }}° / {{ selectedCity.tempMax.toFixed(1) }}°</span>
+        </div>
         <div class="weather-item">
           <span class="weather-label">Umidade</span>
           <span class="weather-value">{{ selectedCity.humidity.toFixed(0) }}%</span>

@@ -42,6 +42,8 @@ export interface WeatherData {
   feelsLike?: number;
   pressure?: number;
   visibility?: number;
+  tempMin?: number; // Temperatura mínima (°C)
+  tempMax?: number; // Temperatura máxima (°C)
 }
 
 /**

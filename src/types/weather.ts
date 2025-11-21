@@ -27,6 +27,8 @@ export interface RainfallData {
   windSpeed: number;
   clouds?: number; // 0-100 (% de cobertura de nuvens)
   weatherAlert?: WeatherAlert[]; // Lista de alertas meteorológicos
+  tempMin?: number; // Temperatura mínima (°C)
+  tempMax?: number; // Temperatura máxima (°C)
 }
 
 export interface WeatherForecast {
