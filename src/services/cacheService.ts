@@ -46,13 +46,38 @@ class WeatherCache {
   }
   
   /**
+   * Arredonda o tempo para a hora mais próxima que é múltipla de 3 horas
+   */
+  private roundTimeToNearest3Hours(time: string): string {
+    const parts = time.split(':');
+    const hoursStr = parts[0];
+    if (!hoursStr) throw new Error('Invalid time format');
+    const hours = parseInt(hoursStr, 10);
+    const remainder = hours % 3;
+    let roundedHours;
+    
+    if (remainder < 1.5) {
+      roundedHours = hours - remainder;
+    } else {
+      roundedHours = hours + (3 - remainder);
+    }
+    
+    // Trata wrap around para 24 horas
+    if (roundedHours >= 24) roundedHours -= 24;
+    if (roundedHours < 0) roundedHours += 24;
+    
+    return `${String(roundedHours).padStart(2, '0')}:00`;
+  }
+  
+  /**
    * Gera chave única para uma requisição regional
    */
   private generateRegionalKey(cityIds: string[], date: string, time: string, radius?: number): string {
+    const roundedTime = this.roundTimeToNearest3Hours(time);
     // Ordena cityIds para garantir que a mesma requisição sempre gere a mesma chave
     const sortedIds = [...cityIds].sort();
     const radiusPart = radius !== undefined ? `_${radius}` : '';
-    return `regional_${sortedIds.join('-')}_${date}_${time}${radiusPart}`;
+    return `regional_${sortedIds.join('-')}_${date}_${roundedTime}${radiusPart}`;
   }
   
   /**
