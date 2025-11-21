@@ -66,7 +66,7 @@ export async function getCityWeather(cityId: string): Promise<WeatherData> {
  * Buscar dados climáticos de múltiplas cidades
  * Backend: POST /api/weather/regional
  * 
- * Com cache integrado: verifica cache antes de fazer requisição
+ * Com cache individual por cidade: busca do cache primeiro, depois API para cidades faltantes
  */
 export async function getRegionalWeather(
   cityIds: string[],
@@ -96,35 +96,57 @@ export async function getRegionalWeather(
     }
   }
   
-  // Verificar se dados estão no cache (AGORA ASSÍNCRONO)
-  const cachedData = await weatherCache.getRegional(cityIds, finalDate, finalTime);
-  if (cachedData) {
-    console.log(`[Cache HIT] Dados regionais para ${cityIds.length} cidades em ${finalDate} ${finalTime}`);
-    return cachedData;
+  // Buscar dados cacheados individualmente por cidade
+  const cachedDataMap = new Map<string, WeatherData>();
+  const missingCityIds: string[] = [];
+  
+  for (const cityId of cityIds) {
+    const cached = await weatherCache.get(cityId, finalDate, finalTime);
+    if (cached) {
+      cachedDataMap.set(cityId, cached);
+    } else {
+      missingCityIds.push(cityId);
+    }
   }
   
-  console.log(`[Cache MISS] Buscando dados regionais da API para ${cityIds.length} cidades`);
+  // Log de cache hit/miss
+  if (cachedDataMap.size > 0) {
+    console.log(`[Cache HIT] ${cachedDataMap.size}/${cityIds.length} cidades cacheadas`);
+  }
+  if (missingCityIds.length > 0) {
+    console.log(`[Cache MISS] Buscando ${missingCityIds.length} cidades da API`);
+  }
+  
+  // Se todas as cidades estão no cache, retornar
+  if (missingCityIds.length === 0) {
+    return cityIds.map(id => cachedDataMap.get(id)!);
+  }
+  
+  // Buscar dados faltantes da API
+  let fetchedData: WeatherData[];
   
   if (APP_CONFIG.USE_MOCK) {
     await new Promise((resolve) => setTimeout(resolve, 400));
-    const data = getMockRegionalWeather(cityIds);
-    // Armazenar no cache (AGORA ASSÍNCRONO)
-    await weatherCache.setRegional(cityIds, finalDate, finalTime, data);
-    return data;
+    fetchedData = getMockRegionalWeather(missingCityIds);
+  } else {
+    const response = await api.post<WeatherData[]>(
+      '/api/weather/regional',
+      { cityIds: missingCityIds },
+      {
+        params: { date: finalDate, time: finalTime }
+      }
+    );
+    fetchedData = response.data;
   }
 
-  const response = await api.post<WeatherData[]>(
-    '/api/weather/regional',
-    { cityIds },
-    {
-      params: { date: finalDate, time: finalTime }
-    }
-  );
-
-  // Armazenar resposta no cache (AGORA ASSÍNCRONO)
-  await weatherCache.setRegional(cityIds, finalDate, finalTime, response.data);
+  // Armazenar cada cidade individualmente no cache
+  for (const cityData of fetchedData) {
+    await weatherCache.set(cityData.cityId, finalDate, finalTime, cityData);
+    cachedDataMap.set(cityData.cityId, cityData);
+  }
   
-  return response.data;
+  // Retornar dados na ordem original dos cityIds
+  return cityIds.map(id => cachedDataMap.get(id)!);
 }
 
 /**

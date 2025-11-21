@@ -17,15 +17,8 @@ interface CacheEntry {
   size: number; // Tamanho em bytes do dado serializado
 }
 
-interface RegionalCacheEntry {
-  data: WeatherData[];
-  timestamp: number;
-  size: number;
-}
-
 interface CacheMetadata {
   keys: string[];
-  regionalKeys: string[];
   totalSize: number;
   lastAccessed: Record<string, number>; // Para implementar LRU
 }
@@ -37,15 +30,13 @@ class WeatherCache {
   // Limite máximo de cache: 10MB
   private readonly MAX_CACHE_SIZE = 10 * 1024 * 1024; // 10MB em bytes
   
-  // Stores separados para melhor organização
+  // Store para dados climáticos individuais
   private readonly weatherStore: LocalForage;
-  private readonly regionalStore: LocalForage;
   private readonly metadataStore: LocalForage;
   
   // Cache de metadata em memória para performance
   private metadata: CacheMetadata = {
     keys: [],
-    regionalKeys: [],
     totalSize: 0,
     lastAccessed: {},
   };
@@ -55,11 +46,6 @@ class WeatherCache {
     this.weatherStore = localforage.createInstance({
       name: 'weather-forecast',
       storeName: 'weather_cache',
-    });
-    
-    this.regionalStore = localforage.createInstance({
-      name: 'weather-forecast',
-      storeName: 'regional_cache',
     });
     
     this.metadataStore = localforage.createInstance({
@@ -82,7 +68,7 @@ class WeatherCache {
       const stored = await this.metadataStore.getItem<CacheMetadata>('metadata');
       if (stored) {
         this.metadata = stored;
-        console.log(`[Cache] Metadata carregado: ${this.metadata.keys.length + this.metadata.regionalKeys.length} entradas, ${this.formatBytes(this.metadata.totalSize)}`);
+        console.log(`[Cache] Metadata carregado: ${this.metadata.keys.length} entradas, ${this.formatBytes(this.metadata.totalSize)}`);
       }
     } catch (error) {
       console.error('[Cache] Erro ao carregar metadata:', error);
@@ -122,11 +108,11 @@ class WeatherCache {
   private async evictLRU(requiredSpace: number): Promise<void> {
     console.log(`[Cache] Evicção LRU necessária. Espaço requerido: ${this.formatBytes(requiredSpace)}`);
     
-    // Combinar todas as chaves com seus timestamps de último acesso
-    const allEntries = [
-      ...this.metadata.keys.map(key => ({ key, regional: false, lastAccess: this.metadata.lastAccessed[key] || 0 })),
-      ...this.metadata.regionalKeys.map(key => ({ key, regional: true, lastAccess: this.metadata.lastAccessed[key] || 0 })),
-    ];
+    // Criar array com todas as chaves e seus timestamps de último acesso
+    const allEntries = this.metadata.keys.map(key => ({ 
+      key, 
+      lastAccess: this.metadata.lastAccessed[key] || 0 
+    }));
     
     // Ordenar por último acesso (mais antigo primeiro)
     allEntries.sort((a, b) => a.lastAccess - b.lastAccess);
@@ -137,23 +123,12 @@ class WeatherCache {
         break;
       }
       
-      if (entry.regional) {
-        await this.removeRegionalByKey(entry.key);
-      } else {
-        await this.removeByKey(entry.key);
-      }
+      await this.removeByKey(entry.key);
     }
     
     console.log(`[Cache] Evicção completa. Tamanho atual: ${this.formatBytes(this.metadata.totalSize)}`);
   }
   
-  
-  /**
-   * Gera chave única para uma cidade em uma data/hora específica
-   */
-  private generateKey(cityId: string, date: string, time: string): string {
-    return `${cityId}_${date}_${time}`;
-  }
   
   /**
    * Arredonda o tempo para a hora mais próxima que é múltipla de 3 horas
@@ -180,20 +155,15 @@ class WeatherCache {
   }
   
   /**
-   * Gera chave única para uma requisição regional
+   * Gera chave única para uma cidade em uma data/hora específica
+   * Usa tempo arredondado para maximizar cache hits
    */
-  private generateRegionalKey(cityIds: string[], date: string, time: string, radius?: number): string {
+  private generateKey(cityId: string, date: string, time: string): string {
     const roundedTime = this.roundTimeToNearest3Hours(time);
-    // Ordena cityIds para garantir que a mesma requisição sempre gere a mesma chave
-    const sortedIds = [...cityIds].sort();
-    const radiusPart = radius !== undefined ? `_${radius}` : '';
-    const key = `regional_${sortedIds.join('-')}_${date}_${roundedTime}${radiusPart}`;
-    
-    // Log para debug - mostra transformação do tempo
-    console.log(`[Cache Key] ${cityIds.length} cidades, ${date} ${time} → ${roundedTime}`);
-    
-    return key;
+    return `${cityId}_${date}_${roundedTime}`;
   }
+  
+
   
   /**
    * Verifica se uma entrada está válida (não expirou)
@@ -211,9 +181,10 @@ class WeatherCache {
   
   /**
    * Armazena dados climáticos de uma cidade no cache
+   * Usa timestamp arredondado para maximizar cache hits
    */
   async set(cityId: string, date: string, time: string, data: WeatherData): Promise<void> {
-    const key = this.generateKey(cityId, date, time);
+    const key = this.generateKey(cityId, date, time); // Já arredonda internamente
     const size = this.calculateSize(data);
     
     // Verificar se precisa fazer evicção
@@ -245,10 +216,11 @@ class WeatherCache {
   
   /**
    * Recupera dados climáticos de uma cidade do cache
+   * Usa timestamp arredondado para maximizar cache hits
    * Retorna null se não existe ou expirou
    */
   async get(cityId: string, date: string, time: string): Promise<WeatherData | null> {
-    const key = this.generateKey(cityId, date, time);
+    const key = this.generateKey(cityId, date, time); // Já arredonda internamente
     
     try {
       const entry = await this.weatherStore.getItem<CacheEntry>(key);
@@ -282,81 +254,6 @@ class WeatherCache {
   }
   
   /**
-   * Armazena dados climáticos regionais (múltiplas cidades) no cache
-   */
-  async setRegional(cityIds: string[], date: string, time: string, data: WeatherData[], radius?: number): Promise<void> {
-    const key = this.generateRegionalKey(cityIds, date, time, radius);
-    const size = this.calculateSize(data);
-    
-    // Verificar se precisa fazer evicção
-    if (this.metadata.totalSize + size > this.MAX_CACHE_SIZE) {
-      await this.evictLRU(size);
-    }
-    
-    const entry: RegionalCacheEntry = {
-      data,
-      timestamp: Date.now(),
-      size,
-    };
-    
-    try {
-      await this.regionalStore.setItem(key, entry);
-      
-      // Atualizar metadata
-      if (!this.metadata.regionalKeys.includes(key)) {
-        this.metadata.regionalKeys.push(key);
-      }
-      this.metadata.totalSize += size;
-      this.updateLastAccess(key);
-      
-      await this.saveMetadata();
-      console.log(`[Cache] Entrada regional salva com sucesso (${this.formatBytes(size)})`);
-    } catch (error) {
-      console.error(`[Cache] Erro ao salvar entrada regional ${key}:`, error);
-    }
-  }
-  
-  /**
-   * Recupera dados climáticos regionais do cache
-   * Retorna null se não existe ou expirou
-   */
-  async getRegional(cityIds: string[], date: string, time: string, radius?: number): Promise<WeatherData[] | null> {
-    const key = this.generateRegionalKey(cityIds, date, time, radius);
-    
-    try {
-      const entry = await this.regionalStore.getItem<RegionalCacheEntry>(key);
-      
-      if (!entry) {
-        console.log(`[Cache] Entry não encontrada no store`);
-        return null;
-      }
-      
-      if (!this.isValid(entry.timestamp)) {
-        console.log(`[Cache] Entry expirada (${Math.round((Date.now() - entry.timestamp) / 1000 / 60)} min atrás)`);
-        await this.removeRegionalByKey(key);
-        return null;
-      }
-      
-      // Atualizar último acesso
-      this.updateLastAccess(key);
-      await this.saveMetadata();
-      
-      return entry.data;
-    } catch (error) {
-      console.error(`[Cache] Erro ao recuperar entrada regional ${key}:`, error);
-      return null;
-    }
-  }
-  
-  /**
-   * Verifica se dados regionais estão no cache e são válidos
-   */
-  async hasRegional(cityIds: string[], date: string, time: string, radius?: number): Promise<boolean> {
-    const data = await this.getRegional(cityIds, date, time, radius);
-    return data !== null;
-  }
-  
-  /**
    * Remove entrada específica do cache
    */
   async remove(cityId: string, date: string, time: string): Promise<void> {
@@ -382,42 +279,16 @@ class WeatherCache {
     }
   }
   
-  /**
-   * Remove entrada regional específica do cache
-   */
-  async removeRegional(cityIds: string[], date: string, time: string, radius?: number): Promise<void> {
-    const key = this.generateRegionalKey(cityIds, date, time, radius);
-    await this.removeRegionalByKey(key);
-  }
+
   
   /**
-   * Remove entrada regional por chave
-   */
-  private async removeRegionalByKey(key: string): Promise<void> {
-    try {
-      const entry = await this.regionalStore.getItem<RegionalCacheEntry>(key);
-      if (entry) {
-        await this.regionalStore.removeItem(key);
-        this.metadata.totalSize -= entry.size;
-        this.metadata.regionalKeys = this.metadata.regionalKeys.filter(k => k !== key);
-        delete this.metadata.lastAccessed[key];
-        await this.saveMetadata();
-      }
-    } catch (error) {
-      console.error(`[Cache] Erro ao remover entrada regional ${key}:`, error);
-    }
-  }
-  
-  /**
-   * Limpa todo o cache (individual e regional)
+   * Limpa todo o cache
    */
   async clear(): Promise<void> {
     try {
       await this.weatherStore.clear();
-      await this.regionalStore.clear();
       this.metadata = {
         keys: [],
-        regionalKeys: [],
         totalSize: 0,
         lastAccessed: {},
       };
@@ -428,33 +299,7 @@ class WeatherCache {
     }
   }
   
-  /**
-   * Limpa apenas o cache individual
-   */
-  async clearIndividual(): Promise<void> {
-    try {
-      for (const key of this.metadata.keys) {
-        await this.removeByKey(key);
-      }
-      console.log('[Cache] Cache individual limpo');
-    } catch (error) {
-      console.error('[Cache] Erro ao limpar cache individual:', error);
-    }
-  }
-  
-  /**
-   * Limpa apenas o cache regional
-   */
-  async clearRegional(): Promise<void> {
-    try {
-      for (const key of this.metadata.regionalKeys) {
-        await this.removeRegionalByKey(key);
-      }
-      console.log('[Cache] Cache regional limpo');
-    } catch (error) {
-      console.error('[Cache] Erro ao limpar cache regional:', error);
-    }
-  }
+
   
   /**
    * Remove entradas expiradas (limpeza automática)
@@ -463,7 +308,6 @@ class WeatherCache {
     console.log('[Cache] Iniciando limpeza automática...');
     let removed = 0;
     
-    // Limpar cache individual
     for (const key of [...this.metadata.keys]) {
       try {
         const entry = await this.weatherStore.getItem<CacheEntry>(key);
@@ -476,19 +320,6 @@ class WeatherCache {
       }
     }
     
-    // Limpar cache regional
-    for (const key of [...this.metadata.regionalKeys]) {
-      try {
-        const entry = await this.regionalStore.getItem<RegionalCacheEntry>(key);
-        if (entry && !this.isValid(entry.timestamp)) {
-          await this.removeRegionalByKey(key);
-          removed++;
-        }
-      } catch (error) {
-        console.error(`[Cache] Erro ao limpar entrada regional ${key}:`, error);
-      }
-    }
-    
     if (removed > 0) {
       console.log(`[Cache] Limpeza completa: ${removed} entradas expiradas removidas. Tamanho: ${this.formatBytes(this.metadata.totalSize)}`);
     }
@@ -498,8 +329,6 @@ class WeatherCache {
    * Retorna estatísticas do cache para debug
    */
   getStats(): { 
-    individual: number; 
-    regional: number; 
     total: number;
     size: string;
     limit: string;
@@ -508,9 +337,7 @@ class WeatherCache {
     const usagePercent = ((this.metadata.totalSize / this.MAX_CACHE_SIZE) * 100).toFixed(2);
     
     return {
-      individual: this.metadata.keys.length,
-      regional: this.metadata.regionalKeys.length,
-      total: this.metadata.keys.length + this.metadata.regionalKeys.length,
+      total: this.metadata.keys.length,
       size: this.formatBytes(this.metadata.totalSize),
       limit: this.formatBytes(this.MAX_CACHE_SIZE),
       usage: `${usagePercent}%`,
