@@ -26,6 +26,9 @@ interface CachedMesh {
   size: number;
 }
 
+// TTL para malhas do IBGE: 24 horas (em milissegundos)
+const IBGE_TTL = 24 * 60 * 60 * 1000;
+
 interface IBGEMetadata {
   keys: string[];
   totalSize: number;
@@ -130,11 +133,23 @@ export async function getMunicipalityMesh(
     const cached = await ibgeMeshStore.getItem<CachedMesh>(municipalityId);
     
     if (cached) {
-      console.log(`[IBGE Cache] HIT: ${municipalityId}`);
-      // Atualizar último acesso
-      ibgeMetadata.lastAccessed[municipalityId] = Date.now();
-      await saveIBGEMetadata();
-      return cached.data;
+      // Verificar se o cache expirou (24 horas)
+      const isExpired = Date.now() - cached.timestamp > IBGE_TTL;
+      
+      if (isExpired) {
+        console.log(`[IBGE Cache] EXPIRED: ${municipalityId} - removendo do cache`);
+        await ibgeMeshStore.removeItem(municipalityId);
+        ibgeMetadata.totalSize -= cached.size;
+        ibgeMetadata.keys = ibgeMetadata.keys.filter(k => k !== municipalityId);
+        delete ibgeMetadata.lastAccessed[municipalityId];
+        await saveIBGEMetadata();
+      } else {
+        console.log(`[IBGE Cache] HIT: ${municipalityId}`);
+        // Atualizar último acesso
+        ibgeMetadata.lastAccessed[municipalityId] = Date.now();
+        await saveIBGEMetadata();
+        return cached.data;
+      }
     }
     
     console.log(`[IBGE Cache] MISS: ${municipalityId} - Buscando do IBGE`);

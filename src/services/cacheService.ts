@@ -31,8 +31,8 @@ interface CacheMetadata {
 }
 
 class WeatherCache {
-  // TTL padrão: 30 minutos (em milissegundos)
-  private readonly DEFAULT_TTL = 30 * 60 * 1000;
+  // TTL para dados climáticos: 3 horas (em milissegundos)
+  private readonly WEATHER_TTL = 3 * 60 * 60 * 1000;
   
   // Limite máximo de cache: 10MB
   private readonly MAX_CACHE_SIZE = 10 * 1024 * 1024; // 10MB em bytes
@@ -70,8 +70,8 @@ class WeatherCache {
     // Inicializar metadata
     this.initMetadata();
     
-    // Limpeza automática a cada 5 minutos
-    setInterval(() => this.cleanup(), 5 * 60 * 1000);
+    // Limpeza automática a cada 1 hora (para TTL de 3 horas)
+    setInterval(() => this.cleanup(), 60 * 60 * 1000);
   }
   
   /**
@@ -193,7 +193,7 @@ class WeatherCache {
   /**
    * Verifica se uma entrada está válida (não expirou)
    */
-  private isValid(timestamp: number, ttl: number = this.DEFAULT_TTL): boolean {
+  private isValid(timestamp: number, ttl: number = this.WEATHER_TTL): boolean {
     return Date.now() - timestamp < ttl;
   }
   
