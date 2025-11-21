@@ -132,7 +132,14 @@ export function getMockWeatherData(cityId: string): WeatherData {
       temperature: 24.3,
       humidity: 72.5,
       windSpeed: 12.8,
-      weatherAlert: [],
+      weatherAlert: [
+        {
+          code: 'MODERATE_WIND',
+          severity: 'warning',
+          description: '💨 Ventos moderados',
+          timestamp: now,
+        },
+      ],
     },
     '3534708': {
       // Ourinhos
@@ -144,7 +151,7 @@ export function getMockWeatherData(cityId: string): WeatherData {
       weatherAlert: [
         {
           code: 'RAIN_EXPECTED',
-          severity: 'warning',
+          severity: 'info',
           description: '🌧️ Alta probabilidade de chuva',
           timestamp: now,
         },
@@ -178,7 +185,7 @@ export function getMockWeatherData(cityId: string): WeatherData {
       weatherAlert: [
         {
           code: 'RAIN_EXPECTED',
-          severity: 'warning',
+          severity: 'info',
           description: '🌧️ Alta probabilidade de chuva',
           timestamp: now,
         },
@@ -191,7 +198,14 @@ export function getMockWeatherData(cityId: string): WeatherData {
       temperature: 26.1,
       humidity: 65.4,
       windSpeed: 8.2,
-      weatherAlert: [],
+      weatherAlert: [
+        {
+          code: 'SNOW',
+          severity: 'info',
+          description: '❄️ Neve (raro no Brasil)',
+          timestamp: now,
+        },
+      ],
     },
     '3538808': {
       // Piraju
@@ -205,6 +219,12 @@ export function getMockWeatherData(cityId: string): WeatherData {
           code: 'HEAVY_RAIN',
           severity: 'alert',
           description: '⚠️ ALERTA: Chuva forte',
+          timestamp: now,
+        },
+        {
+          code: 'STORM',
+          severity: 'danger',
+          description: '⚠️ ALERTA: Tempestade com raios',
           timestamp: now,
         },
       ],

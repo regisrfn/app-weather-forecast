@@ -9,9 +9,8 @@
 .weather-alerts {
   margin-top: 20px;
   background: linear-gradient(135deg, #fff8dc 0%, #fffaf0 100%);
-  border-radius: 12px;
-  padding: 16px;
-  border-left: 4px solid #ffa500;
+  padding: 1rem;
+  border-left: 0.1rem solid #ffa500;
 }
 
 .alerts-header {
@@ -93,7 +92,7 @@
 }
 
 // Estilos por severidade
-.severity-danger {
+.alert-item.severity-danger {
   border-left-color: #dc2626;
 
   .alert-icon {
@@ -101,7 +100,7 @@
   }
 }
 
-.severity-alert {
+.alert-item.severity-alert {
   border-left-color: #ea580c;
 
   .alert-icon {
@@ -109,7 +108,7 @@
   }
 }
 
-.severity-warning {
+.alert-item.severity-warning {
   border-left-color: #d97706;
 
   .alert-icon {
@@ -117,7 +116,7 @@
   }
 }
 
-.severity-info {
+.alert-item.severity-info {
   border-left-color: #0284c7;
 
   .alert-icon {
