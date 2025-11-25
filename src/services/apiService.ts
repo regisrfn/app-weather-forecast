@@ -15,6 +15,7 @@ import {
   type WeatherData,
 } from './mockService';
 import { weatherCache } from './cacheService';
+import { chunkArray } from '../utils/array';
 
 const api = axios.create({
   baseURL: APP_CONFIG.API_BASE_URL,
@@ -63,10 +64,34 @@ export async function getCityWeather(cityId: string): Promise<WeatherData> {
 }
 
 /**
+ * Buscar dados de um chunk de cidades da API
+ */
+async function fetchWeatherChunk(
+  cityIds: string[],
+  date: string,
+  time: string
+): Promise<WeatherData[]> {
+  if (APP_CONFIG.USE_MOCK) {
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    return getMockRegionalWeather(cityIds);
+  } else {
+    const response = await api.post<WeatherData[]>(
+      '/api/weather/regional',
+      { cityIds },
+      {
+        params: { date, time }
+      }
+    );
+    return response.data;
+  }
+}
+
+/**
  * Buscar dados climáticos de múltiplas cidades
  * Backend: POST /api/weather/regional
  * 
  * Com cache individual por cidade: busca do cache primeiro, depois API para cidades faltantes
+ * Divide requisições grandes em chunks de 50 cidades e processa em paralelo
  */
 export async function getRegionalWeather(
   cityIds: string[],
@@ -122,31 +147,59 @@ export async function getRegionalWeather(
     return cityIds.map(id => cachedDataMap.get(id)!);
   }
   
-  // Buscar dados faltantes da API
-  let fetchedData: WeatherData[];
+  // Dividir cidades faltantes em chunks de no máximo 50
+  const chunks = chunkArray(missingCityIds, APP_CONFIG.API.MAX_CITIES_PER_BATCH);
   
-  if (APP_CONFIG.USE_MOCK) {
-    await new Promise((resolve) => setTimeout(resolve, 400));
-    fetchedData = getMockRegionalWeather(missingCityIds);
-  } else {
-    const response = await api.post<WeatherData[]>(
-      '/api/weather/regional',
-      { cityIds: missingCityIds },
-      {
-        params: { date: finalDate, time: finalTime }
-      }
-    );
-    fetchedData = response.data;
+  console.log(`[API] Dividindo ${missingCityIds.length} cidades em ${chunks.length} chunk(s) de até ${APP_CONFIG.API.MAX_CITIES_PER_BATCH} cidades`);
+  
+  // Buscar todos os chunks em paralelo usando Promise.allSettled
+  const chunkPromises = chunks.map((chunk: string[], index: number) => 
+    fetchWeatherChunk(chunk, finalDate, finalTime)
+      .then(data => ({ status: 'fulfilled' as const, data, chunkIndex: index, chunk }))
+      .catch(error => ({ status: 'rejected' as const, reason: error, chunkIndex: index, chunk }))
+  );
+  
+  const results = await Promise.all(chunkPromises);
+  
+  // Processar resultados: separar sucessos e falhas
+  const successfulData: WeatherData[] = [];
+  const failedChunks: Array<{ index: number; cityIds: string[]; error: any }> = [];
+  
+  for (const result of results) {
+    if (result.status === 'fulfilled') {
+      successfulData.push(...result.data);
+      console.log(`[API] ✓ Chunk ${result.chunkIndex + 1}/${chunks.length} OK: ${result.chunk.length} cidades`);
+    } else {
+      failedChunks.push({
+        index: result.chunkIndex,
+        cityIds: result.chunk,
+        error: result.reason,
+      });
+      console.error(`[API] ✗ Chunk ${result.chunkIndex + 1}/${chunks.length} FALHOU:`, result.reason.message);
+    }
   }
-
-  // Armazenar cada cidade individualmente no cache
-  for (const cityData of fetchedData) {
+  
+  // Armazenar dados bem-sucedidos individualmente no cache
+  for (const cityData of successfulData) {
     await weatherCache.set(cityData.cityId, finalDate, finalTime, cityData);
     cachedDataMap.set(cityData.cityId, cityData);
   }
   
-  // Retornar dados na ordem original dos cityIds
-  return cityIds.map(id => cachedDataMap.get(id)!);
+  // Log de resumo
+  if (failedChunks.length > 0) {
+    const failedCityCount = failedChunks.reduce((sum, chunk) => sum + chunk.cityIds.length, 0);
+    console.warn(`[API] ⚠️ ${failedChunks.length} chunk(s) falharam (${failedCityCount} cidades sem dados)`);
+  }
+  
+  // Retornar dados na ordem original dos cityIds (undefined para cidades sem dados)
+  const result = cityIds.map(id => cachedDataMap.get(id)!).filter(Boolean);
+  
+  // Se não conseguimos dados para nenhuma cidade, lançar erro
+  if (result.length === 0 && cityIds.length > 0) {
+    throw new Error('Falha ao buscar dados de todas as cidades');
+  }
+  
+  return result;
 }
 
 /**

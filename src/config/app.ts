@@ -46,4 +46,15 @@ export const APP_CONFIG = {
    * Intervalo de atualização dos dados (ms)
    */
   UPDATE_INTERVAL: 60 * 60 * 1000, // 60 minutos
+
+  /**
+   * Configurações de API
+   */
+  API: {
+    /**
+     * Tamanho máximo de cidades por requisição batch
+     * Para evitar timeouts e limites de payload do backend
+     */
+    MAX_CITIES_PER_BATCH: 50,
+  },
 } as const;
