@@ -704,7 +704,11 @@ const canNavigateNext = (): boolean => {
   const maxDate = new Date(brasilTime);
   maxDate.setDate(maxDate.getDate() + 4); // Máximo 5 dias (0-4)
   
-  return currentDate < maxDate;
+  // Comparar apenas as datas (sem horas) usando strings YYYY-MM-DD
+  const currentDateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+  const maxDateStr = `${maxDate.getFullYear()}-${String(maxDate.getMonth() + 1).padStart(2, '0')}-${String(maxDate.getDate()).padStart(2, '0')}`;
+  
+  return currentDateStr < maxDateStr;
 };
 
 const navigatePrevDay = async () => {
