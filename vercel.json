@@ -6,7 +6,7 @@
   "framework": "vite",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!assets/).*)",
       "destination": "/index.html"
     }
   ],
@@ -21,7 +21,7 @@
       ]
     },
     {
-      "source": "/(.*)",
+      "source": "/(.*\\.(?:js|css|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|ico))",
       "headers": [
         {
           "key": "Cache-Control",
