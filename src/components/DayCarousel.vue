@@ -100,7 +100,7 @@ const selectedTime = ref(props.initialTime);
 
 const days = computed<Day[]>(() => {
   const result: Day[] = [];
-  const maxDays = props.maxDays || 5;
+  const maxDays = props.maxDays || 6;
   
   // Obter data atual no timezone do Brasil
   const now = new Date();

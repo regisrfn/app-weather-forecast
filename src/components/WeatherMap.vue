@@ -212,7 +212,7 @@
       v-if="showDayCarousel"
       :initialDate="forecastDate"
       :initialTime="forecastTime"
-      :maxDays="5"
+      :maxDays="6"
       @close="showDayCarousel = false"
       @select="handleDateTimeSelect"
     />
@@ -706,7 +706,7 @@ const canNavigateNext = (): boolean => {
   const now = new Date();
   const brasilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
   const maxDate = new Date(brasilTime);
-  maxDate.setDate(maxDate.getDate() + 4); // Máximo 5 dias (0-4)
+  maxDate.setDate(maxDate.getDate() + 5); // Máximo 6 dias (0-5)
   
   // Comparar apenas as datas (sem horas) usando strings YYYY-MM-DD
   const currentDateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
