@@ -2,6 +2,47 @@
 # AWS Amplify Hosting Module
 # ============================================
 
+# IAM Role para Amplify
+resource "aws_iam_role" "amplify" {
+  name = "${var.app_name}-amplify-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "amplify.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  tags = var.tags
+}
+
+# Policy para Amplify acessar recursos necessários
+resource "aws_iam_role_policy" "amplify" {
+  name = "${var.app_name}-amplify-policy"
+  role = aws_iam_role.amplify.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:*:*:*"
+      }
+    ]
+  })
+}
+
 # Amplify App
 resource "aws_amplify_app" "app" {
   name       = var.app_name
@@ -9,6 +50,9 @@ resource "aws_amplify_app" "app" {
 
   # GitHub OAuth token
   access_token = var.github_token
+
+  # IAM Role
+  iam_service_role_arn = aws_iam_role.amplify.arn
 
   # Build settings
   build_spec = var.build_spec_content
