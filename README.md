@@ -1,299 +1,234 @@
-# 🌦️ App Previsão do Tempo - Ribeirão do Sul
+# 🌤️ Weather Forecast App
 
-Aplicação web interativa para visualizar previsão do tempo focada em **Ribeirão do Sul, SP** e cidades vizinhas com visualização em mapa usando malhas municipais do IBGE.
+Aplicação web de previsão do tempo com visualização em mapa interativo, desenvolvida com Vue 3, TypeScript e Leaflet.
+
+![Vue.js](https://img.shields.io/badge/Vue.js-3.5-4FC08D?logo=vue.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-7.2-646CFF?logo=vite&logoColor=white)
+![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?logo=vercel&logoColor=white)
+
+## 📋 Índice
+
+- [Visão Geral](#-visão-geral)
+- [Funcionalidades](#-funcionalidades)
+- [Demo](#-demo)
+- [Tecnologias](#-tecnologias)
+- [Começando](#-começando)
+- [Documentação](#-documentação)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Licença](#-licença)
+
+## 🎯 Visão Geral
+
+O Weather Forecast App é uma aplicação web moderna que exibe previsões meteorológicas em um mapa interativo. A aplicação permite visualizar dados climáticos de múltiplas cidades simultaneamente, com controle de raio de busca, navegação temporal e estatísticas agregadas.
+
+### Características Principais
+
+- 🗺️ **Mapa Interativo**: Visualização geográfica com Leaflet
+- 📍 **Busca de Cidades**: Pesquisa rápida por nome de cidade
+- 📊 **Estatísticas Regionais**: Temperatura média, extremos e condições predominantes
+- 📅 **Navegação Temporal**: Visualize previsões para os próximos 5 dias
+- 🎨 **UI Moderna**: Interface responsiva com design glassmorphism
+- ⚡ **Performance**: Cache inteligente e otimizações
+- 🌐 **100% Frontend**: Funciona com dados mock (backend opcional)
 
 ## ✨ Funcionalidades
 
-- 🎯 **Foco em Ribeirão do Sul** como ponto central
-- 📍 **Busca por raio ajustável** - 10 a 150 km para cidades vizinhas
-- 🗺️ **Visualização em mapa interativo** com malhas municipais do IBGE
-- 🌈 **Gradiente de cores azuis** indicando intensidade de chuva
-- 📊 **Painel de informações** completas por cidade
-- 📱 **Interface responsiva** - Desktop e mobile
-- 🔄 **Atualização automática** a cada 5 minutos
-- 🧪 **Dados mockados** para desenvolvimento (sem necessidade de backend)
+### Mapa Meteorológico
+- Visualização de múltiplas cidades simultaneamente
+- Marcadores coloridos por condição climática
+- Popups com informações detalhadas
+- Controle de raio de busca (10-150 km)
 
-## 🚀 Tecnologias
+### Busca e Navegação
+- Pesquisa por nome de cidade
+- Autocomplete com lista filtrada
+- Navegação por carrossel de dias
+- Controle de horários dentro do dia
+
+### Estatísticas
+- Temperatura média regional
+- Temperaturas mínima e máxima
+- Condição climática predominante
+- Alertas meteorológicos (quando disponíveis)
+
+### Cache e Performance
+- Sistema de cache com LocalForage
+- Refresh automático configurável
+- Debounce em operações custosas
+- Carregamento otimizado de dados
+
+## 🚀 Demo
+
+**URL de Produção:** [Em breve - Deploy via Vercel]
+
+### Screenshots
+
+```
+[Adicione capturas de tela aqui]
+```
+
+## 🛠️ Tecnologias
 
 ### Frontend
-- **Vue 3** - Framework progressivo com Composition API
-- **TypeScript** - Tipagem estática
-- **Leaflet** - Biblioteca de mapas interativos
-- **Vite** - Build tool ultrarrápida
-- **Axios** - Cliente HTTP
+- **Vue 3**: Framework JavaScript progressivo
+- **TypeScript**: Tipagem estática
+- **Vite**: Build tool e dev server
+- **Leaflet**: Biblioteca de mapas interativos
+- **Sass**: Pré-processador CSS
+- **Axios**: Cliente HTTP
 
-### APIs Externas
-- **IBGE Malhas** - Geometrias GeoJSON dos municípios
-- **OpenStreetMap** - Tiles do mapa base
+### Infraestrutura
+- **Vercel**: Plataforma de deploy e hosting
+- **LocalForage**: Armazenamento local assíncrono
 
-### Backend (Opcional)
-- Veja [BACKEND_REQUIREMENTS.md](./BACKEND_REQUIREMENTS.md) para implementação completa
+### Qualidade
+- **Vue TSC**: Type checking para Vue
+- **ESLint**: Análise estática de código (futuro)
 
-## 📦 Instalação e Desenvolvimento
+## 🚀 Começando
 
 ### Pré-requisitos
 
-- Node.js 18+ 
+- Node.js 20.x ou superior
 - npm ou yarn
 
 ### Instalação
 
+1. **Clone o repositório**
 ```bash
-# Clone o repositório
-git clone https://github.com/seu-usuario/app-weather-forecast.git
+git clone https://github.com/regisrfn/app-weather-forecast.git
 cd app-weather-forecast
+```
 
-# Instale as dependências
+2. **Instale as dependências**
+```bash
 npm install
 ```
 
-### Desenvolvimento Local
-
+3. **Configure as variáveis de ambiente**
 ```bash
-# Inicie o servidor de desenvolvimento
-npm run dev
-
-# Acesse http://localhost:5173/
+cp .env.example .env
 ```
+
+Edite o arquivo `.env`:
+```env
+# Modo de desenvolvimento - usa dados mockados
+VITE_USE_MOCK=true
+
+# URL da API backend (quando disponível)
+VITE_API_BASE_URL=
+```
+
+4. **Inicie o servidor de desenvolvimento**
+```bash
+npm run dev
+```
+
+Acesse http://localhost:5173
 
 ### Build para Produção
 
 ```bash
-# Build otimizado
 npm run build
+```
 
-# Preview do build
+Os arquivos otimizados serão gerados em `dist/`.
+
+### Preview do Build
+
+```bash
 npm run preview
 ```
 
-## 🏗️ Estrutura do Projeto
+## 📚 Documentação
+
+A documentação completa está organizada em seções:
+
+- **[Funcionalidades](docs/FEATURES.md)**: Detalhamento de todas as funcionalidades
+- **[Arquitetura](docs/ARCHITECTURE.md)**: Estrutura técnica e decisões de design
+- **[Implementação](docs/IMPLEMENTATION.md)**: Guia de desenvolvimento e padrões
+- **[Deploy](docs/DEPLOY.md)**: Instruções de deploy no Vercel
+- **[API](docs/API.md)**: Documentação da integração com backend
+
+## 📁 Estrutura do Projeto
 
 ```
-src/
-├── components/
-│   └── WeatherMap.vue          # Componente principal do mapa
-├── services/
-│   ├── apiService.ts           # Comunicação com backend
-│   ├── mockService.ts          # Dados simulados para desenvolvimento
-│   └── ibgeService.ts          # Busca malhas do IBGE
-├── config/
-│   └── app.ts                  # Configurações centralizadas
-├── types/
-│   └── weather.ts              # Tipos TypeScript
-├── App.vue                     # Componente raiz
-└── main.ts                     # Entry point
+app-weather-forecast/
+├── public/                    # Arquivos estáticos
+│   └── data/
+│       └── municipalities_db.json  # Database de municípios
+├── src/
+│   ├── assets/               # Recursos estáticos (imagens, etc)
+│   ├── components/           # Componentes Vue
+│   │   ├── WeatherMap.vue   # Componente principal do mapa
+│   │   ├── DayCarousel.vue  # Carrossel de dias
+│   │   └── WeatherAlerts.vue # Alertas meteorológicos
+│   ├── config/
+│   │   └── app.ts           # Configurações da aplicação
+│   ├── services/            # Camada de serviços
+│   │   ├── apiService.ts    # Cliente da API
+│   │   ├── cacheService.ts  # Sistema de cache
+│   │   ├── ibgeService.ts   # Serviço de municípios
+│   │   └── mockService.ts   # Dados mock
+│   ├── styles/              # Estilos globais (Sass)
+│   │   ├── abstracts/       # Variáveis, mixins, funções
+│   │   ├── base/            # Reset, tipografia
+│   │   └── components/      # Estilos por componente
+│   ├── types/
+│   │   └── weather.ts       # TypeScript interfaces
+│   ├── utils/
+│   │   └── array.ts         # Funções utilitárias
+│   ├── App.vue              # Componente raiz
+│   └── main.ts              # Entry point
+├── docs/                    # Documentação
+├── vercel.json              # Configuração Vercel
+├── vite.config.ts           # Configuração Vite
+├── tsconfig.json            # Configuração TypeScript
+└── package.json             # Dependências e scripts
 ```
 
-## 🎮 Como Usar
-
-1. **Ajustar Raio de Busca** - Use o slider no topo para alterar o raio (10-150 km)
-2. **Navegar no Mapa** - Clique e arraste para mover, scroll para zoom
-3. **Ver Detalhes da Cidade** - Clique em uma malha municipal
-4. **Abrir/Fechar Painel** - Use o botão flutuante no canto inferior direito
-5. **Acompanhar Intensidade** - Observe o gradiente de azul nas malhas
-
-## 🎨 Gradiente de Intensidade de Chuva
-
-| Intensidade | Cor | Descrição |
-|-------------|-----|-----------|
-| 0% | Cinza claro | Sem chuva |
-| 1-25% | Azul claro | Chuva fraca |
-| 25-50% | Azul médio | Chuva moderada |
-| 50-75% | Azul escuro | Chuva forte |
-| 75-100% | Azul intenso | Chuva muito forte |
-
-## 🗺️ Cidades da Região
-
-Cidades vizinhas de **Ribeirão do Sul** (Microrregião de Ourinhos - SP):
-
-| Código IBGE | Nome | Distância Aprox. |
-|-------------|------|------------------|
-| 3543204 | **Ribeirão do Sul** | 0 km (centro) |
-| 3550506 | São Pedro do Turvo | ~18 km |
-| 3545407 | Salto Grande | ~18 km |
-| 3534708 | Ourinhos | ~25 km |
-| 3510153 | Canitar | ~30 km |
-| 3546405 | Santa Cruz do Rio Pardo | ~36 km |
-| 3538808 | Piraju | ~47 km |
-
-## ⚙️ Configuração
-
-### Variáveis de Ambiente
-
-Crie um arquivo `.env` na raiz do projeto:
-
-```env
-# URL do backend (quando implementado)
-VITE_API_BASE_URL=http://localhost:3000
-
-# Modo mock (true = dados simulados, false = backend real)
-VITE_USE_MOCK=true
-```
-
-### Configuração Centralizada
-
-Edite `src/config/app.ts` para ajustar:
-
-```typescript
-export const APP_CONFIG = {
-  CENTER_CITY_ID: '3543204',    // Código IBGE da cidade centro
-  API_BASE_URL: '...',           // URL do backend
-  USE_MOCK: true,                // Usar dados mockados
-  RADIUS: {
-    DEFAULT: 50,                 // Raio padrão (km)
-    MIN: 10,                     // Raio mínimo
-    MAX: 150,                    // Raio máximo
-  },
-  UPDATE_INTERVAL: 5 * 60 * 1000, // Intervalo de atualização (ms)
-}
-```
-
-## 📡 Backend
-
-A aplicação frontend está **preparada para integração com backend**, mas funciona com dados mockados por padrão.
-
-### Documentação Completa
-Veja [BACKEND_REQUIREMENTS.md](./BACKEND_REQUIREMENTS.md) para:
-- ✅ Especificação completa das 3 rotas de API
-- ✅ Parâmetros, tipos e exemplos de retorno
-- ✅ Implementação de exemplo em Express + TypeScript
-- ✅ Integração com APIs meteorológicas (OpenWeatherMap, INMET)
-- ✅ Cálculo de distância com Haversine
-- ✅ Instruções de deploy
-
-### Rotas Necessárias
-
-```http
-GET  /api/cities/neighbors/:cityId?radius=50
-GET  /api/weather/city/:cityId
-POST /api/weather/regional
-```
-
-### Alternando entre Mock e Backend Real
-
-```typescript
-// src/config/app.ts
-USE_MOCK: false  // Desativa mock, usa backend real
-```
-
-## 🌐 APIs do IBGE
-
-### Malhas Municipais
-Busca geometria GeoJSON dos municípios:
-
-```
-GET https://servicodados.ibge.gov.br/api/v3/malhas/municipios/{id}?formato=application/vnd.geo+json
-```
-
-**Exemplo:** Malha de Ribeirão do Sul
-```bash
-curl "https://servicodados.ibge.gov.br/api/v3/malhas/municipios/3543204?formato=application/vnd.geo+json"
-```
-
-## 🚀 Deploy
-
-### Deploy na AWS S3 (Versão Simplificada)
-
-**Deploy rápido:**
-```bash
-# Build da aplicação
-npm run build
-
-# Deploy automático no S3
-./deploy-s3.sh
-```
-
-📖 **Documentação completa**: [DEPLOY_S3.md](./DEPLOY_S3.md)
-
----
-
-### Deploy na AWS com CloudFront (Requer conta verificada)
-
-Veja [DEPLOY_AWS.md](./DEPLOY_AWS.md) para instruções completas usando:
-- **S3** - Hospedagem estática
-- **CloudFront** - CDN global
-- **Route 53** - DNS customizado
-- **Terraform** - Infraestrutura como código
-
-### Outras Opções de Deploy
-
-#### Vercel
-```bash
-npm install -g vercel
-vercel
-```
-
-#### Netlify
-```bash
-npm install -g netlify-cli
-netlify deploy --prod --dir=dist
-```
-
-#### Railway
-```bash
-railway login
-railway init
-railway up
-```
-
-## 🧪 Desenvolvimento
+## 🔧 Scripts Disponíveis
 
 ```bash
-# Type checking
-npm run type-check
+# Desenvolvimento
+npm run dev          # Inicia servidor de desenvolvimento
 
 # Build
-npm run build
+npm run build        # Build de produção
+npm run preview      # Preview do build local
 
-# Preview da build
-npm run preview
+# Type Checking
+npm run type-check   # Verifica erros de TypeScript
 ```
 
-## 📱 Responsividade
+## 🌍 Variáveis de Ambiente
 
-A aplicação é totalmente responsiva:
-
-- **Desktop** - Painel de informações flutuante no canto inferior direito
-- **Mobile** - Painel adaptativo com largura total
-- **Tablet** - Layout intermediário otimizado
-
-## 🔧 Adicionar Novas Cidades
-
-Para adicionar mais cidades ao mock:
-
-1. Edite `src/services/mockService.ts`
-2. Adicione coordenadas em `getMockNeighborCities()`
-3. Adicione dados climáticos em `getMockWeatherData()`
-
-```typescript
-// Exemplo:
-{
-  id: '3503208',
-  name: 'Assis',
-  latitude: -22.6622,
-  longitude: -50.4128,
-  distance: 60.5,
-}
-```
+| Variável | Descrição | Padrão | Obrigatória |
+|----------|-----------|--------|-------------|
+| `VITE_USE_MOCK` | Usa dados mockados | `true` | Não |
+| `VITE_API_BASE_URL` | URL base da API backend | - | Sim (se USE_MOCK=false) |
 
 ## 🤝 Contribuindo
 
+Contribuições são bem-vindas! Siga os passos:
+
 1. Fork o projeto
-2. Crie uma branch (`git checkout -b feature/nova-feature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
-4. Push para a branch (`git push origin feature/nova-feature`)
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
-## 📄 Licença
+## 📝 Licença
 
-Este projeto está sob a licença MIT.
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
-## 🙏 Agradecimentos
+## 👤 Autor
 
-- **IBGE** - API de malhas municipais
-- **OpenStreetMap** - Tiles do mapa base
-- **Leaflet** - Biblioteca de mapas
-- **Vue.js** - Framework frontend
+**Regis Fonseca**
+- GitHub: [@regisrfn](https://github.com/regisrfn)
 
 ---
+
+⭐ Se este projeto foi útil, considere dar uma estrela!
 
