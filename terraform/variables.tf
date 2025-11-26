@@ -1,7 +1,7 @@
 variable "aws_region" {
   description = "Região AWS para deploy"
   type        = string
-  default     = "us-east-1"  # Virginia, USA
+  default     = "sa-east-1"  # São Paulo, Brasil
 }
 
 variable "environment" {
@@ -56,4 +56,44 @@ variable "max_ttl" {
   description = "Tempo máximo de cache (segundos)"
   type        = number
   default     = 86400
+}
+
+# ============================================
+# AWS Amplify Variables
+# ============================================
+
+variable "repository_url" {
+  description = "URL do repositório GitHub (ex: https://github.com/user/repo)"
+  type        = string
+  default     = "https://github.com/regisrfn/app-weather-forecast"
+}
+
+variable "github_token" {
+  description = "GitHub Personal Access Token para Amplify (permissões: repo, admin:repo_hook)"
+  type        = string
+  sensitive   = true
+}
+
+variable "branch_name" {
+  description = "Nome da branch principal para deploy"
+  type        = string
+  default     = "main"
+}
+
+variable "enable_auto_build" {
+  description = "Habilitar build automático ao fazer push na branch"
+  type        = bool
+  default     = true
+}
+
+variable "vite_use_mock" {
+  description = "Usar dados mock no frontend (VITE_USE_MOCK)"
+  type        = string
+  default     = "true"
+}
+
+variable "vite_api_base_url" {
+  description = "URL base da API backend (VITE_API_BASE_URL)"
+  type        = string
+  default     = ""
 }

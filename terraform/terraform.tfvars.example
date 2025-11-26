@@ -1,23 +1,37 @@
-# Variáveis de ambiente de exemplo
-# Copie este arquivo para terraform.tfvars e ajuste conforme necessário
+# ============================================
+# Configurações Básicas
+# ============================================
 
 # Ambiente
 environment  = "production"
 project_name = "weather-forecast"
 aws_region   = "sa-east-1"  # São Paulo, Brasil
 
-# CloudFront
-price_class = "PriceClass_100"  # Apenas US, Canadá e Europa
-enable_ipv6 = true
+# ============================================
+# AWS Amplify Configuration
+# ============================================
 
-# Cache (em segundos)
-min_ttl     = 0
-default_ttl = 3600   # 1 hora
-max_ttl     = 86400  # 1 dia
+# Repositório GitHub
+repository_url = "https://github.com/regisrfn/app-weather-forecast"
 
-# ======================================
-# DOMÍNIO CUSTOMIZADO (OPCIONAL)
-# ======================================
+# GitHub Token (criar em: https://github.com/settings/tokens)
+# Permissões necessárias: repo, admin:repo_hook
+github_token = "ghp_YOUR_GITHUB_TOKEN_HERE"
+
+# Branch para deploy
+branch_name = "main"
+
+# Auto-build ao fazer push
+enable_auto_build = true
+
+# Variáveis de ambiente do Vite
+vite_use_mock     = "true"  # "false" quando tiver backend
+vite_api_base_url = ""      # "https://api.example.com" quando tiver backend
+
+# ============================================
+# Domínio Customizado (OPCIONAL)
+# ============================================
+
 # Descomente as linhas abaixo se tiver um domínio próprio
 
 # enable_custom_domain = true
@@ -25,5 +39,11 @@ max_ttl     = 86400  # 1 dia
 
 # NOTA: Você precisa ter:
 # 1. Domínio registrado
-# 2. Zona Route53 criada para o domínio
-# 3. Nameservers do domínio apontando para Route53
+# 2. Zona Route53 criada para o domínio (ou adicionar registros DNS manualmente)
+# 3. Aguardar verificação SSL (~15-30 minutos)
+
+# ============================================
+# Configurações Antigas (CloudFront - REMOVIDAS)
+# ============================================
+# As configurações de CloudFront foram substituídas pelo AWS Amplify
+# Se precisar reverter, use: git log --follow terraform/s3-cloudfront.tf.disabled
