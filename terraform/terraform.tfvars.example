@@ -5,7 +5,7 @@
 # Ambiente
 environment  = "production"
 project_name = "weather-forecast"
-aws_region   = "sa-east-1"  # São Paulo, Brasil
+aws_region   = "us-east-1"  # Virginia, USA (Amplify mais estável)
 
 # ============================================
 # AWS Amplify Configuration
