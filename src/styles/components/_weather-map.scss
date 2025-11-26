@@ -21,4 +21,24 @@
   flex: 1;
   z-index: $z-map;
   min-height: 0;
+  
+  // Remover outline em elementos SVG/Path do Leaflet (Chrome fix)
+  svg path {
+    outline: none !important;
+    
+    &:focus,
+    &:active {
+      outline: none !important;
+    }
+  }
+  
+  // Garantir que elementos interativos do Leaflet não tenham outline
+  .leaflet-interactive {
+    outline: none !important;
+    
+    &:focus,
+    &:active {
+      outline: none !important;
+    }
+  }
 }

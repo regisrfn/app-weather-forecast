@@ -556,6 +556,7 @@ const renderCityMeshes = async (
           fillOpacity: 0.7,
           color: '#2c3e50',
           weight: 2,
+          dashArray: '',
         },
         onEachFeature: (_feature, layer) => {
           // Guardar cor original da camada
@@ -572,6 +573,7 @@ const renderCityMeshes = async (
                     fillOpacity: 0.7,
                     weight: 2,
                     color: '#2c3e50',
+                    dashArray: '',
                   });
                 }
               }
@@ -582,6 +584,8 @@ const renderCityMeshes = async (
                 fillOpacity: 0.6,
                 weight: 3,
                 color: '#27ae60', // Verde mais escuro na borda
+                dashArray: '', // Remove dash array se houver
+                outline: 'none', // Remove outline
               });
               
               selectedLayer = layer;
