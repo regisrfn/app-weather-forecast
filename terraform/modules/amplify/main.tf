@@ -2,51 +2,6 @@
 # AWS Amplify Hosting Module
 # ============================================
 
-# IAM Role para Amplify
-resource "aws_iam_role" "amplify" {
-  name = "${var.app_name}-amplify-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Service = "amplify.amazonaws.com"
-        }
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
-
-  tags = var.tags
-}
-
-# Attach policies necessárias para Amplify
-resource "aws_iam_role_policy_attachment" "amplify_logs" {
-  role       = aws_iam_role.amplify.name
-  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-}
-
-# Policy customizada para build do Amplify
-resource "aws_iam_role_policy" "amplify_build" {
-  name = "${var.app_name}-amplify-build-policy"
-  role = aws_iam_role.amplify.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "amplify:*"
-        ]
-        Resource = "*"
-      }
-    ]
-  })
-}
-
 # Amplify App
 resource "aws_amplify_app" "app" {
   name       = var.app_name

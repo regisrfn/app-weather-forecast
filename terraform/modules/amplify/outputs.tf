@@ -12,11 +12,6 @@ output "app_arn" {
   value       = aws_amplify_app.app.arn
 }
 
-output "iam_role_arn" {
-  description = "ARN da IAM Role do Amplify"
-  value       = aws_iam_role.amplify.arn
-}
-
 output "default_domain" {
   description = "Domínio padrão do Amplify"
   value       = aws_amplify_app.app.default_domain
