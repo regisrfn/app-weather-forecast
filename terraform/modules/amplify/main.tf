@@ -55,9 +55,6 @@ resource "aws_amplify_app" "app" {
   # GitHub OAuth token
   access_token = var.github_token
 
-  # IAM Role
-  iam_service_role_arn = aws_iam_role.amplify.arn
-
   # Build settings
   build_spec = var.build_spec_content
 
