@@ -216,6 +216,13 @@
       @close="showDayCarousel = false"
       @select="handleDateTimeSelect"
     />
+
+    <!-- Painel de Detalhes de Alertas -->
+    <AlertDetailPanel
+      :alert="selectedAlert"
+      :isOpen="isAlertPanelOpen"
+      @close="closeAlertPanel"
+    />
     
     <!-- Painel de Informações (Expansível) -->
     <div 
@@ -265,7 +272,7 @@
       </div>
       
       <!-- Alertas Meteorológicos -->
-      <WeatherAlerts :alerts="selectedCity.weatherAlert" />
+      <WeatherAlerts :alerts="selectedCity.weatherAlert" @alert-clicked="handleAlertClick" />
       
       <div class="update-time">
         Previsão para: {{ formatTime(selectedCity.timestamp) }}
@@ -284,6 +291,8 @@ import { getMunicipalityMesh } from '../services/ibgeService';
 import { getCloudsDescription, getRainfallColor, getRainfallDescription, type WeatherData } from '../services/mockService';
 import DayCarousel from './DayCarousel.vue';
 import WeatherAlerts from './WeatherAlerts.vue';
+import AlertDetailPanel from './AlertDetailPanel.vue';
+import type { WeatherAlert } from '../types/weather';
 
 // Corrigir ícones do Leaflet para produção
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -329,6 +338,10 @@ const isPanelOpen = ref<boolean>(false);
 // Controle do menu hamburger (mobile)
 const isMenuOpen = ref<boolean>(false);
 
+// Controle do painel de detalhes de alertas
+const selectedAlert = ref<WeatherAlert | null>(null);
+const isAlertPanelOpen = ref<boolean>(false);
+
 // Controle de carregamento
 const isLoading = ref<boolean>(false);
 
@@ -338,6 +351,16 @@ const togglePanel = () => {
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
+};
+
+const handleAlertClick = (alert: WeatherAlert) => {
+  selectedAlert.value = alert;
+  isAlertPanelOpen.value = true;
+};
+
+const closeAlertPanel = () => {
+  isAlertPanelOpen.value = false;
+  selectedAlert.value = null;
 };
 
 const toggleSearch = () => {

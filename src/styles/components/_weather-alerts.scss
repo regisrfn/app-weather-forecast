@@ -39,16 +39,28 @@
 
 .alert-item {
   display: flex;
+  align-items: center;
   gap: 12px;
   padding: 12px;
   border-radius: 8px;
   background: white;
   border-left: 3px solid;
   transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  user-select: none;
 
   &:hover {
     transform: translateX(4px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateX(2px) scale(0.98);
+  }
+
+  &:focus {
+    outline: 2px solid rgba(0, 0, 0, 0.2);
+    outline-offset: 2px;
   }
 }
 
@@ -75,6 +87,7 @@
 
 .alert-meta {
   display: flex;
+  align-items: center;
   gap: 12px;
   flex-wrap: wrap;
   font-size: 12px;
@@ -89,6 +102,27 @@
 
 .alert-time {
   color: #666;
+}
+
+.alert-arrow {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  opacity: 0.4;
+  transition: opacity 0.2s, transform 0.2s;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .alert-item:hover & {
+    opacity: 0.8;
+    transform: translateX(2px);
+  }
 }
 
 // Estilos por severidade
