@@ -33,6 +33,9 @@ export interface WeatherData {
   cityName: string;
   timestamp: string; // ISO string como vem do backend
   rainfallIntensity: number;
+  rainfallProbability?: number; // Probabilidade de chuva (0-100%)
+  rainVolumeHour?: number; // Volume de chuva em mm/h
+  dailyRainAccumulation?: number; // Acumulado de chuva do dia (mm)
   temperature: number;
   humidity: number;
   windSpeed: number;
@@ -256,25 +259,27 @@ export function getMockRegionalWeather(cityIds: string[]): WeatherData[] {
 }
 
 /**
- * Utilitário: Gerar cor baseada na intensidade de chuva
+ * Utilitário: Cor para intensidade de chuva
+ * Alinhado com nova escala de intensidade composta
  */
 export function getRainfallColor(intensity: number): string {
   if (intensity === 0) return 'rgba(200, 200, 200, 0.3)';
-  if (intensity < 25) return 'rgba(173, 216, 230, 0.6)';
-  if (intensity < 50) return 'rgba(100, 149, 237, 0.7)';
-  if (intensity < 75) return 'rgba(30, 144, 255, 0.8)';
+  if (intensity < 15) return 'rgba(173, 216, 230, 0.6)';
+  if (intensity < 35) return 'rgba(100, 149, 237, 0.7)';
+  if (intensity < 60) return 'rgba(30, 144, 255, 0.8)';
   return 'rgba(0, 0, 139, 0.9)';
 }
 
 /**
- * Utilitário: Descrição textual da probabilidade de chuva
+ * Utilitário: Descrição textual da intensidade de chuva
+ * Baseado na métrica composta (volume × probabilidade)
  */
 export function getRainfallDescription(intensity: number): string {
   if (intensity === 0) return 'Sem chuva';
-  if (intensity < 25) return 'Probabilidade baixa';
-  if (intensity < 50) return 'Probabilidade média';
-  if (intensity < 75) return 'Probabilidade alta';
-  return 'Probabilidade muito alta';
+  if (intensity < 15) return 'Chuva fraca';
+  if (intensity < 35) return 'Chuva moderada';
+  if (intensity < 60) return 'Chuva forte';
+  return 'Chuva intensa';
 }
 
 /**

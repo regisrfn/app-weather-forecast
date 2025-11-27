@@ -246,9 +246,13 @@
       </div>
       
       <div class="weather-grid">
-        <div class="weather-item">
-          <span class="weather-label">Chuva</span>
-          <span class="weather-value">{{ selectedCity.rainfallIntensity.toFixed(0) }}%</span>
+        <div class="weather-item" v-if="selectedCity.rainfallProbability !== undefined">
+          <span class="weather-label">Prob. Chuva</span>
+          <span class="weather-value">{{ selectedCity.rainfallProbability.toFixed(0) }}%</span>
+        </div>
+        <div class="weather-item" v-if="selectedCity.dailyRainAccumulation !== undefined && selectedCity.dailyRainAccumulation > 0">
+          <span class="weather-label">Acum. Dia</span>
+          <span class="weather-value">{{ selectedCity.dailyRainAccumulation.toFixed(1) }} mm</span>
         </div>
         <div class="weather-item">
           <span class="weather-label">Temp.</span>
@@ -466,11 +470,11 @@ const getCurrentCenterCityName = (): string => {
 };
 
 const legendItems = [
-  { color: 'rgba(200, 200, 200, 0.3)', label: '0% - Sem chuva' },
-  { color: 'rgba(173, 216, 230, 0.6)', label: '< 25% - Baixa' },
-  { color: 'rgba(100, 149, 237, 0.7)', label: '25-50% - Média' },
-  { color: 'rgba(30, 144, 255, 0.8)', label: '50-75% - Alta' },
-  { color: 'rgba(0, 0, 139, 0.9)', label: '> 75% - Muito alta' },
+  { color: 'rgba(200, 200, 200, 0.3)', label: '0 - Sem chuva' },
+  { color: 'rgba(173, 216, 230, 0.6)', label: '< 15 - Fraca' },
+  { color: 'rgba(100, 149, 237, 0.7)', label: '15-35 - Moderada' },
+  { color: 'rgba(30, 144, 255, 0.8)', label: '35-60 - Forte' },
+  { color: 'rgba(0, 0, 139, 0.9)', label: '> 60 - Intensa' },
 ];
 
 const formatTime = (timestamp: string): string => {
@@ -645,7 +649,7 @@ const renderCityMeshes = async (
           });
           
           layer.bindTooltip(
-            `<b>${city.name}</b><br>Chuva: ${weather.rainfallIntensity.toFixed(1)}% - ${getRainfallDescription(weather.rainfallIntensity)}`,
+            `<b>${city.name}</b><br>Intensidade: ${weather.rainfallIntensity.toFixed(0)} - ${getRainfallDescription(weather.rainfallIntensity)}`,
             { permanent: false, direction: 'top' }
           );
         },
