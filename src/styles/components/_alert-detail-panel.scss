@@ -275,56 +275,6 @@
   }
 }
 
-// Safety Recommendations Section
-.safety-recommendations {
-  h3 {
-    font-size: 16px;
-    font-weight: 600;
-    color: rgba(0, 0, 0, 0.8);
-    margin: 0 0 $spacing-md 0;
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-
-    &::before {
-      content: '⚠️';
-    }
-  }
-}
-
-.recommendations-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-sm;
-
-  li {
-    padding: $spacing-sm $spacing-md;
-    background: rgba(0, 0, 0, 0.03);
-    border-radius: $radius-sm;
-    color: rgba(0, 0, 0, 0.75);
-    font-size: 14px;
-    line-height: 1.5;
-    position: relative;
-    padding-left: $spacing-xl;
-
-    &::before {
-      content: '•';
-      position: absolute;
-      left: $spacing-md;
-      color: rgba(0, 0, 0, 0.4);
-      font-weight: 700;
-    }
-
-    // Highlight critical recommendations (ALL CAPS)
-    &:first-letter {
-      font-weight: 600;
-    }
-  }
-}
-
 // Animations
 .alert-panel-enter-active,
 .alert-panel-leave-active {

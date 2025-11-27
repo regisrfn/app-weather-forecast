@@ -30,92 +30,6 @@ const alertCodeLabels: Record<string, string> = {
   SNOW: 'Neve',
 };
 
-// Recomendações de segurança por código de alerta
-const safetyRecommendations: Record<string, string[]> = {
-  DRIZZLE: [
-    'Leve um guarda-chuva ao sair',
-    'Dirija com atenção em estradas molhadas',
-  ],
-  LIGHT_RAIN: [
-    'Use guarda-chuva ou capa de chuva',
-    'Evite áreas propensas a alagamentos',
-    'Reduz a velocidade ao dirigir',
-  ],
-  MODERATE_RAIN: [
-    'Evite atividades ao ar livre',
-    'Dirija com velocidade reduzida',
-    'Mantenha-se informado sobre as condições',
-    'Cuidado com aquaplanagem',
-  ],
-  HEAVY_RAIN: [
-    'Evite sair de casa, se possível',
-    'Não dirija em áreas alagadas',
-    'Afaste-se de rios e córregos',
-    'Risco elevado de alagamentos e deslizamentos',
-    'Mantenha-se em local seguro',
-  ],
-  RAIN_EXPECTED: [
-    'Leve guarda-chuva ao sair',
-    'Planeje suas atividades considerando a possibilidade de chuva',
-  ],
-  STORM: [
-    'BUSQUE ABRIGO IMEDIATAMENTE',
-    'Evite áreas abertas e árvores isoladas',
-    'Não use equipamentos elétricos conectados à tomada',
-    'Afaste-se de janelas',
-    'Evite usar telefone fixo',
-    'Perigo de raios - risco de vida',
-  ],
-  STORM_RAIN: [
-    'Busque abrigo seguro',
-    'Evite áreas abertas',
-    'Não dirija em condições de tempestade',
-    'Cuidado com raios e ventos fortes',
-  ],
-  MODERATE_WIND: [
-    'Prenda objetos soltos que possam voar',
-    'Cuidado ao dirigir veículos altos',
-    'Evite atividades que envolvam objetos leves',
-  ],
-  STRONG_WIND: [
-    'MANTENHA-SE EM LOCAL SEGURO',
-    'Prenda todos os objetos soltos',
-    'Evite áreas com árvores que possam cair',
-    'Não dirija veículos altos ou trailers',
-    'Cuidado com linhas elétricas caídas',
-  ],
-  COLD: [
-    'Vista roupas quentes em camadas',
-    'Proteja extremidades (mãos, pés, orelhas)',
-    'Mantenha-se aquecido, especialmente à noite',
-    'Cuidado com grupos vulneráveis (crianças, idosos)',
-  ],
-  VERY_COLD: [
-    'USE AGASALHOS ADEQUADOS',
-    'Proteja-se do frio intenso',
-    'Evite exposição prolongada ao frio',
-    'Atenção especial a crianças e idosos',
-    'Risco de hipotermia',
-  ],
-  TEMP_DROP: [
-    'Prepare agasalhos para os próximos dias',
-    'Ajuste o aquecimento de sua residência',
-    'Proteja plantas sensíveis ao frio',
-    'Atenção a mudanças bruscas de temperatura',
-  ],
-  TEMP_RISE: [
-    'Prepare-se para temperaturas mais altas',
-    'Mantenha-se hidratado',
-    'Use roupas leves e protetor solar',
-  ],
-  SNOW: [
-    'Vista roupas quentes e impermeáveis',
-    'Cuidado ao dirigir em condições de neve',
-    'Mantenha-se aquecido',
-    'Evento raro - aproveite com segurança',
-  ],
-};
-
 // Ícones SVG por severidade
 const getSeverityIcon = (severity: string) => {
   const icons = {
@@ -218,16 +132,21 @@ const formatDetails = computed(() => {
     });
   }
 
-  return formatted;
-});
+  if (details.day_1_max_c !== undefined) {
+    formatted.push({
+      label: 'Temperatura Inicial',
+      value: `${details.day_1_max_c.toFixed(1)}°C`,
+    });
+  }
 
-// Recomendações de segurança para o alerta atual
-const recommendations = computed(() => {
-  if (!props.alert?.code) return [];
-  return safetyRecommendations[props.alert.code] || [
-    'Mantenha-se informado sobre as condições meteorológicas',
-    'Siga as orientações das autoridades locais',
-  ];
+  if (details.day_2_max_c !== undefined) {
+    formatted.push({
+      label: 'Temperatura Final',
+      value: `${details.day_2_max_c.toFixed(1)}°C`,
+    });
+  }
+
+  return formatted;
 });
 
 // Label do código do alerta
@@ -282,16 +201,6 @@ const handleClose = () => {
                 <span class="detail-value">{{ detail.value }}</span>
               </div>
             </div>
-          </div>
-
-          <!-- Safety Recommendations -->
-          <div class="safety-recommendations">
-            <h3>Recomendações de Segurança</h3>
-            <ul class="recommendations-list">
-              <li v-for="(recommendation, index) in recommendations" :key="index">
-                {{ recommendation }}
-              </li>
-            </ul>
           </div>
         </div>
       </div>

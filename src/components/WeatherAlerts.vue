@@ -107,13 +107,19 @@ const getAlertIcon = (severity: AlertSeverity) => {
 
 const getAlertCodeLabel = (code: string): string => {
   const labels: Record<string, string> = {
-    STORM: 'Tempestade',
-    STORM_RAIN: 'Tempestade',
+    DRIZZLE: 'Garoa',
+    LIGHT_RAIN: 'Chuva Fraca',
+    MODERATE_RAIN: 'Chuva Moderada',
     HEAVY_RAIN: 'Chuva Forte',
     RAIN_EXPECTED: 'Chuva Prevista',
-    RAIN_LIKELY: 'Chuva Provável',
-    STRONG_WIND: 'Vento Forte',
+    STORM: 'Tempestade',
+    STORM_RAIN: 'Tempestade',
     MODERATE_WIND: 'Vento Moderado',
+    STRONG_WIND: 'Vento Forte',
+    COLD: 'Frio',
+    VERY_COLD: 'Frio Intenso',
+    TEMP_DROP: 'Queda de Temperatura',
+    TEMP_RISE: 'Aumento de Temperatura',
     SNOW: 'Neve'
   };
   
