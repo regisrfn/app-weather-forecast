@@ -120,7 +120,8 @@ const getAlertCodeLabel = (code: string): string => {
     VERY_COLD: 'Frio Intenso',
     TEMP_DROP: 'Queda de Temperatura',
     TEMP_RISE: 'Aumento de Temperatura',
-    SNOW: 'Neve'
+    SNOW: 'Neve',
+    LOW_VISIBILITY: 'Visibilidade Reduzida'
   };
   
   return labels[code] || code;

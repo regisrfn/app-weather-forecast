@@ -28,6 +28,7 @@ const alertCodeLabels: Record<string, string> = {
   TEMP_DROP: 'Queda de Temperatura',
   TEMP_RISE: 'Aumento de Temperatura',
   SNOW: 'Neve',
+  LOW_VISIBILITY: 'Visibilidade Reduzida',
 };
 
 // Ícones SVG por severidade
@@ -80,6 +81,40 @@ const formatDetails = computed(() => {
     formatted.push({
       label: 'Intensidade da Chuva',
       value: `${details.rain_mm_h.toFixed(1)} mm/h`,
+    });
+  }
+
+  if (details.rain_mm !== undefined) {
+    formatted.push({
+      label: 'Volume de Chuva',
+      value: `${details.rain_mm.toFixed(1)} mm`,
+    });
+  }
+
+  if (details.rain_ends_at !== undefined) {
+    try {
+      const endDate = new Date(details.rain_ends_at);
+      formatted.push({
+        label: 'Fim Previsto da Chuva',
+        value: endDate.toLocaleString('pt-BR', {
+          timeZone: 'America/Sao_Paulo',
+          day: '2-digit',
+          month: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+      });
+    } catch {
+      // Ignora se a data for inválida
+    }
+  }
+
+  if (details.visibility_m !== undefined) {
+    formatted.push({
+      label: 'Visibilidade',
+      value: details.visibility_m < 1000 
+        ? `${details.visibility_m} m` 
+        : `${(details.visibility_m / 1000).toFixed(1)} km`,
     });
   }
 
