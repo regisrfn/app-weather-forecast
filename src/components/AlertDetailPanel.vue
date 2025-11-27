@@ -10,6 +10,7 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits<{
   close: [];
+  jumpToDate: [date: string, time: string];
 }>();
 
 // Mapeamento de códigos para labels em português
@@ -67,6 +68,31 @@ const formatTimestamp = (timestamp: string) => {
     });
   } catch {
     return timestamp;
+  }
+};
+
+// Extrair data e hora do timestamp e buscar previsão
+const handleTimestampClick = () => {
+  if (!props.alert?.timestamp) return;
+  
+  try {
+    const date = new Date(props.alert.timestamp);
+    
+    // Formatar data YYYY-MM-DD
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    
+    // Formatar hora HH:MM
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const timeStr = `${hours}:${minutes}`;
+    
+    emit('jumpToDate', dateStr, timeStr);
+    emit('close');
+  } catch (error) {
+    console.error('Erro ao processar timestamp:', error);
   }
 };
 
@@ -223,7 +249,17 @@ const handleClose = () => {
             <h2>{{ alert.description }}</h2>
             <div class="alert-detail-meta">
               <span class="alert-type">{{ alertLabel }}</span>
-              <span class="alert-detail-time">{{ formatTimestamp(alert.timestamp) }}</span>
+              <button 
+                class="alert-detail-time clickable"
+                @click="handleTimestampClick"
+                title="Clique para buscar previsão neste horário"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 4px; vertical-align: middle;">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                  <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                {{ formatTimestamp(alert.timestamp) }}
+              </button>
             </div>
           </div>
 

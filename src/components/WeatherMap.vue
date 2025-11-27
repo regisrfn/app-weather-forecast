@@ -222,6 +222,7 @@
       :alert="selectedAlert"
       :isOpen="isAlertPanelOpen"
       @close="closeAlertPanel"
+      @jump-to-date="handleJumpToDate"
     />
     
     <!-- Painel de Informações (Expansível) -->
@@ -361,6 +362,12 @@ const handleAlertClick = (alert: WeatherAlert) => {
 const closeAlertPanel = () => {
   isAlertPanelOpen.value = false;
   selectedAlert.value = null;
+};
+
+const handleJumpToDate = async (date: string, time: string) => {
+  forecastDate.value = date;
+  forecastTime.value = time;
+  await updateRegionalData();
 };
 
 const toggleSearch = () => {
