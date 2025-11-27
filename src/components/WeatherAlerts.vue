@@ -23,7 +23,10 @@
           <component :is="getAlertIcon(alert.severity)" />
         </div>
         <div class="alert-content">
-          <div class="alert-description">{{ alert.description }}</div>
+          <div class="alert-description">
+            <span class="alert-emoji">{{ getAlertEmoji(alert.code) }}</span>
+            {{ getAlertDescription(alert.code) }}
+          </div>
           <div class="alert-meta">
             <span class="alert-code">{{ getAlertCodeLabel(alert.code) }}</span>
             <span class="alert-time">{{ formatAlertTime(alert.timestamp) }}</span>
@@ -167,26 +170,95 @@ const getAlertIcon = (severity: AlertSeverity) => {
   return icons[severity] || icons.info;
 };
 
+// Mapa global de labels e descrições dos alertas
+const ALERT_CONFIG: Record<string, { label: string; description: string; icon: string }> = {
+  DRIZZLE: { 
+    label: 'Garoa', 
+    description: 'Chuva leve prevista',
+    icon: '🌦️'
+  },
+  LIGHT_RAIN: { 
+    label: 'Chuva Fraca', 
+    description: 'Chuva fraca esperada',
+    icon: '🌧️'
+  },
+  MODERATE_RAIN: { 
+    label: 'Chuva Moderada', 
+    description: 'Chuva moderada prevista',
+    icon: '🌧️'
+  },
+  HEAVY_RAIN: { 
+    label: 'Chuva Forte', 
+    description: 'Chuva intensa esperada',
+    icon: '⛈️'
+  },
+  RAIN_EXPECTED: { 
+    label: 'Chuva Prevista', 
+    description: 'Alta probabilidade de chuva',
+    icon: '☔'
+  },
+  STORM: { 
+    label: 'Tempestade', 
+    description: 'Tempestade se aproximando',
+    icon: '⛈️'
+  },
+  STORM_RAIN: { 
+    label: 'Tempestade', 
+    description: 'Tempestade com chuva intensa',
+    icon: '⛈️'
+  },
+  MODERATE_WIND: { 
+    label: 'Vento Moderado', 
+    description: 'Ventos moderados esperados',
+    icon: '💨'
+  },
+  STRONG_WIND: { 
+    label: 'Vento Forte', 
+    description: 'Ventos fortes previstos',
+    icon: '🌬️'
+  },
+  COLD: { 
+    label: 'Frio', 
+    description: 'Temperaturas baixas',
+    icon: '🥶'
+  },
+  VERY_COLD: { 
+    label: 'Frio Intenso', 
+    description: 'Temperaturas muito baixas',
+    icon: '❄️'
+  },
+  TEMP_DROP: { 
+    label: 'Queda de Temperatura', 
+    description: 'Temperatura em queda',
+    icon: '🌡️'
+  },
+  TEMP_RISE: { 
+    label: 'Aumento de Temperatura', 
+    description: 'Temperatura em elevação',
+    icon: '🌡️'
+  },
+  SNOW: { 
+    label: 'Neve', 
+    description: 'Possibilidade de neve',
+    icon: '🌨️'
+  },
+  LOW_VISIBILITY: { 
+    label: 'Visibilidade Reduzida', 
+    description: 'Baixa visibilidade',
+    icon: '🌫️'
+  }
+};
+
 const getAlertCodeLabel = (code: string): string => {
-  const labels: Record<string, string> = {
-    DRIZZLE: 'Garoa',
-    LIGHT_RAIN: 'Chuva Fraca',
-    MODERATE_RAIN: 'Chuva Moderada',
-    HEAVY_RAIN: 'Chuva Forte',
-    RAIN_EXPECTED: 'Chuva Prevista',
-    STORM: 'Tempestade',
-    STORM_RAIN: 'Tempestade',
-    MODERATE_WIND: 'Vento Moderado',
-    STRONG_WIND: 'Vento Forte',
-    COLD: 'Frio',
-    VERY_COLD: 'Frio Intenso',
-    TEMP_DROP: 'Queda de Temperatura',
-    TEMP_RISE: 'Aumento de Temperatura',
-    SNOW: 'Neve',
-    LOW_VISIBILITY: 'Visibilidade Reduzida'
-  };
-  
-  return labels[code] || code;
+  return ALERT_CONFIG[code]?.label || code;
+};
+
+const getAlertDescription = (code: string): string => {
+  return ALERT_CONFIG[code]?.description || code;
+};
+
+const getAlertEmoji = (code: string): string => {
+  return ALERT_CONFIG[code]?.icon || '⚠️';
 };
 
 const formatAlertTime = (timestamp: string): string => {
