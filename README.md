@@ -225,7 +225,7 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 ## 👤 Autor
 
-**Regis Fonseca**
+**Regis**
 - GitHub: [@regisrfn](https://github.com/regisrfn)
 
 ---
