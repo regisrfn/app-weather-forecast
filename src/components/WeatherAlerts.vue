@@ -10,7 +10,7 @@
     
     <div class="alerts-list">
       <div 
-        v-for="(alert, index) in alerts" 
+        v-for="(alert, index) in sortedAlerts" 
         :key="index"
         class="alert-item"
         :class="[`severity-${alert.severity}`]"
@@ -40,18 +40,80 @@
 </template>
 
 <script setup lang="ts">
-import { h } from 'vue';
+import { h, computed } from 'vue';
 import type { WeatherAlert, AlertSeverity } from '../types/weather';
 
 interface Props {
   alerts?: WeatherAlert[];
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
   alertClicked: [alert: WeatherAlert];
 }>();
+
+// Ordenar alertas por categoria/tipo, depois por timestamp e severidade
+const sortedAlerts = computed(() => {
+  if (!props.alerts || props.alerts.length === 0) return [];
+  
+  // Mapa de categoria por código de alerta
+  const alertCategory: Record<string, number> = {
+    // Tempestades (prioridade 1 - mais crítico)
+    'STORM': 1,
+    'STORM_RAIN': 1,
+    
+    // Chuvas (prioridade 2)
+    'HEAVY_RAIN': 2,
+    'MODERATE_RAIN': 2,
+    'LIGHT_RAIN': 2,
+    'DRIZZLE': 2,
+    'RAIN_EXPECTED': 2,
+    
+    // Ventos (prioridade 3)
+    'STRONG_WIND': 3,
+    'MODERATE_WIND': 3,
+    
+    // Temperatura (prioridade 4)
+    'VERY_COLD': 4,
+    'COLD': 4,
+    'TEMP_DROP': 4,
+    'TEMP_RISE': 4,
+    
+    // Visibilidade (prioridade 5)
+    'LOW_VISIBILITY': 5,
+    
+    // Outros (prioridade 6)
+    'SNOW': 6
+  };
+  
+  // Mapa de prioridade de severidade (maior = mais crítico)
+  const severityPriority: Record<AlertSeverity, number> = {
+    danger: 4,
+    alert: 3,
+    warning: 2,
+    info: 1
+  };
+  
+  return [...props.alerts].sort((a, b) => {
+    // Primeiro: ordenar por categoria
+    const catA = alertCategory[a.code] || 99;
+    const catB = alertCategory[b.code] || 99;
+    if (catA !== catB) {
+      return catA - catB;
+    }
+    
+    // Segundo: ordenar por timestamp (mais próximos primeiro)
+    const dateA = new Date(a.timestamp).getTime();
+    const dateB = new Date(b.timestamp).getTime();
+    if (dateA !== dateB) {
+      return dateA - dateB;
+    }
+    
+    // Terceiro: se timestamps iguais, ordenar por severidade (mais críticos primeiro)
+    return severityPriority[b.severity] - severityPriority[a.severity];
+  });
+});
 
 const handleAlertClick = (alert: WeatherAlert) => {
   emit('alertClicked', alert);

@@ -76,18 +76,42 @@ const handleTimestampClick = () => {
   if (!props.alert?.timestamp) return;
   
   try {
+    // Converter para timezone de Brasília usando toLocaleString
     const date = new Date(props.alert.timestamp);
     
-    // Formatar data YYYY-MM-DD
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const dateStr = `${year}-${month}-${day}`;
+    // Formatar data YYYY-MM-DD usando timezone de Brasília
+    const brasiliaDate = date.toLocaleString('pt-BR', {
+      timeZone: 'America/Sao_Paulo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
     
-    // Formatar hora HH:MM
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const timeStr = `${hours}:${minutes}`;
+    // Parse: "27/11/2025, 18:00" -> ["27/11/2025", "18:00"]
+    const parts = brasiliaDate.split(', ');
+    const datePart = parts[0];
+    const timePart = parts[1];
+    
+    if (!datePart || !timePart) {
+      console.error('Formato de data inválido:', brasiliaDate);
+      return;
+    }
+    
+    const dateComponents = datePart.split('/');
+    const day = dateComponents[0];
+    const month = dateComponents[1];
+    const year = dateComponents[2];
+    
+    if (!day || !month || !year) {
+      console.error('Componentes de data inválidos:', datePart);
+      return;
+    }
+    
+    const dateStr = `${year}-${month}-${day}`;
+    const timeStr = timePart;
     
     emit('jumpToDate', dateStr, timeStr);
     emit('close');
@@ -187,9 +211,12 @@ const formatDetails = computed(() => {
   }
 
   if (details.day_1_date && details.day_2_date) {
+    // Adicionar 'T00:00:00' para forçar interpretação como data local, não UTC
+    const date1 = new Date(details.day_1_date + 'T00:00:00');
+    const date2 = new Date(details.day_2_date + 'T00:00:00');
     formatted.push({
       label: 'Período da Variação',
-      value: `${new Date(details.day_1_date).toLocaleDateString('pt-BR')} → ${new Date(details.day_2_date).toLocaleDateString('pt-BR')}`,
+      value: `${date1.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })} → ${date2.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })}`,
     });
   }
 
