@@ -1,0 +1,162 @@
+// =================================
+// AD UNIT COMPONENT STYLES
+// =================================
+
+@use '../abstracts/variables' as *;
+@use '../abstracts/colors' as *;
+@use '../abstracts/mixins' as *;
+@use '../abstracts/breakpoints' as *;
+
+.adsense-unit-container {
+  @include glass-effect(rgba(100, 97, 97, 0.45), 20px, 0.1);
+  border-radius: $radius-md;
+  padding: $spacing-sm;
+  margin: $spacing-md 0;
+  box-shadow: $shadow-md;
+  transition: $transition-normal;
+  overflow: hidden;
+  
+  &:hover {
+    @include glass-effect(rgba(100, 97, 97, 0.55), 20px, 0.15);
+    box-shadow: $shadow-lg;
+  }
+
+  // Centraliza o conteúdo do anúncio
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+  max-height: 120px;
+
+  @include md {
+    padding: $spacing-xs;
+    margin: $spacing-sm 0;
+    min-height: 60px;
+    max-height: 100px;
+  }
+
+  // Esconde se não tiver conteúdo carregado
+  &:not(:has(ins[data-ad-status="filled"])) {
+    ins:empty + & {
+      display: none;
+    }
+  }
+}
+
+.adsense-label {
+  @include no-select;
+  font-size: $font-xs;
+  font-weight: $font-regular;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: $letter-spacing-wide;
+  margin-bottom: $spacing-xs;
+  text-align: center;
+
+  @include md {
+    font-size: 0.55rem;
+    margin-bottom: 0.15rem;
+  }
+}
+
+// Container do anúncio real do AdSense
+.adsbygoogle {
+  width: 100%;
+  max-width: 100%;
+  display: block;
+}
+
+// Variações de layout para diferentes formatos
+.adsense-unit-container.adsense-format-horizontal {
+  min-height: 100px;
+
+  @include md {
+    min-height: 60px;
+  }
+}
+
+.adsense-unit-container.adsense-format-rectangle {
+  min-height: 260px;
+  max-width: 320px;
+  margin: $spacing-lg auto;
+
+  @include md {
+    max-width: 100%;
+    min-height: 200px;
+  }
+}
+
+// Ad unit no header (banner horizontal)
+.adsense-unit-header {
+  position: absolute;
+  top: 80px; // Abaixo do floating header
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 900; // Entre map e stats
+  width: calc(100% - 2rem);
+  max-width: 728px;
+
+  @include md {
+    top: 60px;
+    width: calc(100% - 1rem);
+    max-width: 100%;
+  }
+}
+
+// Ad unit no info panel (rectangle)
+.adsense-unit-info-panel {
+  margin: $spacing-lg 0;
+  width: 100%;
+  max-width: 300px;
+  max-height: 120px;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+
+  .adsense-unit-container {
+    min-height: 90px;
+    max-height: 120px;
+  }
+
+  @include md {
+    max-width: 100%;
+    max-height: 100px;
+    margin: $spacing-md 0;
+  }
+}
+
+// Animação de entrada suave
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.adsense-unit-container {
+  animation: fadeIn 0.4s ease-out;
+}
+
+// Estados de loading/empty
+.adsense-unit-container.adsense-loading {
+  background: rgba(100, 97, 97, 0.25);
+  
+  &::after {
+    content: 'Carregando anúncio...';
+    display: block;
+    font-size: $font-xs;
+    color: rgba(255, 255, 255, 0.4);
+    text-align: center;
+    padding: $spacing-lg;
+  }
+}
+
+// Esconde label quando anúncio não carrega
+.adsense-unit-container:empty {
+  display: none;
+}
