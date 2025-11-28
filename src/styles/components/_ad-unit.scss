@@ -60,6 +60,53 @@
   }
 }
 
+// Botão de fechar anúncio
+.adsense-close-btn {
+  @include reset-button;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-full;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  color: white;
+  @include flex-center;
+  transition: $transition-fast;
+  z-index: 10;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.1);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  }
+
+  @include md {
+    width: 24px;
+    height: 24px;
+    top: 6px;
+    right: 6px;
+
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+}
+
 // Container do anúncio real do AdSense
 .adsbygoogle {
   width: 100%;
@@ -123,6 +170,35 @@
     max-width: 100%;
     max-height: 100px;
     margin: $spacing-md 0;
+  }
+}
+
+// Ad unit no bottom (banner horizontal)
+.adsense-unit-bottom {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000; // Mesmo nível do header
+  width: calc(100% - 2rem);
+  max-width: 728px;
+
+  .adsense-unit-container {
+    min-height: 90px;
+    max-height: 100px;
+    @include glass-effect(rgba(100, 97, 97, 0.75), 25px, 0.2); // Mais opaco e blur
+    box-shadow: $shadow-xl;
+  }
+
+  @include md {
+    bottom: 10px;
+    width: calc(100% - 1rem);
+    max-width: 100%;
+    
+    .adsense-unit-container {
+      min-height: 50px;
+      max-height: 60px;
+    }
   }
 }
 

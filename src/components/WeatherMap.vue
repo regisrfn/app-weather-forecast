@@ -206,6 +206,15 @@
         </button>
       </div>
     </div>
+
+    <!-- Ad Unit 2: Bottom Banner -->
+    <AdUnit 
+      slot-id="2549813732"
+      format="auto"
+      label="Publicidade"
+      :closeable="true"
+      class="adsense-unit-bottom"
+    />
     
     <!-- Carrossel de Dias -->
     <DayCarousel
@@ -332,6 +341,7 @@
         slot-id="7418997036"
         format="auto"
         label="Publicidade"
+        :closeable="true"
         class="adsense-unit-info-panel"
       />
       
