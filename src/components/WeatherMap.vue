@@ -257,21 +257,66 @@
         
         <!-- Controles de Navegação Temporal -->
         <div class="time-navigation">
-          <button class="time-nav-btn" @click="navigatePrevTime" aria-label="Horário anterior (-3h)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Botões de navegação Dia -->
+          <button 
+            class="nav-btn nav-btn-day prev" 
+            @click="navigatePrevDay" 
+            :disabled="!canNavigatePrev()"
+            aria-label="Dia anterior"
+            title="Dia anterior"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M11 5L4 12l7 7M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          
+          <!-- Botões de navegação Hora -->
+          <button 
+            class="nav-btn nav-btn-hour prev" 
+            @click="navigatePrevTime" 
+            aria-label="3 horas antes"
+            title="3 horas antes"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
-          <div class="current-time-display">
+          
+          <!-- Display central com data e hora -->
+          <button 
+            class="datetime-display"
+            @click="showDayCarousel = true"
+            title="Clique para abrir o calendário"
+          >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-              <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+              <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            <span>{{ forecastTime }}</span>
-          </div>
-          <button class="time-nav-btn" @click="navigateNextTime" aria-label="Próximo horário (+3h)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <span class="datetime-text">{{ formatDateButton() }}</span>
+          </button>
+          
+          <!-- Botões de navegação Hora -->
+          <button 
+            class="nav-btn nav-btn-hour next" 
+            @click="navigateNextTime" 
+            aria-label="3 horas depois"
+            title="3 horas depois"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          
+          <!-- Botões de navegação Dia -->
+          <button 
+            class="nav-btn nav-btn-day next" 
+            @click="navigateNextDay"
+            :disabled="!canNavigateNext()"
+            aria-label="Próximo dia"
+            title="Próximo dia"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13 5l7 7-7 7M20 12H4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
         </div>
