@@ -10,6 +10,7 @@
 
 import localforage from 'localforage';
 import type { WeatherData } from './mockService';
+import { cacheLogger } from '../utils/logger';
 
 interface CacheEntry {
   data: WeatherData;
@@ -68,10 +69,10 @@ class WeatherCache {
       const stored = await this.metadataStore.getItem<CacheMetadata>('metadata');
       if (stored) {
         this.metadata = stored;
-        console.log(`[Cache] Metadata carregado: ${this.metadata.keys.length} entradas, ${this.formatBytes(this.metadata.totalSize)}`);
+        cacheLogger.info(`Metadata carregado: ${this.metadata.keys.length} entradas, ${this.formatBytes(this.metadata.totalSize)}`);
       }
     } catch (error) {
-      console.error('[Cache] Erro ao carregar metadata:', error);
+      cacheLogger.error('Erro ao carregar metadata:', error);
     }
   }
   
@@ -82,7 +83,7 @@ class WeatherCache {
     try {
       await this.metadataStore.setItem('metadata', this.metadata);
     } catch (error) {
-      console.error('[Cache] Erro ao salvar metadata:', error);
+      cacheLogger.error('Erro ao salvar metadata:', error);
     }
   }
   
@@ -106,7 +107,7 @@ class WeatherCache {
    * Remove entradas menos recentemente usadas até liberar espaço suficiente
    */
   private async evictLRU(requiredSpace: number): Promise<void> {
-    console.log(`[Cache] Evicção LRU necessária. Espaço requerido: ${this.formatBytes(requiredSpace)}`);
+    cacheLogger.debug(`Evicção LRU necessária. Espaço requerido: ${this.formatBytes(requiredSpace)}`);
     
     // Criar array com todas as chaves e seus timestamps de último acesso
     const allEntries = this.metadata.keys.map(key => ({ 
@@ -126,7 +127,7 @@ class WeatherCache {
       await this.removeByKey(entry.key);
     }
     
-    console.log(`[Cache] Evicção completa. Tamanho atual: ${this.formatBytes(this.metadata.totalSize)}`);
+    cacheLogger.debug(`Evicção completa. Tamanho atual: ${this.formatBytes(this.metadata.totalSize)}`);
   }
   
   
@@ -210,7 +211,7 @@ class WeatherCache {
       
       await this.saveMetadata();
     } catch (error) {
-      console.error(`[Cache] Erro ao salvar entrada ${key}:`, error);
+      cacheLogger.error(`Erro ao salvar entrada ${key}:`, error);
     }
   }
   
@@ -240,7 +241,7 @@ class WeatherCache {
       
       return entry.data;
     } catch (error) {
-      console.error(`[Cache] Erro ao recuperar entrada ${key}:`, error);
+      cacheLogger.error(`Erro ao recuperar entrada ${key}:`, error);
       return null;
     }
   }
@@ -275,7 +276,7 @@ class WeatherCache {
         await this.saveMetadata();
       }
     } catch (error) {
-      console.error(`[Cache] Erro ao remover entrada ${key}:`, error);
+      cacheLogger.error(`Erro ao remover entrada ${key}:`, error);
     }
   }
   
@@ -293,9 +294,9 @@ class WeatherCache {
         lastAccessed: {},
       };
       await this.saveMetadata();
-      console.log('[Cache] Cache limpo completamente');
+      cacheLogger.info('Cache limpo completamente');
     } catch (error) {
-      console.error('[Cache] Erro ao limpar cache:', error);
+      cacheLogger.error('Erro ao limpar cache:', error);
     }
   }
   
@@ -305,7 +306,7 @@ class WeatherCache {
    * Remove entradas expiradas (limpeza automática)
    */
   private async cleanup(): Promise<void> {
-    console.log('[Cache] Iniciando limpeza automática...');
+    cacheLogger.debug('Iniciando limpeza automática...');
     let removed = 0;
     
     for (const key of [...this.metadata.keys]) {
@@ -316,12 +317,12 @@ class WeatherCache {
           removed++;
         }
       } catch (error) {
-        console.error(`[Cache] Erro ao limpar entrada ${key}:`, error);
+        cacheLogger.error(`Erro ao limpar entrada ${key}:`, error);
       }
     }
     
     if (removed > 0) {
-      console.log(`[Cache] Limpeza completa: ${removed} entradas expiradas removidas. Tamanho: ${this.formatBytes(this.metadata.totalSize)}`);
+      cacheLogger.info(`Limpeza completa: ${removed} entradas expiradas removidas. Tamanho: ${this.formatBytes(this.metadata.totalSize)}`);
     }
   }
   

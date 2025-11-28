@@ -7,6 +7,7 @@
  */
 
 import localforage from 'localforage';
+import { ibgeLogger } from '../utils/logger';
 
 // Store dedicado para malhas do IBGE
 const ibgeMeshStore = localforage.createInstance({
@@ -53,10 +54,10 @@ async function initIBGEMetadata(): Promise<void> {
     const stored = await ibgeMetadataStore.getItem<IBGEMetadata>('metadata');
     if (stored) {
       ibgeMetadata = stored;
-      console.log(`[IBGE Cache] Metadata carregado: ${ibgeMetadata.keys.length} malhas, ${formatBytes(ibgeMetadata.totalSize)}`);
+      ibgeLogger.info(`Metadata carregado: ${ibgeMetadata.keys.length} malhas, ${formatBytes(ibgeMetadata.totalSize)}`);
     }
   } catch (error) {
-    console.error('[IBGE Cache] Erro ao carregar metadata:', error);
+    ibgeLogger.error('Erro ao carregar metadata:', error);
   }
 }
 
@@ -67,7 +68,7 @@ async function saveIBGEMetadata(): Promise<void> {
   try {
     await ibgeMetadataStore.setItem('metadata', ibgeMetadata);
   } catch (error) {
-    console.error('[IBGE Cache] Erro ao salvar metadata:', error);
+    ibgeLogger.error('Erro ao salvar metadata:', error);
   }
 }
 
@@ -91,7 +92,7 @@ function formatBytes(bytes: number): string {
  * Remove malhas menos recentemente usadas até liberar espaço
  */
 async function evictLRU(requiredSpace: number): Promise<void> {
-  console.log(`[IBGE Cache] Evicção LRU necessária. Espaço requerido: ${formatBytes(requiredSpace)}`);
+  ibgeLogger.debug(`Evicção LRU necessária. Espaço requerido: ${formatBytes(requiredSpace)}`);
   
   // Ordenar chaves por último acesso
   const sortedKeys = [...ibgeMetadata.keys].sort(
@@ -111,10 +112,10 @@ async function evictLRU(requiredSpace: number): Promise<void> {
         ibgeMetadata.totalSize -= cached.size;
         ibgeMetadata.keys = ibgeMetadata.keys.filter(k => k !== key);
         delete ibgeMetadata.lastAccessed[key];
-        console.log(`[IBGE Cache] Malha ${key} removida (LRU)`);
+        ibgeLogger.debug(`Malha ${key} removida (LRU)`);
       }
     } catch (error) {
-      console.error(`[IBGE Cache] Erro ao remover ${key}:`, error);
+      ibgeLogger.error(`Erro ao remover ${key}:`, error);
     }
   }
   
@@ -139,7 +140,7 @@ export async function getMunicipalityMesh(
       const isExpired = Date.now() - cached.timestamp > IBGE_TTL;
       
       if (isExpired) {
-        console.log(`[IBGE Cache] EXPIRED: ${municipalityId} - removendo do cache`);
+        ibgeLogger.debug(`EXPIRED: ${municipalityId} - removendo do cache`);
         await ibgeMeshStore.removeItem(municipalityId);
         ibgeMetadata.totalSize -= cached.size;
         ibgeMetadata.keys = ibgeMetadata.keys.filter(k => k !== municipalityId);
@@ -148,7 +149,7 @@ export async function getMunicipalityMesh(
           await saveIBGEMetadata();
         }
       } else {
-        console.log(`[IBGE Cache] HIT: ${municipalityId}`);
+        ibgeLogger.debug(`HIT: ${municipalityId}`);
         // Atualizar último acesso
         ibgeMetadata.lastAccessed[municipalityId] = Date.now();
         if (!skipMetadataSave) {
@@ -158,7 +159,7 @@ export async function getMunicipalityMesh(
       }
     }
     
-    console.log(`[IBGE Cache] MISS: ${municipalityId} - Buscando do IBGE`);
+    ibgeLogger.debug(`MISS: ${municipalityId} - Buscando do IBGE`);
     
     // Buscar da API do IBGE
     const response = await fetch(
@@ -199,7 +200,7 @@ export async function getMunicipalityMesh(
     
     return mesh;
   } catch (error) {
-    console.error(`[IBGE Cache] Erro ao buscar malha do município ${municipalityId}:`, error);
+    ibgeLogger.error(`Erro ao buscar malha do município ${municipalityId}:`, error);
     return null;
   }
 }
@@ -216,9 +217,9 @@ export async function clearMeshCache(): Promise<void> {
       lastAccessed: {},
     };
     await saveIBGEMetadata();
-    console.log('[IBGE Cache] Cache de malhas limpo');
+    ibgeLogger.info('Cache de malhas limpo');
   } catch (error) {
-    console.error('[IBGE Cache] Erro ao limpar cache:', error);
+    ibgeLogger.error('Erro ao limpar cache:', error);
   }
 }
 
@@ -267,7 +268,7 @@ export async function getMultipleMunicipalityMeshes(
   // Salvar metadata uma única vez ao final (batch update)
   await saveIBGEMetadata();
   
-  console.log(`[IBGE Cache] Batch: ${municipalityIds.length} malhas processadas (${meshMap.size} sucessos)`);
+  ibgeLogger.info(`Batch: ${municipalityIds.length} malhas processadas (${meshMap.size} sucessos)`);
 
   return meshMap;
 }

@@ -16,6 +16,7 @@ import {
 } from './mockService';
 import { weatherCache } from './cacheService';
 import { chunkArray } from '../utils/array';
+import { apiLogger } from '../utils/logger';
 
 const api = axios.create({
   baseURL: APP_CONFIG.API_BASE_URL,
@@ -136,10 +137,10 @@ export async function getRegionalWeather(
   
   // Log de cache hit/miss
   if (cachedDataMap.size > 0) {
-    console.log(`[Cache HIT] ${cachedDataMap.size}/${cityIds.length} cidades cacheadas`);
+    apiLogger.debug(`Cache HIT: ${cachedDataMap.size}/${cityIds.length} cidades`);
   }
   if (missingCityIds.length > 0) {
-    console.log(`[Cache MISS] Buscando ${missingCityIds.length} cidades da API`);
+    apiLogger.debug(`Cache MISS: Buscando ${missingCityIds.length} cidades da API`);
   }
   
   // Se todas as cidades estão no cache, retornar
@@ -150,7 +151,7 @@ export async function getRegionalWeather(
   // Dividir cidades faltantes em chunks de no máximo 50
   const chunks = chunkArray(missingCityIds, APP_CONFIG.API.MAX_CITIES_PER_BATCH);
   
-  console.log(`[API] Dividindo ${missingCityIds.length} cidades em ${chunks.length} chunk(s) de até ${APP_CONFIG.API.MAX_CITIES_PER_BATCH} cidades`);
+  apiLogger.info(`Dividindo ${missingCityIds.length} cidades em ${chunks.length} chunk(s) de até ${APP_CONFIG.API.MAX_CITIES_PER_BATCH}`);
   
   // Buscar todos os chunks em paralelo usando Promise.allSettled
   const chunkPromises = chunks.map((chunk: string[], index: number) => 
@@ -168,14 +169,14 @@ export async function getRegionalWeather(
   for (const result of results) {
     if (result.status === 'fulfilled') {
       successfulData.push(...result.data);
-      console.log(`[API] ✓ Chunk ${result.chunkIndex + 1}/${chunks.length} OK: ${result.chunk.length} cidades`);
+      apiLogger.debug(`✓ Chunk ${result.chunkIndex + 1}/${chunks.length} OK: ${result.chunk.length} cidades`);
     } else {
       failedChunks.push({
         index: result.chunkIndex,
         cityIds: result.chunk,
         error: result.reason,
       });
-      console.error(`[API] ✗ Chunk ${result.chunkIndex + 1}/${chunks.length} FALHOU:`, result.reason.message);
+      apiLogger.error(`✗ Chunk ${result.chunkIndex + 1}/${chunks.length} FALHOU:`, result.reason.message);
     }
   }
   
@@ -188,7 +189,7 @@ export async function getRegionalWeather(
   // Log de resumo
   if (failedChunks.length > 0) {
     const failedCityCount = failedChunks.reduce((sum, chunk) => sum + chunk.cityIds.length, 0);
-    console.warn(`[API] ⚠️ ${failedChunks.length} chunk(s) falharam (${failedCityCount} cidades sem dados)`);
+    apiLogger.warn(`⚠️ ${failedChunks.length} chunk(s) falharam (${failedCityCount} cidades sem dados)`);
   }
   
   // Retornar dados na ordem original dos cityIds (undefined para cidades sem dados)
@@ -208,11 +209,11 @@ export async function getRegionalWeather(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API Error:', error.message);
+    apiLogger.error('API Error:', error.message);
 
     if (error.response) {
-      console.error('Status:', error.response.status);
-      console.error('Data:', error.response.data);
+      apiLogger.error('Status:', error.response.status);
+      apiLogger.error('Data:', error.response.data);
     }
 
     return Promise.reject(error);

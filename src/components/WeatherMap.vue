@@ -347,6 +347,9 @@ import DayCarousel from './DayCarousel.vue';
 import WeatherAlerts from './WeatherAlerts.vue';
 import AlertDetailPanel from './AlertDetailPanel.vue';
 import type { WeatherAlert } from '../types/weather';
+import { componentLogger } from '../utils/logger';
+
+const logger = componentLogger('WeatherMap');
 
 // Router
 const route = useRoute();
@@ -509,7 +512,7 @@ const updateForecastSlots = async () => {
         slot.data = weatherData[0];
       }
     } catch (error) {
-      console.error(`Erro ao buscar previsão para ${time}:`, error);
+      logger.error(`Erro ao buscar previsão para ${time}:`, error);
     } finally {
       slot.loading = false;
     }
@@ -535,7 +538,7 @@ const loadMunicipalities = async () => {
     const response = await fetch('/data/municipalities_db.json');
     municipalities.value = await response.json();
   } catch (error) {
-    console.error('Erro ao carregar municípios:', error);
+    logger.error('Erro ao carregar municípios:', error);
   }
 };
 
@@ -702,7 +705,7 @@ const loadRegionalData = async () => {
       await updateForecastSlots();
     }
   } catch (error) {
-    console.error('Erro ao carregar dados regionais:', error);
+    logger.error('Erro ao carregar dados regionais:', error);
   } finally {
     // Sempre desativar loading ao final
     isLoading.value = false;

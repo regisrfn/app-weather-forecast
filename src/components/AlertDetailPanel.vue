@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { WeatherAlert } from '../types/weather';
+import { componentLogger } from '../utils/logger';
+
+const logger = componentLogger('AlertDetailPanel');
 
 interface Props {
   alert: WeatherAlert | null;
@@ -96,7 +99,7 @@ const handleTimestampClick = () => {
     const timePart = parts[1];
     
     if (!datePart || !timePart) {
-      console.error('Formato de data inválido:', brasiliaDate);
+      logger.error('Formato de data inválido:', brasiliaDate);
       return;
     }
     
@@ -106,7 +109,7 @@ const handleTimestampClick = () => {
     const year = dateComponents[2];
     
     if (!day || !month || !year) {
-      console.error('Componentes de data inválidos:', datePart);
+      logger.error('Componentes de data inválidos:', datePart);
       return;
     }
     
@@ -116,7 +119,7 @@ const handleTimestampClick = () => {
     emit('jumpToDate', dateStr, timeStr);
     emit('close');
   } catch (error) {
-    console.error('Erro ao processar timestamp:', error);
+    logger.error('Erro ao processar timestamp:', error);
   }
 };
 
