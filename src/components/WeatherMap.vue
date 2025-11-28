@@ -232,16 +232,64 @@
       :class="{ 'is-open': isPanelOpen }"
     >
       <div class="panel-header">
-        <h2>{{ selectedCity.cityName }}</h2>
-        <div class="header-right">
-          <span class="intensity-badge" :style="{ backgroundColor: getRainfallColor(selectedCity.rainfallIntensity) }">
-            {{ getRainfallDescription(selectedCity.rainfallIntensity) }}
-          </span>
-          <button class="close-panel-btn" @click="togglePanel" aria-label="Fechar">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+        <div class="header-top">
+          <h2>{{ selectedCity.cityName }}</h2>
+          <div class="header-right">
+            <span class="intensity-badge" :style="{ backgroundColor: getRainfallColor(selectedCity.rainfallIntensity) }">
+              {{ getRainfallDescription(selectedCity.rainfallIntensity) }}
+            </span>
+            <button class="close-panel-btn" @click="togglePanel" aria-label="Fechar">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Controles de Navegação Temporal -->
+        <div class="time-navigation">
+          <button class="time-nav-btn" @click="navigatePrevTime" aria-label="Horário anterior (-3h)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
+          <div class="current-time-display">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span>{{ forecastTime }}</span>
+          </div>
+          <button class="time-nav-btn" @click="navigateNextTime" aria-label="Próximo horário (+3h)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Timeline de Previsões -->
+      <div class="forecast-timeline">
+        <div 
+          v-for="(forecast, index) in forecastTimeSlots" 
+          :key="index"
+          class="forecast-card"
+          :class="{ 'is-current': index === 0, 'is-loading': forecast.loading }"
+          @click="jumpToTime(forecast.time)"
+        >
+          <div class="forecast-time">{{ forecast.time }}</div>
+          <div v-if="!forecast.loading && forecast.data" class="forecast-content">
+            <div class="forecast-temp">{{ forecast.data.temperature.toFixed(1) }}°C</div>
+            <div class="forecast-rain" v-if="forecast.data.rainfallProbability !== undefined">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" fill="currentColor" opacity="0.6"/>
+              </svg>
+              <span>{{ forecast.data.rainfallProbability.toFixed(0) }}%</span>
+            </div>
+          </div>
+          <div v-else-if="forecast.loading" class="forecast-loading">
+            <div class="spinner-small"></div>
+          </div>
         </div>
       </div>
       
@@ -355,6 +403,19 @@ const isAlertPanelOpen = ref<boolean>(false);
 // Controle de carregamento
 const isLoading = ref<boolean>(false);
 
+// Previsões de múltiplos horários
+interface ForecastSlot {
+  time: string;
+  data: WeatherData | null;
+  loading: boolean;
+}
+
+const forecastTimeSlots = ref<ForecastSlot[]>([
+  { time: '00:00', data: null, loading: false },
+  { time: '03:00', data: null, loading: false },
+  { time: '06:00', data: null, loading: false }
+]);
+
 const togglePanel = () => {
   isPanelOpen.value = !isPanelOpen.value;
 };
@@ -377,6 +438,82 @@ const handleJumpToDate = async (date: string, time: string) => {
   forecastDate.value = date;
   forecastTime.value = time;
   await updateRegionalData();
+};
+
+// Navegação temporal por intervalos de 3 horas
+const navigatePrevTime = async () => {
+  const currentTime = forecastTime.value;
+  const parts = currentTime.split(':');
+  const hours = parts[0] ? parseInt(parts[0]) : 0;
+  
+  let newHour = hours - 3;
+  if (newHour < 0) {
+    newHour = 21; // Volta para 21:00 (último slot do dia)
+  }
+  
+  forecastTime.value = `${String(newHour).padStart(2, '0')}:00`;
+  await updateRegionalData();
+};
+
+const navigateNextTime = async () => {
+  const currentTime = forecastTime.value;
+  const parts = currentTime.split(':');
+  const hours = parts[0] ? parseInt(parts[0]) : 0;
+  
+  let newHour = hours + 3;
+  if (newHour >= 24) {
+    newHour = 0; // Volta para 00:00 (primeiro slot do dia)
+  }
+  
+  forecastTime.value = `${String(newHour).padStart(2, '0')}:00`;
+  await updateRegionalData();
+};
+
+const jumpToTime = async (time: string) => {
+  forecastTime.value = time;
+  await updateRegionalData();
+};
+
+// Atualizar slots de previsão
+const updateForecastSlots = async () => {
+  if (!selectedCity.value) return;
+  
+  const currentTime = forecastTime.value;
+  const parts = currentTime.split(':');
+  const currentHours = parts[0] ? parseInt(parts[0]) : 0;
+  
+  // Calcular os 3 slots de tempo (atual, +3h, +6h)
+  const slots: string[] = [];
+  for (let i = 0; i < 3; i++) {
+    let hour = currentHours + (i * 3);
+    if (hour >= 24) hour = hour - 24;
+    slots.push(`${String(hour).padStart(2, '0')}:00`);
+  }
+  
+  // Atualizar os slots
+  forecastTimeSlots.value = slots.map((time, index) => ({
+    time,
+    data: index === 0 ? selectedCity.value : null,
+    loading: index > 0
+  }));
+  
+  // Buscar dados para os próximos horários
+  for (let i = 1; i < slots.length; i++) {
+    const time = slots[i];
+    const slot = forecastTimeSlots.value[i];
+    if (!slot) continue;
+    
+    try {
+      const weatherData = await getRegionalWeather([selectedCity.value.cityId], forecastDate.value, time);
+      if (weatherData.length > 0 && weatherData[0]) {
+        slot.data = weatherData[0];
+      }
+    } catch (error) {
+      console.error(`Erro ao buscar previsão para ${time}:`, error);
+    } finally {
+      slot.loading = false;
+    }
+  }
 };
 
 const toggleSearch = () => {
@@ -562,6 +699,7 @@ const loadRegionalData = async () => {
     const centerData = weatherData.find((d: WeatherData) => d.cityId === centerCityId.value);
     if (centerData) {
       selectedCity.value = centerData;
+      await updateForecastSlots();
     }
   } catch (error) {
     console.error('Erro ao carregar dados regionais:', error);
@@ -630,6 +768,7 @@ const renderCityMeshes = async (
               selectedLayer = layer;
               selectedCity.value = weather;
               isPanelOpen.value = true; // Abrir painel ao clicar
+              updateForecastSlots(); // Atualizar previsões ao selecionar cidade
             },
             mouseover: (e) => {
               const layer = e.target;
