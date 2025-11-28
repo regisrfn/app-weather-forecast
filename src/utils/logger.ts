@@ -14,16 +14,15 @@ interface LoggerConfig {
 const isDevelopment = import.meta.env.DEV;
 
 /**
- * Cores ANSI para console (apenas em dev)
+ * Cores CSS para console.log do browser
  */
-const colors = {
-  reset: '\x1b[0m',
-  gray: '\x1b[90m',
-  blue: '\x1b[34m',
-  cyan: '\x1b[36m',
-  yellow: '\x1b[33m',
-  red: '\x1b[31m',
-  bold: '\x1b[1m',
+const cssColors = {
+  gray: 'color: #888',
+  blue: 'color: #3b82f6',
+  cyan: 'color: #06b6d4',
+  yellow: 'color: #f59e0b',
+  red: 'color: #ef4444',
+  bold: 'font-weight: bold',
 };
 
 /**
@@ -38,14 +37,6 @@ const getTimestamp = (): string => {
   });
   const ms = now.getMilliseconds().toString().padStart(3, '0');
   return `${time}.${ms}`;
-};
-
-/**
- * Aplica cor ao texto (apenas em dev e se suportado)
- */
-const colorize = (text: string, color: string, enableColors: boolean): string => {
-  if (!isDevelopment || !enableColors) return text;
-  return `${color}${text}${colors.reset}`;
 };
 
 /**
@@ -64,36 +55,35 @@ class Logger {
    * Formata mensagem com prefixo e timestamp
    */
   private formatMessage(level: LogLevel, ...args: any[]): any[] {
-    const timestamp = colorize(
-      `[${getTimestamp()}]`,
-      colors.gray,
-      this.enableColors
-    );
-    const prefix = colorize(this.prefix, colors.bold, this.enableColors);
+    if (!this.enableColors) {
+      return [`[${getTimestamp()}]`, this.prefix, `[${level.toUpperCase()}]`, ...args];
+    }
+
+    const timestamp = `[${getTimestamp()}]`;
+    const prefix = this.prefix;
+    const levelStr = `[${level.toUpperCase()}]`;
     
-    let levelColor = colors.reset;
+    let cssColor = cssColors.gray;
     switch (level) {
-      case 'debug':
-        levelColor = colors.gray;
-        break;
       case 'info':
-        levelColor = colors.cyan;
+        cssColor = cssColors.cyan;
         break;
       case 'warn':
-        levelColor = colors.yellow;
+        cssColor = cssColors.yellow;
         break;
       case 'error':
-        levelColor = colors.red;
+        cssColor = cssColors.red;
         break;
     }
-    
-    const levelStr = colorize(
-      `[${level.toUpperCase()}]`,
-      levelColor,
-      this.enableColors
-    );
 
-    return [timestamp, prefix, levelStr, ...args];
+    // Usa %c para aplicar estilos CSS no console do browser
+    return [
+      `%c${timestamp} %c${prefix} %c${levelStr}`,
+      cssColors.gray,
+      cssColors.bold,
+      cssColor,
+      ...args
+    ];
   }
 
   /**
