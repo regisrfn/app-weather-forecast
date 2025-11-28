@@ -289,7 +289,8 @@
 <script setup lang="ts">
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { APP_CONFIG } from '../config/app';
 import { getNeighborCities, getRegionalWeather } from '../services/apiService';
 import { getMunicipalityMesh } from '../services/ibgeService';
@@ -298,6 +299,10 @@ import DayCarousel from './DayCarousel.vue';
 import WeatherAlerts from './WeatherAlerts.vue';
 import AlertDetailPanel from './AlertDetailPanel.vue';
 import type { WeatherAlert } from '../types/weather';
+
+// Router
+const route = useRoute();
+const router = useRouter();
 
 // Corrigir ícones do Leaflet para produção
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -803,12 +808,15 @@ onMounted(async () => {
   const year = brasilTime.getFullYear();
   const month = String(brasilTime.getMonth() + 1).padStart(2, '0');
   const day = String(brasilTime.getDate()).padStart(2, '0');
-  forecastDate.value = `${year}-${month}-${day}`;
+  const defaultDate = `${year}-${month}-${day}`;
   
   // Formatar hora HH:MM
   const hours = String(brasilTime.getHours()).padStart(2, '0');
   const minutes = String(brasilTime.getMinutes()).padStart(2, '0');
-  forecastTime.value = `${hours}:${minutes}`;
+  const defaultTime = `${hours}:${minutes}`;
+  
+  // Inicializar estado a partir da URL ou usar valores padrão
+  initializeFromURL(defaultDate, defaultTime);
   
   initMap();
   await loadRegionalData();
@@ -816,6 +824,123 @@ onMounted(async () => {
   // Atualizar dados automaticamente
   updateInterval = window.setInterval(() => loadRegionalData(), APP_CONFIG.UPDATE_INTERVAL);
 });
+
+// Inicializar estado a partir dos parâmetros da URL
+const initializeFromURL = (defaultDate: string, defaultTime: string) => {
+  const query = route.query;
+  
+  // Inicializar cidade
+  if (query.city && typeof query.city === 'string') {
+    const cityExists = municipalities.value.some(m => m.id === query.city);
+    if (cityExists) {
+      centerCityId.value = query.city;
+      const city = municipalities.value.find(m => m.id === query.city);
+      if (city) {
+        centerLat.value = city.latitude;
+        centerLng.value = city.longitude;
+      }
+    } else {
+      centerCityId.value = APP_CONFIG.CENTER_CITY_ID;
+      centerLat.value = APP_CONFIG.MAP.CENTER.lat;
+      centerLng.value = APP_CONFIG.MAP.CENTER.lng;
+    }
+  } else {
+    centerCityId.value = APP_CONFIG.CENTER_CITY_ID;
+    centerLat.value = APP_CONFIG.MAP.CENTER.lat;
+    centerLng.value = APP_CONFIG.MAP.CENTER.lng;
+  }
+  
+  // Inicializar raio
+  if (query.radius && typeof query.radius === 'string') {
+    const radius = parseInt(query.radius);
+    if (!isNaN(radius) && radius >= APP_CONFIG.RADIUS.MIN && radius <= APP_CONFIG.RADIUS.MAX) {
+      searchRadius.value = radius;
+    } else {
+      searchRadius.value = APP_CONFIG.RADIUS.DEFAULT;
+    }
+  } else {
+    searchRadius.value = APP_CONFIG.RADIUS.DEFAULT;
+  }
+  
+  // Inicializar data
+  if (query.date && typeof query.date === 'string') {
+    if (isValidDate(query.date)) {
+      forecastDate.value = query.date;
+    } else {
+      forecastDate.value = defaultDate;
+    }
+  } else {
+    forecastDate.value = defaultDate;
+  }
+  
+  // Inicializar hora
+  if (query.time && typeof query.time === 'string') {
+    if (isValidTime(query.time)) {
+      forecastTime.value = query.time;
+    } else {
+      forecastTime.value = defaultTime;
+    }
+  } else {
+    forecastTime.value = defaultTime;
+  }
+};
+
+// Validar formato de data YYYY-MM-DD
+const isValidDate = (dateStr: string): boolean => {
+  const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match || !match[1] || !match[2] || !match[3]) return false;
+  
+  const year = parseInt(match[1]);
+  const month = parseInt(match[2]);
+  const day = parseInt(match[3]);
+  
+  const date = new Date(year, month - 1, day);
+  const now = new Date();
+  const maxDate = new Date(now.getTime() + 6 * 24 * 60 * 60 * 1000); // +6 dias
+  
+  return date.getFullYear() === year &&
+         date.getMonth() === month - 1 &&
+         date.getDate() === day &&
+         date >= now &&
+         date <= maxDate;
+};
+
+// Validar formato de hora HH:MM
+const isValidTime = (timeStr: string): boolean => {
+  const match = timeStr.match(/^(\d{2}):(\d{2})$/);
+  if (!match || !match[1] || !match[2]) return false;
+  
+  const hours = parseInt(match[1]);
+  const minutes = parseInt(match[2]);
+  
+  return hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59;
+};
+
+// Atualizar URL quando o estado mudar
+const updateURL = () => {
+  router.replace({
+    query: {
+      city: centerCityId.value,
+      radius: searchRadius.value.toString(),
+      date: forecastDate.value,
+      time: forecastTime.value
+    }
+  });
+};
+
+// Flag para evitar atualização da URL durante a inicialização
+let isInitialLoad = true;
+
+// Watchers para sincronizar estado com URL
+watch([centerCityId, searchRadius, forecastDate, forecastTime], () => {
+  if (isInitialLoad) {
+    isInitialLoad = false;
+    // Atualizar URL na primeira carga para garantir consistência
+    updateURL();
+    return;
+  }
+  updateURL();
+}, { deep: true });
 
 onUnmounted(() => {
   if (updateInterval) {

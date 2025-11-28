@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import WeatherMap from './components/WeatherMap.vue'
 </script>
 
 <template>
-  <WeatherMap />
+  <router-view />
 </template>
