@@ -206,15 +206,6 @@
         </button>
       </div>
     </div>
-
-    <!-- Ad Unit 2: Bottom Banner -->
-    <AdUnit 
-      slot-id="2549813732"
-      format="auto"
-      label="Publicidade"
-      :closeable="true"
-      class="adsense-unit-bottom"
-    />
     
     <!-- Carrossel de Dias -->
     <DayCarousel
@@ -356,15 +347,6 @@
       
       <!-- Alertas Meteorológicos -->
       <WeatherAlerts :alerts="selectedCity.weatherAlert" @alert-clicked="handleAlertClick" />
-
-      <!-- Ad Unit 2: Info Panel Rectangle -->
-      <AdUnit 
-        slot-id="7418997036"
-        format="auto"
-        label="Publicidade"
-        :closeable="true"
-        class="adsense-unit-info-panel"
-      />
       
       <div class="update-time">
         Previsão para: {{ formatTime(selectedCity.timestamp) }}
@@ -385,7 +367,6 @@ import { getCloudsDescription, getRainfallColor, getRainfallDescription, type We
 import DayCarousel from './DayCarousel.vue';
 import WeatherAlerts from './WeatherAlerts.vue';
 import AlertDetailPanel from './AlertDetailPanel.vue';
-import AdUnit from './AdUnit.vue';
 import type { WeatherAlert } from '../types/weather';
 import { componentLogger } from '../utils/logger';
 
