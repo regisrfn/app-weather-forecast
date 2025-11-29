@@ -234,15 +234,6 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
   }
-
-  // Botão de hora (padrão e mais discreto)
-  &.nav-btn-hour {
-    opacity: 0.85;
-    
-    &:hover {
-      opacity: 1;
-    }
-  }
 }
 
 .datetime-display {
@@ -262,6 +253,7 @@
   @include md {
     padding: $spacing-xs $spacing-sm;
     gap: $spacing-xs;
+    margin: 0 $spacing-sm;
   }
 
   &:hover {

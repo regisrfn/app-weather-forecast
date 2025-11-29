@@ -270,18 +270,6 @@
             </svg>
           </button>
           
-          <!-- Botões de navegação Hora -->
-          <button 
-            class="nav-btn nav-btn-hour prev" 
-            @click="navigatePrevTime" 
-            aria-label="3 horas antes"
-            title="3 horas antes"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          
           <!-- Display central com data e hora -->
           <button 
             class="datetime-display"
@@ -293,18 +281,6 @@
               <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
             <span class="datetime-text">{{ formatDateButton() }}</span>
-          </button>
-          
-          <!-- Botões de navegação Hora -->
-          <button 
-            class="nav-btn nav-btn-hour next" 
-            @click="navigateNextTime" 
-            aria-label="3 horas depois"
-            title="3 horas depois"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
           </button>
           
           <!-- Botões de navegação Dia -->
@@ -504,35 +480,6 @@ const closeAlertPanel = () => {
 const handleJumpToDate = async (date: string, time: string) => {
   forecastDate.value = date;
   forecastTime.value = time;
-  await updateRegionalData();
-};
-
-// Navegação temporal por intervalos de 3 horas
-const navigatePrevTime = async () => {
-  const currentTime = forecastTime.value;
-  const parts = currentTime.split(':');
-  const hours = parts[0] ? parseInt(parts[0]) : 0;
-  
-  let newHour = hours - 3;
-  if (newHour < 0) {
-    newHour = 21; // Volta para 21:00 (último slot do dia)
-  }
-  
-  forecastTime.value = `${String(newHour).padStart(2, '0')}:00`;
-  await updateRegionalData();
-};
-
-const navigateNextTime = async () => {
-  const currentTime = forecastTime.value;
-  const parts = currentTime.split(':');
-  const hours = parts[0] ? parseInt(parts[0]) : 0;
-  
-  let newHour = hours + 3;
-  if (newHour >= 24) {
-    newHour = 0; // Volta para 00:00 (primeiro slot do dia)
-  }
-  
-  forecastTime.value = `${String(newHour).padStart(2, '0')}:00`;
   await updateRegionalData();
 };
 
