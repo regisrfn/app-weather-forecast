@@ -9,7 +9,8 @@
       "src": "/ads.txt",
       "status": 301,
       "headers": {
-        "Location": "https://srv.adstxtmanager.com/19390/vemchuvabrasil.com"
+        "Location": "https://srv.adstxtmanager.com/19390/vemchuvabrasil.com",
+        "Content-Type": "text/plain; charset=utf-8"
       }
     },
     {
