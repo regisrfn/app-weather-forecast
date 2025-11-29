@@ -5,7 +5,7 @@ Aplicação web de previsão do tempo com visualização em mapa interativo, des
 ![Vue.js](https://img.shields.io/badge/Vue.js-3.5-4FC08D?logo=vue.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-7.2-646CFF?logo=vite&logoColor=white)
-[![Live Demo](https://img.shields.io/badge/🚀_Live-Demo-brightgreen?style=flat-square)](https://app-weather-forecast-eight.vercel.app)
+[![Live Demo](https://img.shields.io/badge/🚀_Live-Demo-brightgreen?style=flat-square)](https://vemchuvabrasil.com)
 ![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?logo=vercel&logoColor=white)
 
 ## 📋 Índice
@@ -61,7 +61,7 @@ O Weather Forecast App é uma aplicação web moderna que exibe previsões meteo
 
 ## 🚀 Demo
 
-**URL de Produção:** [https://app-weather-forecast-eight.vercel.app](https://app-weather-forecast-eight.vercel.app)
+**URL de Produção:** [https://vemchuvabrasil.com](https://vemchuvabrasil.com)
 
 > 💡 **Nota**: Aplicação configurada com dados mock para demonstração. Para conectar a um backend real, configure a variável `VITE_API_BASE_URL`.
 
