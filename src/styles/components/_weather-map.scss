@@ -41,4 +41,11 @@
       outline: none !important;
     }
   }
+  
+  // Esconder controles de zoom em telas pequenas
+  @include md {
+    .leaflet-control-zoom {
+      display: none !important;
+    }
+  }
 }

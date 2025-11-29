@@ -18,6 +18,15 @@
     appearance: none;
     cursor: pointer;
 
+    // Reduzir largura em telas médias
+    @include breakpoint(1100px) {
+      width: 120px;
+    }
+
+    @include breakpoint(900px) {
+      width: 100px;
+    }
+
     @include md {
       width: 100%;
     }
