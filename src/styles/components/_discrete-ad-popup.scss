@@ -1,0 +1,115 @@
+/**
+ * Discrete Ad Popup Styles
+ * Popup discreto no canto inferior direito
+ */
+
+@use '../abstracts/colors' as *;
+@use '../abstracts/breakpoints' as *;
+
+.discrete-ad-popup {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  max-width: 350px;
+  width: calc(100vw - 2rem);
+  background-color: $bg-dark-secondary;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 
+              0 0 0 1px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  
+  // Animação suave
+  animation: slideUpFade 0.4s ease-out;
+  
+  @include md {
+    max-width: 320px;
+    bottom: 0.5rem;
+    right: 0.5rem;
+  }
+  
+  @include sm {
+    max-width: calc(100vw - 1rem);
+    bottom: 0.5rem;
+    right: 0.5rem;
+    left: 0.5rem;
+    width: auto;
+  }
+}
+
+.discrete-ad-close {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  z-index: 10;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: $text-white;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    transform: scale(1.1);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.discrete-ad-content {
+  padding: 0.5rem;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.discrete-ad-placeholder {
+  width: 100%;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  // Permitir que o Ezoic controle o tamanho
+  // Não adicionar estilos que restrinjam o layout do anúncio
+}
+
+// Animações
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Transições Vue
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.4s ease;
+}
+
+.slide-up-enter-from {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
