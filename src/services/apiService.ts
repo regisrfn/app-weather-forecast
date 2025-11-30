@@ -17,6 +17,7 @@ import {
 import { weatherCache } from './cacheService';
 import { chunkArray } from '../utils/array';
 import { apiLogger } from '../utils/logger';
+import { getSessionId } from '../utils/session';
 
 const api = axios.create({
   baseURL: APP_CONFIG.API_BASE_URL,
@@ -24,6 +25,14 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+});
+
+// Interceptor para adicionar session_id em todas as requisições
+api.interceptors.request.use((config) => {
+  const sessionId = getSessionId();
+  config.headers['x-session-id'] = sessionId;
+  apiLogger.debug('Enviando requisição com session_id:', sessionId);
+  return config;
 });
 
 /**
