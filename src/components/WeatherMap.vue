@@ -233,7 +233,9 @@
     >
       <div class="panel-header">
         <div class="header-top">
-          <h2>{{ selectedCity.cityName }}</h2>
+          <h2 class="city-name-clickable" @click="navigateToCityDetail" role="button" tabindex="0" @keydown.enter="navigateToCityDetail">
+            {{ selectedCity.cityName }}
+          </h2>
           <div class="header-right">
             <span class="intensity-badge" :style="{ backgroundColor: getRainfallColor(selectedCity.rainfallIntensity) }">
               {{ getRainfallDescription(selectedCity.rainfallIntensity) }}
@@ -467,6 +469,15 @@ const handleJumpToDate = async (date: string, time: string) => {
 const jumpToTime = async (time: string) => {
   forecastTime.value = time;
   await updateRegionalData();
+};
+
+/**
+ * Navega para a página de detalhes da cidade
+ */
+const navigateToCityDetail = () => {
+  if (selectedCity.value) {
+    router.push(`/city/${selectedCity.value.cityId}`);
+  }
 };
 
 // Atualizar slots de previsão

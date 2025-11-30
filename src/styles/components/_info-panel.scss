@@ -151,6 +151,30 @@
       font-size: $font-xl;
     }
   }
+  
+  .city-name-clickable {
+    margin: 0;
+    font-size: $font-3xl;
+    font-weight: $font-bold;
+    flex: 1;
+    cursor: pointer;
+    transition: $transition-fast;
+    text-decoration: underline dotted transparent;
+    text-underline-offset: 4px;
+    
+    @include md {
+      font-size: $font-xl;
+    }
+    
+    &:hover {
+      text-decoration-color: rgba(255, 255, 255, 0.8);
+      transform: translateX(2px);
+    }
+    
+    &:active {
+      transform: translateX(0);
+    }
+  }
 }
 
 .time-navigation {

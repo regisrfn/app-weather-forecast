@@ -18,6 +18,8 @@ import { weatherCache } from './cacheService';
 import { chunkArray } from '../utils/array';
 import { apiLogger } from '../utils/logger';
 import { getSessionId } from '../utils/session';
+import type { DetailedWeatherResponse } from '../types/weather';
+import localforage from 'localforage';
 
 const api = axios.create({
   baseURL: APP_CONFIG.API_BASE_URL,
@@ -210,6 +212,55 @@ export async function getRegionalWeather(
   }
   
   return result;
+}
+
+// Store dedicado para cache de dados detalhados
+const detailedCacheStore = localforage.createInstance({
+  name: 'weather-forecast',
+  storeName: 'detailed_cache',
+});
+
+interface DetailedCacheEntry {
+  data: DetailedWeatherResponse;
+  timestamp: number;
+}
+
+/**
+ * Buscar dados climáticos detalhados de uma cidade
+ * Backend: GET /api/weather/city/:cityId/detailed
+ * 
+ * Com cache transparente de 60 minutos por cidade
+ */
+export async function getCityWeatherDetailed(cityId: string): Promise<DetailedWeatherResponse> {
+  const cacheKey = `detailed:${cityId}`;
+  const ttl = 60 * 60 * 1000; // 60 minutos em milissegundos
+  
+  try {
+    // Tentar buscar do cache primeiro
+    const cached = await detailedCacheStore.getItem<DetailedCacheEntry>(cacheKey);
+    
+    if (cached && Date.now() - cached.timestamp < ttl) {
+      apiLogger.debug(`Cache HIT: Dados detalhados da cidade ${cityId}`);
+      return cached.data;
+    }
+    
+    apiLogger.debug(`Cache MISS: Buscando dados detalhados da cidade ${cityId} da API`);
+    
+    // Buscar da API (estrutura já corresponde às interfaces)
+    const response = await api.get<DetailedWeatherResponse>(`/api/weather/city/${cityId}/detailed`);
+    
+    // Armazenar no cache
+    const entry: DetailedCacheEntry = {
+      data: response.data,
+      timestamp: Date.now(),
+    };
+    await detailedCacheStore.setItem(cacheKey, entry);
+    
+    return response.data;
+  } catch (error) {
+    apiLogger.error(`Erro ao buscar dados detalhados da cidade ${cityId}:`, error);
+    throw error;
+  }
 }
 
 /**

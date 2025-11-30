@@ -21,7 +21,7 @@ export interface WeatherAlert {
 export interface RainfallData {
   cityId: string;
   cityName: string;
-  timestamp: Date;
+  timestamp: Date | string; // Aceita Date ou ISO string
   rainfallIntensity: number; // 0-100 (0 = sem chuva, 100 = chuva intensa)
   temperature: number;
   humidity: number;
@@ -30,6 +30,26 @@ export interface RainfallData {
   weatherAlert?: WeatherAlert[]; // Lista de alertas meteorológicos
   tempMin?: number; // Temperatura mínima (°C)
   tempMax?: number; // Temperatura máxima (°C)
+}
+
+// Tipos para resposta detalhada da API
+export interface CityInfo {
+  cityId: string;
+  cityName: string;
+}
+
+// CurrentWeather = RainfallData + campos extras da API detailed
+export interface CurrentWeather extends RainfallData {
+  rainfallProbability: number;
+  rainVolumeHour: number;
+  dailyRainAccumulation: number;
+  description: string;
+  feelsLike: number;
+  pressure: number;
+  visibility: number;
+  clouds: number; // Override: sempre presente em CurrentWeather
+  cloudsDescription: string;
+  timestamp: string; // Override: sempre string ISO na API
 }
 
 export interface WeatherForecast {
@@ -49,4 +69,47 @@ export interface MapBounds {
   south: number;
   east: number;
   west: number;
+}
+
+// Tipos para resposta detalhada da API
+export interface CityInfo {
+  cityId: string;
+  cityName: string;
+}
+
+// CurrentWeather = RainfallData + campos extras da API detailed
+export interface CurrentWeather extends RainfallData {
+  rainfallProbability: number;
+  rainVolumeHour: number;
+  dailyRainAccumulation: number;
+  description: string;
+  feelsLike: number;
+  pressure: number;
+  visibility: number;
+  clouds: number; // Override: sempre presente em CurrentWeather
+  cloudsDescription: string;
+  timestamp: string; // Override: sempre string ISO na API
+}
+
+export interface DailyForecast {
+  date: string;
+  tempMin: number;
+  tempMax: number;
+  precipitationMm: number;
+  rainProbability: number;
+  windSpeedMax: number;
+  windDirection: number;
+  uvIndex: number;
+  uvRiskLevel: string;
+  uvRiskColor: string;
+  sunrise: string;
+  sunset: string;
+  precipitationHours: number;
+  daylightHours: number;
+}
+
+export interface DetailedWeatherResponse {
+  cityInfo: CityInfo;
+  currentWeather: CurrentWeather;
+  dailyForecasts: DailyForecast[];
 }
