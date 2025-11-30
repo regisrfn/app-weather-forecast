@@ -36,9 +36,8 @@ export interface RainfallData {
 export interface CityInfo {
   cityId: string;
   cityName: string;
+  state: string;
 }
-
-// CurrentWeather = RainfallData + campos extras da API detailed
 export interface CurrentWeather extends RainfallData {
   rainfallProbability: number;
   rainVolumeHour: number;
@@ -71,26 +70,6 @@ export interface MapBounds {
   west: number;
 }
 
-// Tipos para resposta detalhada da API
-export interface CityInfo {
-  cityId: string;
-  cityName: string;
-}
-
-// CurrentWeather = RainfallData + campos extras da API detailed
-export interface CurrentWeather extends RainfallData {
-  rainfallProbability: number;
-  rainVolumeHour: number;
-  dailyRainAccumulation: number;
-  description: string;
-  feelsLike: number;
-  pressure: number;
-  visibility: number;
-  clouds: number; // Override: sempre presente em CurrentWeather
-  cloudsDescription: string;
-  timestamp: string; // Override: sempre string ISO na API
-}
-
 export interface DailyForecast {
   date: string;
   tempMin: number;
@@ -106,6 +85,8 @@ export interface DailyForecast {
   sunset: string;
   precipitationHours: number;
   daylightHours: number;
+  moonPhase: string;
+  weatherDescription: string;
 }
 
 export interface DetailedWeatherResponse {

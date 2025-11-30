@@ -55,14 +55,13 @@ const chartAriaLabel = computed(() =>
 );
 
 /**
- * Formata data para exibição no eixo X
+ * Formata data para exibição no eixo X (formato curto)
  */
 const formatDate = (dateStr: string): string => {
   const date = new Date(dateStr + 'T00:00:00');
-  const day = date.getDate();
-  const month = date.toLocaleDateString('pt-BR', { month: 'short' });
-  const weekday = date.toLocaleDateString('pt-BR', { weekday: 'short' });
-  return `${weekday} ${day}/${month}`;
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  return `${day}/${month}`;
 };
 
 /**
@@ -96,7 +95,13 @@ const createChart = () => {
           label: 'Temp. Máx (°C)',
           data: tempMaxData,
           borderColor: '#f97316',
-          backgroundColor: 'rgba(249, 115, 22, 0.1)',
+          backgroundColor: (context: any) => {
+            const ctx = context.chart.ctx;
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(249, 115, 22, 0.3)');
+            gradient.addColorStop(1, 'rgba(249, 115, 22, 0.0)');
+            return gradient;
+          },
           borderWidth: 3,
           pointRadius: 5,
           pointHoverRadius: 7,
@@ -105,14 +110,20 @@ const createChart = () => {
           pointBorderWidth: 2,
           tension: 0.4,
           yAxisID: 'y',
-          fill: false,
+          fill: true,
         },
         {
           type: 'line',
           label: 'Temp. Mín (°C)',
           data: tempMinData,
           borderColor: '#3b82f6',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          backgroundColor: (context: any) => {
+            const ctx = context.chart.ctx;
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(59, 130, 246, 0.3)');
+            gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+            return gradient;
+          },
           borderWidth: 3,
           pointRadius: 5,
           pointHoverRadius: 7,
@@ -121,7 +132,7 @@ const createChart = () => {
           pointBorderWidth: 2,
           tension: 0.4,
           yAxisID: 'y',
-          fill: false,
+          fill: true,
         },
         {
           type: 'bar',
@@ -157,12 +168,13 @@ const createChart = () => {
           },
         },
         tooltip: {
-          backgroundColor: 'rgba(30, 41, 59, 0.95)',
+          backgroundColor: 'rgba(30, 41, 59, 0.96)',
           titleColor: '#fff',
-          bodyColor: '#fff',
-          borderColor: '#475569',
+          bodyColor: '#e2e8f0',
+          borderColor: '#64748b',
           borderWidth: 1,
-          padding: 12,
+          padding: 14,
+          cornerRadius: 8,
           titleFont: {
             size: 14,
             weight: 'bold',
@@ -186,12 +198,15 @@ const createChart = () => {
       scales: {
         x: {
           grid: {
-            display: false,
+            display: true,
+            color: 'rgba(148, 163, 184, 0.1)',
+            lineWidth: 1,
           },
           ticks: {
             color: '#475569',
             font: {
-              size: 11,
+              size: 12,
+              weight: 'bold',
             },
           },
         },

@@ -6,7 +6,7 @@
 .city-detail-page {
   min-height: 100vh;
   height: 100vh;
-  background: linear-gradient(to bottom, #f8fafc 0%, #e2e8f0 100%);
+  background: linear-gradient(to bottom, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.08) 100%);
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;
@@ -14,16 +14,45 @@
 }
 
 .page-header {
-  background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
-  padding: $spacing-xl $spacing-lg;
-  box-shadow: $shadow-lg;
+  background: rgba(102, 126, 234, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: $spacing-lg $spacing-lg;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 100;
   flex-shrink: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   
   @include md {
-    padding: $spacing-lg $spacing-md;
+    padding: $spacing-md $spacing-md;
+  }
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  max-width: 1400px;
+  margin: 0 auto;
+  
+  @include md {
+    gap: $spacing-md;
+    flex-wrap: wrap;
+  }
+}
+
+.header-info {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-md;
+  flex: 1;
+  
+  @include md {
+    flex-direction: column;
+    gap: $spacing-xs;
+    align-items: flex-start;
   }
 }
 
@@ -31,24 +60,29 @@
   @include reset-button;
   display: inline-flex;
   align-items: center;
-  gap: $spacing-sm;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
   color: $text-white;
-  font-size: $font-base;
-  font-weight: $font-semibold;
-  padding: $spacing-sm $spacing-md;
-  border-radius: $radius-md;
+  border-radius: $radius-full;
   transition: $transition-fast;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
   
   &:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateX(-4px);
+    box-shadow: $shadow-md;
+  }
+  
+  &:active {
     transform: translateX(-2px);
   }
   
   svg {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
   }
 }
 
@@ -56,11 +90,51 @@
   color: $text-white;
   font-size: $font-4xl;
   font-weight: $font-extrabold;
-  margin: $spacing-md 0 0 0;
+  margin: 0;
   @include text-shadow;
   
   @include md {
     font-size: $font-2xl;
+  }
+}
+
+.city-state {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: $font-lg;
+  font-weight: $font-semibold;
+  
+  @include md {
+    font-size: $font-base;
+  }
+}
+
+.timestamp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: $font-sm;
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-full;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-weight: $font-semibold;
+  margin-left: auto;
+  white-space: nowrap;
+  
+  svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0.9;
+  }
+  
+  @include md {
+    font-size: $font-xs;
+    padding: $spacing-xs $spacing-sm;
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -144,44 +218,85 @@
   }
 }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: $spacing-lg;
-  flex-wrap: wrap;
-  gap: $spacing-md;
+.current-weather-section {
+  margin-bottom: $spacing-2xl;
+  animation: fadeIn 0.6s ease-out;
 }
 
-.timestamp-badge {
-  display: inline-flex;
+// Hero Weather Card
+.hero-weather-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: $spacing-2xl;
+  border-radius: $radius-xl;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  display: flex;
   align-items: center;
-  gap: $spacing-xs;
-  font-size: $font-sm;
-  color: $text-muted;
-  background: rgba(255, 255, 255, 0.9);
-  padding: $spacing-sm $spacing-md;
-  border-radius: $radius-full;
-  box-shadow: $shadow-sm;
+  justify-content: center;
+  gap: $spacing-2xl;
+  margin-bottom: $spacing-xl;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  transition: $transition-normal;
+  animation: slideDown 0.6s ease-out;
   
-  svg {
-    width: 16px;
-    height: 16px;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
   }
   
   @include md {
-    font-size: $font-xs;
+    flex-direction: column;
+    padding: $spacing-xl;
+    gap: $spacing-lg;
   }
 }
 
-.current-weather-section {
-  margin-bottom: $spacing-2xl;
+.hero-icon {
+  font-size: 96px;
+  line-height: 1;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  
+  @include md {
+    font-size: 72px;
+  }
+}
+
+.hero-temp-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.hero-temp-value {
+  font-size: 80px;
+  font-weight: $font-extrabold;
+  color: $text-dark;
+  line-height: 1;
+  letter-spacing: -2px;
+  
+  @include md {
+    font-size: 64px;
+  }
+}
+
+.hero-temp-label {
+  font-size: $font-xl;
+  color: $text-muted;
+  text-transform: capitalize;
+  font-weight: $font-semibold;
+  
+  @include md {
+    font-size: $font-lg;
+  }
 }
 
 .current-weather-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: $spacing-lg;
+  animation: fadeIn 0.8s ease-out 0.2s both;
   
   @include md {
     grid-template-columns: repeat(2, 1fr);
@@ -190,19 +305,24 @@
 }
 
 .weather-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   padding: $spacing-lg;
   border-radius: $radius-lg;
-  box-shadow: $shadow-md;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: $spacing-sm;
-  transition: $transition-fast;
+  transition: all $transition-normal;
+  border: 1px solid rgba(255, 255, 255, 0.5);
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: $shadow-lg;
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.12);
+    border-color: rgba(102, 126, 234, 0.3);
+    background: rgba(255, 255, 255, 0.95);
   }
   
   @include md {
@@ -210,57 +330,39 @@
   }
 }
 
-.main-temp-card {
-  grid-column: span 2;
-  flex-direction: row;
-  justify-content: center;
-  gap: $spacing-lg;
-  
-  @include md {
-    flex-direction: column;
+.sun-card {
+  .card-icon-svg {
+    color: #f59e0b;
+    
+    &.sunrise {
+      filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));
+    }
+    
+    &.sunset {
+      filter: drop-shadow(0 2px 4px rgba(239, 68, 68, 0.3));
+      color: #ef4444;
+    }
   }
 }
 
-.weather-icon {
-  font-size: 64px;
-  line-height: 1;
-  
-  @include md {
-    font-size: 48px;
-  }
-}
-
-.temp-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-xs;
-}
-
-.temp-value {
-  font-size: $font-5xl;
-  font-weight: $font-extrabold;
-  color: $text-dark;
-  line-height: 1;
-  
-  @include md {
-    font-size: $font-4xl;
-  }
-}
-
-.temp-label {
-  font-size: $font-base;
-  color: $text-muted;
-  text-transform: capitalize;
-  
-  @include md {
-    font-size: $font-sm;
-  }
+.wind-direction {
+  display: inline-block;
+  margin-left: $spacing-xs;
+  font-size: $font-sm;
+  color: $primary-gradient-start;
+  font-weight: $font-bold;
+  padding: 2px 6px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: $radius-sm;
 }
 
 .card-icon {
   font-size: 32px;
   line-height: 1;
+}
+
+.card-icon-svg {
+  flex-shrink: 0;
 }
 
 .card-label {
@@ -281,6 +383,7 @@
 
 .visualization-section {
   margin-bottom: $spacing-2xl;
+  animation: fadeIn 1s ease-out 0.4s both;
 }
 
 .visualization-grid {
@@ -296,8 +399,15 @@
   }
 }
 
+// Alerts Section
+.alerts-section {
+  margin-bottom: $spacing-2xl;
+  animation: fadeIn 0.8s ease-out 0.3s both;
+}
+
 .forecast-section {
   margin-bottom: $spacing-2xl;
+  animation: fadeIn 1s ease-out 0.5s both;
 }
 
 .forecast-swiper {
@@ -327,19 +437,23 @@
 }
 
 .forecast-card {
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   padding: $spacing-lg;
   border-radius: $radius-lg;
-  box-shadow: $shadow-md;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
   gap: $spacing-md;
   height: 100%;
-  transition: $transition-fast;
+  transition: all $transition-normal;
+  border: 2px solid transparent;
   
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: $shadow-lg;
+    transform: translateY(-6px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+    background: rgba(255, 255, 255, 0.95);
   }
   
   @include md {
@@ -361,12 +475,18 @@
 }
 
 .forecast-icon {
-  font-size: 48px;
+  font-size: 56px;
   text-align: center;
   line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  transition: transform $transition-fast;
+  
+  .forecast-card:hover & {
+    transform: scale(1.1);
+  }
   
   @include md {
-    font-size: 40px;
+    font-size: 48px;
   }
 }
 
@@ -402,6 +522,17 @@
   gap: $spacing-xs;
   font-size: $font-sm;
   color: $text-muted;
+  
+  .wind-dir-label {
+    display: inline-block;
+    margin-left: 4px;
+    font-weight: $font-bold;
+    color: $primary-gradient-start;
+    padding: 2px 6px;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: $radius-sm;
+    font-size: $font-xs;
+  }
 }
 
 .detail-icon {
@@ -415,24 +546,78 @@
   font-size: $font-sm;
   font-weight: $font-semibold;
   margin-top: $spacing-xs;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .forecast-sun {
   display: flex;
   justify-content: space-around;
   padding-top: $spacing-sm;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
   font-size: $font-xs;
   color: $text-muted;
+  gap: $spacing-xs;
 }
 
 .sun-time {
   display: flex;
   align-items: center;
-  gap: $spacing-xs;
+  gap: 4px;
+  font-weight: $font-semibold;
   
-  span:first-child {
-    font-size: 16px;
+  .sun-icon {
+    flex-shrink: 0;
+    
+    &.sunrise {
+      color: #f59e0b;
+    }
+    
+    &.sunset {
+      color: #ef4444;
+    }
+  }
+}
+
+// Moon Phase
+.forecast-moon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  padding-top: $spacing-sm;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  margin-top: $spacing-xs;
+}
+
+.moon-emoji {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.moon-label {
+  font-size: $font-xs;
+  color: $text-muted;
+  font-weight: $font-semibold;
+}
+
+// Keyframe Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

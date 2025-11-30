@@ -64,3 +64,66 @@ $radius-circle-color: #667eea;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+// =================================
+// CSS CUSTOM PROPERTIES (Variables)
+// =================================
+:root {
+  // Primary Colors
+  --color-primary-start: #{$primary-gradient-start};
+  --color-primary-end: #{$primary-gradient-end};
+  
+  // Background Colors
+  --bg-primary: #{$bg-dark-primary};
+  --bg-secondary: #{$bg-dark-secondary};
+  --bg-tertiary: #{$bg-dark-tertiary};
+  --bg-header: #{$bg-header};
+  --bg-card: rgba(255, 255, 255, 0.95);
+  --bg-card-hover: rgba(255, 255, 255, 0.98);
+  
+  // Text Colors
+  --text-primary: #{$text-white};
+  --text-secondary: #{$text-light};
+  --text-muted: #{$text-gray};
+  --text-dark: #{$text-dark};
+  
+  // Border Colors
+  --border-light: #{$border-light};
+  --border-medium: #{$border-medium};
+  --border-dark: #{$border-dark};
+  
+  // Overlay Colors
+  --overlay-light: #{$overlay-light};
+  --overlay-medium: #{$overlay-medium};
+  --overlay-dark: #{$overlay-dark};
+  
+  // Weather-specific Colors
+  --weather-temp-cold: #3b82f6;
+  --weather-temp-cool: #06b6d4;
+  --weather-temp-pleasant: #22c55e;
+  --weather-temp-warm: #eab308;
+  --weather-temp-hot: #f97316;
+  --weather-temp-extreme: #ef4444;
+  
+  --weather-rain-none: #e2e8f0;
+  --weather-rain-light: #bae6fd;
+  --weather-rain-moderate: #7dd3fc;
+  --weather-rain-heavy: #38bdf8;
+  --weather-rain-intense: #0284c7;
+  
+  --weather-uv-low: #22c55e;
+  --weather-uv-moderate: #eab308;
+  --weather-uv-high: #f97316;
+  --weather-uv-very-high: #ef4444;
+  --weather-uv-extreme: #a855f7;
+  
+  // Transparency Levels
+  --alpha-10: 0.1;
+  --alpha-15: 0.15;
+  --alpha-20: 0.2;
+  --alpha-30: 0.3;
+  --alpha-50: 0.5;
+  --alpha-70: 0.7;
+  --alpha-90: 0.9;
+  --alpha-95: 0.95;
+}

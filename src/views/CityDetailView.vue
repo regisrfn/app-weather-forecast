@@ -2,15 +2,24 @@
   <div class="city-detail-page">
     <!-- Header -->
     <header class="page-header">
-      <button @click="goBack" class="back-button" aria-label="Voltar">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Voltar
-      </button>
-      <h1 v-if="detailedWeather" class="city-name">
-        {{ detailedWeather.cityInfo.cityName }}
-      </h1>
+      <div class="header-content">
+        <button @click="goBack" class="back-button" aria-label="Voltar">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div v-if="detailedWeather" class="header-info">
+          <h1 class="city-name">{{ detailedWeather.cityInfo.cityName }}</h1>
+          <span v-if="detailedWeather.cityInfo.state" class="city-state">{{ detailedWeather.cityInfo.state }}</span>
+        </div>
+        <span v-if="detailedWeather" class="timestamp-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          {{ formatTimestamp(detailedWeather.currentWeather.timestamp) }}
+        </span>
+      </div>
     </header>
 
     <!-- Loading State -->
@@ -34,25 +43,19 @@
     <main v-else-if="detailedWeather" class="page-content">
       <!-- Clima Atual -->
       <section class="current-weather-section">
-        <div class="section-header">
-          <h2 class="section-title">Clima Atual</h2>
-          <span class="timestamp-badge">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-              <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            {{ formatTimestamp(detailedWeather.currentWeather.timestamp) }}
-          </span>
-        </div>
-        <div class="current-weather-grid">
-          <div class="weather-card main-temp-card">
-            <span class="weather-icon">{{ getWeatherIcon(detailedWeather.currentWeather.description) }}</span>
-            <div class="temp-info">
-              <span class="temp-value">{{ detailedWeather.currentWeather.temperature.toFixed(1) }}°C</span>
-              <span class="temp-label">{{ detailedWeather.currentWeather.description }}</span>
-            </div>
+        <h2 class="section-title">Clima Atual</h2>
+        
+        <!-- Hero Card - Temperatura Principal -->
+        <div class="hero-weather-card">
+          <span class="hero-icon">{{ getWeatherIcon(detailedWeather.currentWeather.description) }}</span>
+          <div class="hero-temp-info">
+            <span class="hero-temp-value">{{ detailedWeather.currentWeather.temperature.toFixed(1) }}°C</span>
+            <span class="hero-temp-label">{{ detailedWeather.currentWeather.description }}</span>
           </div>
+        </div>
 
+        <!-- Grid de Métricas -->
+        <div class="current-weather-grid">
           <div class="weather-card">
             <span class="card-icon">🌡️</span>
             <span class="card-label">Sensação</span>
@@ -63,6 +66,15 @@
             <span class="card-icon">💧</span>
             <span class="card-label">Umidade</span>
             <span class="card-value">{{ detailedWeather.currentWeather.humidity.toFixed(0) }}%</span>
+          </div>
+
+          <div class="weather-card">
+            <span class="card-icon">💨</span>
+            <span class="card-label">Vento</span>
+            <span class="card-value">
+              {{ detailedWeather.currentWeather.windSpeed.toFixed(1) }} km/h
+              <span class="wind-direction">{{ getWindDirectionLabel(detailedWeather.dailyForecasts[0]?.windDirection || 0) }}</span>
+            </span>
           </div>
 
           <div class="weather-card">
@@ -82,13 +94,43 @@
             <span class="card-label">Nuvens</span>
             <span class="card-value">{{ detailedWeather.currentWeather.clouds.toFixed(0) }}%</span>
           </div>
+
+          <!-- Nascer do Sol -->
+          <div class="weather-card sun-card">
+            <svg class="card-icon-svg sunrise" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="4" fill="currentColor"/>
+              <path d="M12 2v4M12 18v4M22 12h-4M6 12H2M19.07 4.93l-2.83 2.83M7.76 16.24l-2.83 2.83M19.07 19.07l-2.83-2.83M7.76 7.76L4.93 4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M2 20h20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span class="card-label">Nascer do Sol</span>
+            <span class="card-value">{{ formatTime(detailedWeather.dailyForecasts[0]?.sunrise || '') }}</span>
+          </div>
+
+          <!-- Pôr do Sol -->
+          <div class="weather-card sun-card">
+            <svg class="card-icon-svg sunset" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="4" fill="currentColor"/>
+              <path d="M12 2v4M12 18v4M22 12h-4M6 12H2M19.07 4.93l-2.83 2.83M7.76 16.24l-2.83 2.83M19.07 19.07l-2.83-2.83M7.76 7.76L4.93 4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M2 20h20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span class="card-label">Pôr do Sol</span>
+            <span class="card-value">{{ formatTime(detailedWeather.dailyForecasts[0]?.sunset || '') }}</span>
+          </div>
         </div>
       </section>
 
-      <!-- Wind Compass e Chart lado a lado em desktop -->
+      <!-- Alertas Meteorológicos -->
+      <section v-if="detailedWeather.currentWeather.weatherAlert && detailedWeather.currentWeather.weatherAlert.length > 0" class="alerts-section">
+        <WeatherAlerts 
+          :alerts="detailedWeather.currentWeather.weatherAlert"
+          @alert-clicked="handleAlertClick"
+        />
+      </section>
+
+      <!-- Gráficos e Visualizações -->
       <section class="visualization-section">
+        <h2 class="section-title">Tendências e Previsões</h2>
         <div class="visualization-grid">
-          <!-- Usar windDirection do dailyForecast[0] para representar direção do dia -->
           <WindCompass 
             :wind-speed="detailedWeather.currentWeather.windSpeed"
             :wind-direction="detailedWeather.dailyForecasts[0]?.windDirection"
@@ -100,7 +142,7 @@
 
       <!-- Carrossel de Previsões Diárias -->
       <section class="forecast-section">
-        <h2 class="section-title">Previsão Diária ({{ detailedWeather.dailyForecasts.length }} dias)</h2>
+        <h2 class="section-title">Previsão para os Próximos {{ detailedWeather.dailyForecasts.length }} Dias</h2>
         <swiper
           :slides-per-view="1.2"
           :space-between="16"
@@ -115,9 +157,18 @@
           class="forecast-swiper"
         >
           <swiper-slide v-for="forecast in detailedWeather.dailyForecasts" :key="forecast.date">
-            <div class="forecast-card">
+            <div 
+              class="forecast-card"
+              :style="{ 
+                backgroundColor: getForecastCardColor((forecast.tempMax + forecast.tempMin) / 2, forecast.rainProbability),
+                borderColor: getForecastCardBorderColor((forecast.tempMax + forecast.tempMin) / 2, forecast.rainProbability)
+              }"
+            >
               <div class="forecast-date">{{ formatForecastDate(forecast.date) }}</div>
-              <div class="forecast-icon">☀️</div>
+              
+              <div class="forecast-icon">
+                {{ forecast.weatherDescription ? getWeatherIcon(forecast.weatherDescription) : getPrecipitationIcon(forecast.precipitationMm) }}
+              </div>
               
               <div class="forecast-temps">
                 <span class="temp-max">{{ forecast.tempMax.toFixed(0) }}°</span>
@@ -135,25 +186,51 @@
                 <span class="detail-value">{{ forecast.rainProbability.toFixed(0) }}%</span>
               </div>
 
+              <div class="forecast-detail">
+                <span class="detail-icon">💨</span>
+                <span class="detail-value">
+                  {{ forecast.windSpeedMax.toFixed(0) }} km/h 
+                  <span class="wind-dir-label">{{ getWindDirectionLabel(forecast.windDirection) }}</span>
+                </span>
+              </div>
+
               <div class="forecast-uv" :style="{ backgroundColor: forecast.uvRiskColor, color: getContrastColor(forecast.uvRiskColor) }">
                 UV {{ forecast.uvIndex.toFixed(1) }} - {{ forecast.uvRiskLevel }}
               </div>
 
               <div class="forecast-sun">
                 <div class="sun-time">
-                  <span>🌅</span>
+                  <svg class="sun-icon sunrise" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                    <path d="M12 5V2M12 22v-3M19 12h3M2 12h3M16.5 7.5l2-2M5.5 18.5l2-2M16.5 16.5l2 2M5.5 5.5l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
                   <span>{{ formatTime(forecast.sunrise) }}</span>
                 </div>
                 <div class="sun-time">
-                  <span>🌇</span>
+                  <svg class="sun-icon sunset" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                    <path d="M12 5V2M12 22v-3M19 12h3M2 12h3M16.5 7.5l2-2M5.5 18.5l2-2M16.5 16.5l2 2M5.5 5.5l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
                   <span>{{ formatTime(forecast.sunset) }}</span>
                 </div>
+              </div>
+
+              <div v-if="forecast.moonPhase" class="forecast-moon">
+                <span class="moon-emoji">{{ getMoonPhaseEmoji(forecast.moonPhase) }}</span>
+                <span class="moon-label">{{ forecast.moonPhase }}</span>
               </div>
             </div>
           </swiper-slide>
         </swiper>
       </section>
     </main>
+
+    <!-- Alert Detail Panel -->
+    <AlertDetailPanel
+      :alert="selectedAlert"
+      :is-open="showAlertDetail"
+      @close="closeAlertDetail"
+    />
   </div>
 </template>
 
@@ -167,10 +244,17 @@ import { getCityWeatherDetailed } from '../services/apiService';
 import type { DetailedWeatherResponse } from '../types/weather';
 import WindCompass from '../components/WindCompass.vue';
 import WeatherChart from '../components/WeatherChart.vue';
+import WeatherAlerts from '../components/WeatherAlerts.vue';
+import AlertDetailPanel from '../components/AlertDetailPanel.vue';
 import { 
   getWeatherIcon, 
   formatTime, 
-  getContrastColor 
+  getContrastColor,
+  getPrecipitationIcon,
+  getWindDirectionLabel,
+  getMoonPhaseEmoji,
+  getForecastCardColor,
+  getForecastCardBorderColor
 } from '../utils/weatherVisuals';
 import { componentLogger } from '../utils/logger';
 
@@ -182,6 +266,8 @@ const router = useRouter();
 const detailedWeather = ref<DetailedWeatherResponse | null>(null);
 const isLoading = ref(true);
 const error = ref<string | null>(null);
+const selectedAlert = ref<any | null>(null);
+const showAlertDetail = ref(false);
 
 /**
  * Formata data para exibição no card
@@ -212,6 +298,22 @@ const formatTimestamp = (isoString: string): string => {
  */
 const goBack = () => {
   router.back();
+};
+
+/**
+ * Manipula clique em alerta
+ */
+const handleAlertClick = (alert: any) => {
+  selectedAlert.value = alert;
+  showAlertDetail.value = true;
+};
+
+/**
+ * Fecha painel de detalhes do alerta
+ */
+const closeAlertDetail = () => {
+  showAlertDetail.value = false;
+  selectedAlert.value = null;
 };
 
 /**

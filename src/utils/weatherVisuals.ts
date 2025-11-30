@@ -131,3 +131,85 @@ export function getRainProbabilityText(probability: number): string {
   if (probability < 80) return 'Alta';
   return 'Muito Alta';
 }
+
+/**
+ * Retorna direção cardinal do vento em português baseada em graus
+ */
+export function getWindDirectionLabel(degrees: number): string {
+  // Normalizar para 0-360
+  const normalized = ((degrees % 360) + 360) % 360;
+  
+  // 8 direções cardinais (45° cada)
+  if (normalized >= 337.5 || normalized < 22.5) return 'N';
+  if (normalized >= 22.5 && normalized < 67.5) return 'NE';
+  if (normalized >= 67.5 && normalized < 112.5) return 'L';
+  if (normalized >= 112.5 && normalized < 157.5) return 'SE';
+  if (normalized >= 157.5 && normalized < 202.5) return 'S';
+  if (normalized >= 202.5 && normalized < 247.5) return 'SO';
+  if (normalized >= 247.5 && normalized < 292.5) return 'O';
+  if (normalized >= 292.5 && normalized < 337.5) return 'NO';
+  
+  return 'N'; // Fallback
+}
+
+/**
+ * Retorna emoji da fase da lua baseada no nome
+ */
+export function getMoonPhaseEmoji(moonPhase: string): string {
+  const phase = moonPhase.toLowerCase();
+  
+  if (phase.includes('nova')) return '🌑';
+  if (phase.includes('crescente')) {
+    if (phase.includes('quarto')) return '🌓';
+    return '🌒'; // Lua Crescente (antes do quarto)
+  }
+  if (phase.includes('cheia')) return '🌕';
+  if (phase.includes('minguante')) {
+    if (phase.includes('quarto')) return '🌗';
+    return '🌖'; // Lua Minguante (depois da cheia)
+  }
+  
+  return '🌙'; // Fallback genérico
+}
+
+/**
+ * Retorna cor do card de previsão baseado na combinação de temperatura e probabilidade de chuva
+ * Usa apenas 2-3 cores principais para manter simplicidade visual
+ */
+export function getForecastCardColor(tempAvg: number, rainProbability: number): string {
+  // Normalizar valores (0-1)
+  const tempNorm = Math.min(Math.max((tempAvg - 10) / 30, 0), 1); // 10°C = 0, 40°C = 1
+  const rainNorm = rainProbability / 100; // 0-100% -> 0-1
+  
+  // Calcular peso combinado (temperatura tem mais peso que chuva)
+  const weatherScore = (tempNorm * 0.6) + (rainNorm * 0.4);
+  
+  // Retornar uma de 3 cores principais baseado no score
+  if (weatherScore < 0.35) {
+    // Clima frio/chuvoso - Azul
+    return 'rgba(59, 130, 246, 0.12)'; // Blue com transparência
+  } else if (weatherScore < 0.65) {
+    // Clima moderado - Verde/Amarelo
+    return 'rgba(34, 197, 94, 0.12)'; // Green com transparência
+  } else {
+    // Clima quente/seco - Laranja/Vermelho
+    return 'rgba(249, 115, 22, 0.12)'; // Orange com transparência
+  }
+}
+
+/**
+ * Retorna cor da borda do card baseado na mesma lógica
+ */
+export function getForecastCardBorderColor(tempAvg: number, rainProbability: number): string {
+  const tempNorm = Math.min(Math.max((tempAvg - 10) / 30, 0), 1);
+  const rainNorm = rainProbability / 100;
+  const weatherScore = (tempNorm * 0.6) + (rainNorm * 0.4);
+  
+  if (weatherScore < 0.35) {
+    return 'rgba(59, 130, 246, 0.3)';
+  } else if (weatherScore < 0.65) {
+    return 'rgba(34, 197, 94, 0.3)';
+  } else {
+    return 'rgba(249, 115, 22, 0.3)';
+  }
+}
