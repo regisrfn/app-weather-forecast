@@ -6,7 +6,12 @@
 .city-detail-page {
   min-height: 100vh;
   height: 100vh;
-  background: linear-gradient(to bottom, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.08) 100%);
+  background: linear-gradient(135deg, 
+    rgba(224, 231, 255, 0.3) 0%,
+    rgba(232, 222, 248, 0.3) 35%,
+    rgba(243, 232, 255, 0.3) 70%,
+    rgba(250, 245, 255, 0.3) 100%
+  );
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;
@@ -14,26 +19,31 @@
 }
 
 .page-header {
-  background: rgba(102, 126, 234, 0.75);
+  background: linear-gradient(135deg, 
+    rgba(139, 157, 225, 0.25) 0%, 
+    rgba(157, 133, 199, 0.25) 100%
+  );
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  padding: $spacing-lg $spacing-lg;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: $spacing-2xl $spacing-xl;
+  box-shadow: 0 2px 20px rgba(102, 126, 234, 0.08);
   position: sticky;
   top: 0;
   z-index: 100;
   flex-shrink: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(139, 157, 225, 0.15);
+  margin-bottom: $spacing-xl;
   
   @include md {
-    padding: $spacing-md $spacing-md;
+    padding: $spacing-lg $spacing-md;
+    margin-bottom: $spacing-lg;
   }
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  gap: $spacing-lg;
+  gap: $spacing-xl;
   max-width: 1400px;
   margin: 0 auto;
   
@@ -61,23 +71,25 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  color: $text-white;
-  border-radius: $radius-full;
-  transition: $transition-fast;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 48px;
+  height: 48px;
+  color: rgba(102, 126, 234, 0.9);
+  border-radius: $radius-lg;
+  transition: all $transition-normal;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(139, 157, 225, 0.2);
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
   
   &:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateX(-4px);
-    box-shadow: $shadow-md;
+    background: rgba(255, 255, 255, 1);
+    transform: translateX(-4px) scale(1.05);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.3);
   }
   
   &:active {
-    transform: translateX(-2px);
+    transform: translateX(-2px) scale(1.02);
   }
   
   svg {
@@ -87,11 +99,12 @@
 }
 
 .city-name {
-  color: $text-white;
+  color: rgba(102, 126, 234, 0.95);
   font-size: $font-4xl;
   font-weight: $font-extrabold;
   margin: 0;
-  @include text-shadow;
+  text-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+  letter-spacing: -0.5px;
   
   @include md {
     font-size: $font-2xl;
@@ -99,7 +112,7 @@
 }
 
 .city-state {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(118, 75, 162, 0.75);
   font-size: $font-lg;
   font-weight: $font-semibold;
   
@@ -113,21 +126,22 @@
   align-items: center;
   gap: $spacing-xs;
   font-size: $font-sm;
-  color: rgba(255, 255, 255, 0.95);
-  background: rgba(255, 255, 255, 0.2);
+  color: rgba(102, 126, 234, 0.9);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  padding: $spacing-sm $spacing-md;
+  padding: $spacing-sm $spacing-lg;
   border-radius: $radius-full;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(139, 157, 225, 0.2);
   font-weight: $font-semibold;
   margin-left: auto;
   white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
   
   svg {
     width: 14px;
     height: 14px;
-    opacity: 0.9;
+    opacity: 0.8;
   }
   
   @include md {
@@ -197,52 +211,96 @@
 .page-content {
   max-width: 1400px;
   margin: 0 auto;
-  padding: $spacing-xl $spacing-lg $spacing-2xl $spacing-lg;
+  padding: 0 $spacing-xl $spacing-2xl $spacing-xl;
   flex: 1;
   overflow-y: auto;
   width: 100%;
   
   @include md {
-    padding: $spacing-lg $spacing-md $spacing-2xl $spacing-md;
+    padding: 0 $spacing-md $spacing-2xl $spacing-md;
   }
 }
 
 .section-title {
   font-size: $font-2xl;
   font-weight: $font-bold;
-  color: $text-dark;
-  margin: 0 0 $spacing-lg 0;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 $spacing-xl 0;
+  position: relative;
+  padding-bottom: $spacing-sm;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.6) 0%, transparent 100%);
+    border-radius: $radius-full;
+  }
   
   @include md {
     font-size: $font-xl;
+    margin-bottom: $spacing-lg;
   }
 }
 
 .current-weather-section {
   margin-bottom: $spacing-2xl;
   animation: fadeIn 0.6s ease-out;
+  padding: $spacing-xl;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: $radius-2xl;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 157, 225, 0.15);
+  box-shadow: 0 4px 24px rgba(102, 126, 234, 0.06);
+  
+  @include md {
+    padding: $spacing-lg;
+  }
 }
 
 // Hero Weather Card
 .hero-weather-card {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(248, 250, 255, 0.95) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   padding: $spacing-2xl;
-  border-radius: $radius-xl;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-radius: $radius-2xl;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: $spacing-2xl;
   margin-bottom: $spacing-xl;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  transition: $transition-normal;
+  border: 2px solid rgba(139, 157, 225, 0.2);
+  transition: all $transition-normal;
   animation: slideDown 0.6s ease-out;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(139, 157, 225, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
   
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 48px rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.35);
   }
   
   @include md {
@@ -272,9 +330,13 @@
 .hero-temp-value {
   font-size: 80px;
   font-weight: $font-extrabold;
-  color: $text-dark;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   line-height: 1;
   letter-spacing: -2px;
+  position: relative;
   
   @include md {
     font-size: 64px;
@@ -283,7 +345,7 @@
 
 .hero-temp-label {
   font-size: $font-xl;
-  color: $text-muted;
+  color: rgba(102, 126, 234, 0.75);
   text-transform: capitalize;
   font-weight: $font-semibold;
   
@@ -305,42 +367,64 @@
 }
 
 .weather-card {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: $spacing-lg;
-  border-radius: $radius-lg;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(248, 250, 255, 0.9) 100%
+  );
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  padding: $spacing-xl;
+  border-radius: $radius-xl;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: $spacing-sm;
   transition: all $transition-normal;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 2px solid rgba(139, 157, 225, 0.15);
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(139, 157, 225, 0.06) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity $transition-normal;
+    pointer-events: none;
+  }
   
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.12);
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.16);
     border-color: rgba(102, 126, 234, 0.3);
-    background: rgba(255, 255, 255, 0.95);
+    
+    &::before {
+      opacity: 1;
+    }
   }
   
   @include md {
-    padding: $spacing-md;
+    padding: $spacing-lg;
   }
 }
 
 .sun-card {
   .card-icon-svg {
-    color: #f59e0b;
+    color: #fbbf24;
+    filter: drop-shadow(0 2px 8px rgba(251, 191, 36, 0.3));
     
     &.sunrise {
-      filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));
+      filter: drop-shadow(0 2px 8px rgba(251, 191, 36, 0.4));
     }
     
     &.sunset {
-      filter: drop-shadow(0 2px 4px rgba(239, 68, 68, 0.3));
-      color: #ef4444;
+      filter: drop-shadow(0 2px 8px rgba(251, 146, 60, 0.4));
+      color: #fb923c;
     }
   }
 }
@@ -349,11 +433,12 @@
   display: inline-block;
   margin-left: $spacing-xs;
   font-size: $font-sm;
-  color: $primary-gradient-start;
+  color: rgba(102, 126, 234, 0.9);
   font-weight: $font-bold;
-  padding: 2px 6px;
-  background: rgba(102, 126, 234, 0.1);
-  border-radius: $radius-sm;
+  padding: 3px 8px;
+  background: linear-gradient(135deg, rgba(139, 157, 225, 0.15) 0%, rgba(157, 133, 199, 0.15) 100%);
+  border-radius: $radius-md;
+  border: 1px solid rgba(139, 157, 225, 0.2);
 }
 
 .card-icon {
@@ -367,14 +452,19 @@
 
 .card-label {
   font-size: $font-sm;
-  color: $text-muted;
+  color: rgba(102, 126, 234, 0.7);
   font-weight: $font-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .card-value {
   font-size: $font-2xl;
   font-weight: $font-bold;
-  color: $text-dark;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   
   @include md {
     font-size: $font-xl;
@@ -384,18 +474,28 @@
 .visualization-section {
   margin-bottom: $spacing-2xl;
   animation: fadeIn 1s ease-out 0.4s both;
+  padding: $spacing-xl;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: $radius-2xl;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 157, 225, 0.15);
+  box-shadow: 0 4px 24px rgba(102, 126, 234, 0.06);
+  
+  @include md {
+    padding: $spacing-lg;
+  }
 }
 
 .visualization-grid {
   display: grid;
   grid-template-columns: 300px 1fr;
-  gap: $spacing-xl;
+  gap: $spacing-2xl;
   align-items: start;
   min-height: 400px;
   
   @include md {
     grid-template-columns: 1fr;
-    gap: $spacing-lg;
+    gap: $spacing-xl;
   }
 }
 
@@ -403,11 +503,31 @@
 .alerts-section {
   margin-bottom: $spacing-2xl;
   animation: fadeIn 0.8s ease-out 0.3s both;
+  padding: $spacing-xl;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: $radius-2xl;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 157, 225, 0.15);
+  box-shadow: 0 4px 24px rgba(102, 126, 234, 0.06);
+  
+  @include md {
+    padding: $spacing-lg;
+  }
 }
 
 .forecast-section {
   margin-bottom: $spacing-2xl;
   animation: fadeIn 1s ease-out 0.5s both;
+  padding: $spacing-xl;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: $radius-2xl;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 157, 225, 0.15);
+  box-shadow: 0 4px 24px rgba(102, 126, 234, 0.06);
+  
+  @include md {
+    padding: $spacing-lg;
+  }
 }
 
 .forecast-swiper {
@@ -415,10 +535,23 @@
   
   :deep(.swiper-button-next),
   :deep(.swiper-button-prev) {
-    color: $primary-gradient-start;
+    color: rgba(102, 126, 234, 0.8);
+    background: rgba(255, 255, 255, 0.9);
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-full;
+    border: 2px solid rgba(139, 157, 225, 0.2);
+    box-shadow: 0 2px 12px rgba(102, 126, 234, 0.15);
+    transition: all $transition-normal;
     
     &::after {
-      font-size: 24px;
+      font-size: 20px;
+    }
+    
+    &:hover {
+      background: rgba(255, 255, 255, 1);
+      border-color: rgba(102, 126, 234, 0.4);
+      transform: scale(1.1);
     }
     
     @include md {
@@ -427,37 +560,64 @@
   }
   
   :deep(.swiper-pagination-bullet) {
-    background: $primary-gradient-start;
-    opacity: 0.4;
+    background: rgba(102, 126, 234, 0.4);
+    opacity: 1;
+    transition: all $transition-fast;
   }
   
   :deep(.swiper-pagination-bullet-active) {
-    opacity: 1;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.8) 100%);
+    width: 24px;
+    border-radius: $radius-full;
   }
 }
 
 .forecast-card {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: $spacing-lg;
-  border-radius: $radius-lg;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(248, 250, 255, 0.95) 100%
+  );
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  padding: $spacing-xl;
+  border-radius: $radius-xl;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.1);
   display: flex;
   flex-direction: column;
   gap: $spacing-md;
   height: 100%;
   transition: all $transition-normal;
-  border: 2px solid transparent;
+  border: 2px solid rgba(139, 157, 225, 0.2);
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+      rgba(102, 126, 234, 0.6) 0%, 
+      rgba(118, 75, 162, 0.6) 100%
+    );
+    opacity: 0;
+    transition: opacity $transition-normal;
+  }
   
   &:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
-    background: rgba(255, 255, 255, 0.95);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.4);
+    
+    &::before {
+      opacity: 1;
+    }
   }
   
   @include md {
-    padding: $spacing-md;
+    padding: $spacing-lg;
     gap: $spacing-sm;
   }
 }
@@ -465,7 +625,10 @@
 .forecast-date {
   font-size: $font-base;
   font-weight: $font-bold;
-  color: $text-dark;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(118, 75, 162, 0.75) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   text-align: center;
   text-transform: capitalize;
   
@@ -478,11 +641,11 @@
   font-size: 56px;
   text-align: center;
   line-height: 1;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 2px 8px rgba(102, 126, 234, 0.2));
   transition: transform $transition-fast;
   
   .forecast-card:hover & {
-    transform: scale(1.1);
+    transform: scale(1.15) translateY(-4px);
   }
   
   @include md {
@@ -494,9 +657,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: $spacing-xs;
+  gap: $spacing-sm;
   font-size: $font-xl;
   font-weight: $font-bold;
+  padding: $spacing-sm;
+  background: linear-gradient(135deg, rgba(139, 157, 225, 0.08) 0%, rgba(157, 133, 199, 0.08) 100%);
+  border-radius: $radius-md;
   
   @include md {
     font-size: $font-lg;
@@ -504,15 +670,16 @@
 }
 
 .temp-max {
-  color: #f97316;
+  color: #fb923c;
 }
 
 .temp-separator {
-  color: $text-muted;
+  color: rgba(102, 126, 234, 0.4);
+  font-weight: $font-regular;
 }
 
 .temp-min {
-  color: #3b82f6;
+  color: #60a5fa;
 }
 
 .forecast-detail {
@@ -521,17 +688,21 @@
   justify-content: center;
   gap: $spacing-xs;
   font-size: $font-sm;
-  color: $text-muted;
+  color: rgba(102, 126, 234, 0.75);
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(139, 157, 225, 0.05);
+  border-radius: $radius-md;
   
   .wind-dir-label {
     display: inline-block;
     margin-left: 4px;
     font-weight: $font-bold;
-    color: $primary-gradient-start;
+    color: rgba(102, 126, 234, 0.9);
     padding: 2px 6px;
-    background: rgba(102, 126, 234, 0.1);
+    background: linear-gradient(135deg, rgba(139, 157, 225, 0.15) 0%, rgba(157, 133, 199, 0.15) 100%);
     border-radius: $radius-sm;
     font-size: $font-xs;
+    border: 1px solid rgba(139, 157, 225, 0.2);
   }
 }
 
@@ -541,22 +712,24 @@
 
 .forecast-uv {
   padding: $spacing-sm $spacing-md;
-  border-radius: $radius-md;
+  border-radius: $radius-lg;
   text-align: center;
   font-size: $font-sm;
   font-weight: $font-semibold;
-  margin-top: $spacing-xs;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: $spacing-sm;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .forecast-sun {
   display: flex;
   justify-content: space-around;
-  padding-top: $spacing-sm;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  padding-top: $spacing-md;
+  border-top: 2px solid rgba(139, 157, 225, 0.15);
   font-size: $font-xs;
-  color: $text-muted;
-  gap: $spacing-xs;
+  color: rgba(102, 126, 234, 0.75);
+  gap: $spacing-sm;
+  margin-top: $spacing-xs;
 }
 
 .sun-time {
@@ -564,16 +737,19 @@
   align-items: center;
   gap: 4px;
   font-weight: $font-semibold;
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(139, 157, 225, 0.05);
+  border-radius: $radius-md;
   
   .sun-icon {
     flex-shrink: 0;
     
     &.sunrise {
-      color: #f59e0b;
+      color: #fbbf24;
     }
     
     &.sunset {
-      color: #ef4444;
+      color: #fb923c;
     }
   }
 }
@@ -584,9 +760,12 @@
   align-items: center;
   justify-content: center;
   gap: $spacing-xs;
-  padding-top: $spacing-sm;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-  margin-top: $spacing-xs;
+  padding-top: $spacing-md;
+  border-top: 2px solid rgba(139, 157, 225, 0.15);
+  margin-top: $spacing-sm;
+  padding: $spacing-sm;
+  background: rgba(139, 157, 225, 0.05);
+  border-radius: $radius-md;
 }
 
 .moon-emoji {
@@ -596,7 +775,7 @@
 
 .moon-label {
   font-size: $font-xs;
-  color: $text-muted;
+  color: rgba(102, 126, 234, 0.75);
   font-weight: $font-semibold;
 }
 

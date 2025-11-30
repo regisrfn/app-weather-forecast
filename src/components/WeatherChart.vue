@@ -94,18 +94,18 @@ const createChart = () => {
           type: 'line',
           label: 'Temp. Máx (°C)',
           data: tempMaxData,
-          borderColor: '#f97316',
+          borderColor: '#fb923c',
           backgroundColor: (context: any) => {
             const ctx = context.chart.ctx;
             const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(249, 115, 22, 0.3)');
-            gradient.addColorStop(1, 'rgba(249, 115, 22, 0.0)');
+            gradient.addColorStop(0, 'rgba(251, 146, 60, 0.25)');
+            gradient.addColorStop(1, 'rgba(251, 146, 60, 0.0)');
             return gradient;
           },
           borderWidth: 3,
           pointRadius: 5,
           pointHoverRadius: 7,
-          pointBackgroundColor: '#f97316',
+          pointBackgroundColor: '#fb923c',
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           tension: 0.4,
@@ -116,18 +116,18 @@ const createChart = () => {
           type: 'line',
           label: 'Temp. Mín (°C)',
           data: tempMinData,
-          borderColor: '#3b82f6',
+          borderColor: '#60a5fa',
           backgroundColor: (context: any) => {
             const ctx = context.chart.ctx;
             const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(59, 130, 246, 0.3)');
-            gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+            gradient.addColorStop(0, 'rgba(96, 165, 250, 0.25)');
+            gradient.addColorStop(1, 'rgba(96, 165, 250, 0.0)');
             return gradient;
           },
           borderWidth: 3,
           pointRadius: 5,
           pointHoverRadius: 7,
-          pointBackgroundColor: '#3b82f6',
+          pointBackgroundColor: '#60a5fa',
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           tension: 0.4,
@@ -138,8 +138,8 @@ const createChart = () => {
           type: 'bar',
           label: 'Precipitação (mm)',
           data: precipData,
-          backgroundColor: 'rgba(59, 130, 246, 0.6)',
-          borderColor: '#2563eb',
+          backgroundColor: 'rgba(139, 157, 225, 0.5)',
+          borderColor: 'rgba(102, 126, 234, 0.8)',
           borderWidth: 1,
           yAxisID: 'y1',
           barPercentage: 0.6,
@@ -302,13 +302,23 @@ onUnmounted(() => {
 .weather-chart {
   width: 100%;
   min-height: 500px;
-  background: rgba(255, 255, 255, 0.98);
-  border-radius: $radius-lg;
-  padding: $spacing-lg;
-  box-shadow: $shadow-md;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(248, 250, 255, 0.98) 100%
+  );
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.12);
+  border: 2px solid rgba(139, 157, 225, 0.2);
+  transition: all $transition-normal;
+  
+  &:hover {
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
+    border-color: rgba(102, 126, 234, 0.3);
+  }
   
   @include md {
-    padding: $spacing-md;
+    padding: $spacing-lg;
     min-height: 400px;
   }
 }
@@ -316,13 +326,16 @@ onUnmounted(() => {
 .chart-title {
   font-size: $font-xl;
   font-weight: $font-bold;
-  color: $text-dark;
-  margin: 0 0 $spacing-lg 0;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 $spacing-xl 0;
   text-align: center;
   
   @include md {
     font-size: $font-lg;
-    margin-bottom: $spacing-md;
+    margin-bottom: $spacing-lg;
   }
 }
 

@@ -124,18 +124,29 @@ const getDirectionName = (degrees: number): string => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $spacing-md;
-  padding: $spacing-lg;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: $radius-lg;
-  box-shadow: $shadow-md;
+  gap: $spacing-lg;
+  padding: $spacing-xl;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(248, 250, 255, 0.98) 100%
+  );
+  border-radius: $radius-xl;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.12);
+  border: 2px solid rgba(139, 157, 225, 0.2);
   min-width: 240px;
   position: relative;
+  transition: all $transition-normal;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
+    border-color: rgba(102, 126, 234, 0.3);
+  }
   
   @include md {
     min-width: 200px;
-    padding: $spacing-md;
-    gap: $spacing-sm;
+    padding: $spacing-lg;
+    gap: $spacing-md;
   }
 }
 
@@ -152,7 +163,7 @@ const getDirectionName = (degrees: number): string => {
 
 .cardinal-point {
   font-size: 18px;
-  fill: $text-dark;
+  fill: rgba(102, 126, 234, 0.8);
   font-weight: $font-bold;
   
   @include md {
@@ -161,7 +172,7 @@ const getDirectionName = (degrees: number): string => {
 }
 
 .cardinal-n {
-  fill: $primary-gradient-start;
+  fill: rgba(102, 126, 234, 0.95);
 }
 
 .cardinal-point-small {
