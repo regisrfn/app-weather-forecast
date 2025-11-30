@@ -12,13 +12,13 @@
           <h1 class="city-name">{{ detailedWeather.cityInfo.cityName }}</h1>
           <span v-if="detailedWeather.cityInfo.state" class="city-state">{{ detailedWeather.cityInfo.state }}</span>
         </div>
-        <span v-if="detailedWeather" class="timestamp-badge">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div v-if="detailedWeather" class="timestamp-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
             <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          {{ formatTimestamp(detailedWeather.currentWeather.timestamp) }}
-        </span>
+          <span class="timestamp-text">{{ formatTimestamp(detailedWeather.currentWeather.timestamp) }}</span>
+        </div>
       </div>
     </header>
 
@@ -47,10 +47,65 @@
         
         <!-- Hero Card - Temperatura Principal -->
         <div class="hero-weather-card">
-          <span class="hero-icon">{{ getWeatherIcon(detailedWeather.currentWeather.description) }}</span>
-          <div class="hero-temp-info">
-            <span class="hero-temp-value">{{ detailedWeather.currentWeather.temperature.toFixed(1) }}°C</span>
-            <span class="hero-temp-label">{{ detailedWeather.currentWeather.description }}</span>
+          <div class="hero-main-content">
+            <span class="hero-icon">{{ getWeatherIcon(detailedWeather.currentWeather.description) }}</span>
+            <div class="hero-temp-info">
+              <span class="hero-temp-value">{{ detailedWeather.currentWeather.temperature.toFixed(1) }}°C</span>
+              <span class="hero-temp-label">{{ detailedWeather.currentWeather.description }}</span>
+              <div class="hero-temp-range">
+                <span class="temp-range-max">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5v14m0-14l-4 4m4-4l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  {{ detailedWeather.dailyForecasts[0]?.tempMax.toFixed(0) }}°
+                </span>
+                <span class="temp-range-separator">|</span>
+                <span class="temp-range-min">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 19V5m0 14l-4-4m4 4l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  {{ detailedWeather.dailyForecasts[0]?.tempMin.toFixed(0) }}°
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Bússola Compacta -->
+          <div class="hero-wind-compass">
+            <div class="compass-mini">
+              <svg viewBox="0 0 120 120" class="compass-svg-mini">
+                <!-- Círculo externo -->
+                <circle cx="60" cy="60" r="50" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.15" />
+                
+                <!-- Pontos cardeais -->
+                <text x="60" y="20" text-anchor="middle" class="cardinal-mini cardinal-n" font-size="12" font-weight="bold">N</text>
+                <text x="100" y="65" text-anchor="middle" class="cardinal-mini" font-size="10">L</text>
+                <text x="60" y="105" text-anchor="middle" class="cardinal-mini" font-size="10">S</text>
+                <text x="20" y="65" text-anchor="middle" class="cardinal-mini" font-size="10">O</text>
+                
+                <!-- Seta indicadora aprimorada -->
+                <g :transform="`rotate(${detailedWeather.dailyForecasts[0]?.windDirection || 0} 60 60)`" class="wind-arrow-mini">
+                  <!-- Sombra da seta -->
+                  <path d="M 61 21 L 66 56 L 61 53 L 56 56 Z" fill="rgba(0, 0, 0, 0.2)" />
+                  <!-- Corpo principal da seta -->
+                  <path d="M 60 18 L 66 56 L 60 53 L 54 56 Z" fill="#ef4444" stroke="#dc2626" stroke-width="1.5" stroke-linejoin="round" />
+                  <!-- Ponta afiada -->
+                  <path d="M 60 12 L 70 24 L 60 18 L 50 24 Z" fill="#b91c1c" stroke="#991b1b" stroke-width="1" stroke-linejoin="round" />
+                  <!-- Destaque na ponta -->
+                  <path d="M 60 12 L 65 18 L 60 16 L 55 18 Z" fill="#fca5a5" opacity="0.8" />
+                  <!-- Base circular -->
+                  <circle cx="60" cy="58" r="5" fill="#dc2626" stroke="#991b1b" stroke-width="1" />
+                  <circle cx="60" cy="57" r="3" fill="#ef4444" opacity="0.7" />
+                </g>
+                
+                <!-- Centro -->
+                <circle cx="60" cy="60" r="2" fill="currentColor" opacity="0.5" />
+              </svg>
+            </div>
+            <div class="wind-info-mini">
+              <span class="wind-speed-mini">{{ detailedWeather.currentWeather.windSpeed.toFixed(1) }} km/h</span>
+              <span class="wind-dir-mini">{{ getWindDirectionLabel(detailedWeather.dailyForecasts[0]?.windDirection || 0) }}</span>
+            </div>
           </div>
         </div>
 
@@ -127,23 +182,17 @@
         />
       </section>
 
-      <!-- Gráficos e Visualizações -->
+      <!-- Gráfico de Tendências -->
       <section class="visualization-section">
         <h2 class="section-title">Tendências e Previsões</h2>
-        <div class="visualization-grid">
-          <WindCompass 
-            :wind-speed="detailedWeather.currentWeather.windSpeed"
-            :wind-direction="detailedWeather.dailyForecasts[0]?.windDirection"
-          />
-
-          <WeatherChart :daily-forecasts="detailedWeather.dailyForecasts" />
-        </div>
+        <WeatherChart :daily-forecasts="detailedWeather.dailyForecasts" />
       </section>
 
       <!-- Carrossel de Previsões Diárias -->
       <section class="forecast-section">
         <h2 class="section-title">Previsão para os Próximos {{ detailedWeather.dailyForecasts.length }} Dias</h2>
         <swiper
+          :modules="[Navigation, Pagination]"
           :slides-per-view="1.2"
           :space-between="16"
           :breakpoints="{
@@ -195,23 +244,31 @@
               </div>
 
               <div class="forecast-uv" :style="{ backgroundColor: forecast.uvRiskColor, color: getContrastColor(forecast.uvRiskColor) }">
-                UV {{ forecast.uvIndex.toFixed(1) }} - {{ forecast.uvRiskLevel }}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="uv-icon">
+                  <circle cx="12" cy="12" r="5" fill="currentColor"/>
+                  <path d="M12 1v3m0 16v3M23 12h-3M4 12H1m17.5-7.5l-2 2m-11 11l-2 2m13 0l-2-2m-11-11l-2-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span>UV {{ forecast.uvIndex.toFixed(1) }}</span>
               </div>
 
               <div class="forecast-sun">
-                <div class="sun-time">
-                  <svg class="sun-icon sunrise" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="3" fill="currentColor"/>
-                    <path d="M12 5V2M12 22v-3M19 12h3M2 12h3M16.5 7.5l2-2M5.5 18.5l2-2M16.5 16.5l2 2M5.5 5.5l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <div class="sun-time sunrise-time">
+                  <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="4" fill="currentColor"/>
+                    <path d="M12 2v4m0 12v4m10-10h-4M6 12H2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M4 19h16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M12 15l-3 4h6l-3-4z" fill="currentColor" opacity="0.3"/>
                   </svg>
-                  <span>{{ formatTime(forecast.sunrise) }}</span>
+                  <span class="sun-label">{{ formatTime(forecast.sunrise) }}</span>
                 </div>
-                <div class="sun-time">
-                  <svg class="sun-icon sunset" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="3" fill="currentColor"/>
-                    <path d="M12 5V2M12 22v-3M19 12h3M2 12h3M16.5 7.5l2-2M5.5 18.5l2-2M16.5 16.5l2 2M5.5 5.5l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <div class="sun-time sunset-time">
+                  <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="4" fill="currentColor"/>
+                    <path d="M12 2v4m0 12v4m10-10h-4M6 12H2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M4 5h16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M12 9l3-4h-6l3 4z" fill="currentColor" opacity="0.3"/>
                   </svg>
-                  <span>{{ formatTime(forecast.sunset) }}</span>
+                  <span class="sun-label">{{ formatTime(forecast.sunset) }}</span>
                 </div>
               </div>
 
@@ -238,11 +295,11 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Swiper, SwiperSlide } from 'swiper/vue';
+import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/swiper-bundle.css';
 
 import { getCityWeatherDetailed } from '../services/apiService';
 import type { DetailedWeatherResponse } from '../types/weather';
-import WindCompass from '../components/WindCompass.vue';
 import WeatherChart from '../components/WeatherChart.vue';
 import WeatherAlerts from '../components/WeatherAlerts.vue';
 import AlertDetailPanel from '../components/AlertDetailPanel.vue';
