@@ -129,8 +129,8 @@ const handleSearchInput = () => {
     
     const normalizedQuery = normalizeString(query);
     
-    // Filtrar cidades (limitar a 50 resultados para performance)
-    filteredCities.value = props.municipalities
+    // Filtrar e ordenar cidades por relevância
+    const matchedCities = props.municipalities
       .filter(city => {
         const normalizedName = normalizeString(city.name);
         const normalizedState = normalizeString(city.state);
@@ -140,8 +140,31 @@ const handleSearchInput = () => {
                normalizedState.includes(normalizedQuery) ||
                normalizedStateName.includes(normalizedQuery);
       })
-      .slice(0, 50);
+      .map(city => {
+        const normalizedName = normalizeString(city.name);
+        const normalizedState = normalizeString(city.state);
+        const normalizedStateName = normalizeString(city.state_name);
+        
+        // Calcular score de relevância
+        let score = 0;
+        
+        // Match exato tem prioridade máxima
+        if (normalizedName === normalizedQuery) score = 1000;
+        // Match que começa com a query
+        else if (normalizedName.startsWith(normalizedQuery)) score = 500;
+        // Match que contém a query
+        else if (normalizedName.includes(normalizedQuery)) score = 100;
+        // Match no estado
+        else if (normalizedState === normalizedQuery || normalizedStateName === normalizedQuery) score = 50;
+        else if (normalizedState.includes(normalizedQuery) || normalizedStateName.includes(normalizedQuery)) score = 10;
+        
+        return { city, score };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 50)
+      .map(item => item.city);
     
+    filteredCities.value = matchedCities;
     isSearching.value = false;
   }, 150);
 };
