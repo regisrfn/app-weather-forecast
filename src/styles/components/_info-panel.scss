@@ -158,21 +158,49 @@
     font-weight: $font-bold;
     flex: 1;
     cursor: pointer;
-    transition: $transition-fast;
-    text-decoration: underline dotted transparent;
+    transition: all $transition-fast;
+    text-decoration: underline solid rgba(255, 255, 255, 0.4);
     text-underline-offset: 4px;
+    padding: 4px 8px;
+    margin-left: -8px;
+    border-radius: $radius-md;
+    position: relative;
     
-    @include md {
+    // Indicador visual de link
+    &::after {
+      content: '→';
+      margin-left: 8px;
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: all $transition-fast;
       font-size: $font-xl;
     }
     
+    @include md {
+      font-size: $font-xl;
+      padding: 2px 6px;
+      margin-left: -6px;
+      
+      &::after {
+        font-size: $font-lg;
+        margin-left: 6px;
+      }
+    }
+    
     &:hover {
-      text-decoration-color: rgba(255, 255, 255, 0.8);
+      text-decoration-color: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.1);
       transform: translateX(2px);
+      
+      &::after {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
     
     &:active {
-      transform: translateX(0);
+      transform: translateX(0) scale(0.98);
+      background: rgba(255, 255, 255, 0.15);
     }
   }
 }
@@ -549,5 +577,41 @@
   @include md {
     padding: $spacing-sm;
     font-size: $font-sm;
+  }
+}
+
+// Mobile-specific improvements for clickable city name
+@media (max-width: 768px) {
+  .header-top .city-name-clickable {
+    // Aumentar área de toque para mobile (mínimo 44x44px recomendado)
+    padding: 8px 12px;
+    margin-left: -12px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    
+    // Sublinhado mais visível em telas pequenas
+    text-decoration: underline solid rgba(255, 255, 255, 0.5);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 5px;
+    
+    // Remover seta em mobile para economizar espaço
+    &::after {
+      display: none;
+    }
+    
+    // Feedback tátil mais evidente
+    &:active {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(0.97);
+    }
+    
+    // Manter hover para dispositivos híbridos
+    @media (hover: hover) {
+      &:hover {
+        background: rgba(255, 255, 255, 0.12);
+        text-decoration-color: rgba(255, 255, 255, 1);
+      }
+    }
   }
 }
