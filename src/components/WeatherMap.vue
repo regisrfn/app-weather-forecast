@@ -233,9 +233,16 @@
     >
       <div class="panel-header">
         <div class="header-top">
-          <h2 class="city-name-clickable" @click="navigateToCityDetail" role="button" tabindex="0" @keydown.enter="navigateToCityDetail">
+          <div 
+            class="city-name-clickable" 
+            role="heading" 
+            aria-level="2"
+            @click="navigateToCityDetail" 
+            tabindex="0" 
+            @keydown.enter="navigateToCityDetail"
+          >
             {{ selectedCity.cityName }}
-          </h2>
+          </div>
           <div class="header-right">
             <span class="intensity-badge" :style="{ backgroundColor: getRainfallColor(selectedCity.rainfallIntensity) }">
               {{ getRainfallDescription(selectedCity.rainfallIntensity) }}

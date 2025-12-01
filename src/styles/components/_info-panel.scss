@@ -134,7 +134,9 @@
 }
 
 .header-top {
-  @include flex-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: $spacing-md;
   margin-bottom: $spacing-md;
 
@@ -158,30 +160,20 @@
     margin: 0;
     font-size: $font-3xl;
     font-weight: $font-bold;
-    flex: 1;
     cursor: pointer;
     transition: all $transition-fast;
-    text-decoration: underline solid rgba(255, 255, 255, 0.4);
+    text-decoration: underline solid rgba(255, 255, 255, 0.5);
+    text-decoration-thickness: 2px;
     text-underline-offset: 4px;
-    padding: 4px 8px;
-    margin-left: -8px;
+    padding: 6px 10px;
     border-radius: $radius-md;
     position: relative;
-    
-    // Indicador visual de link
-    &::after {
-      content: '→';
-      margin-left: 8px;
-      opacity: 0;
-      transform: translateX(-4px);
-      transition: all $transition-fast;
-      font-size: $font-xl;
-    }
+    background: rgba(255, 255, 255, 0.1);
+    width: fit-content;  
     
     @include md {
       font-size: $font-xl;
-      padding: 2px 6px;
-      margin-left: -6px;
+      padding: 4px 8px;
       
       &::after {
         font-size: $font-lg;
@@ -191,7 +183,7 @@
     
     &:hover {
       text-decoration-color: rgba(255, 255, 255, 0.9);
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.2);
       transform: translateX(2px);
       
       &::after {
@@ -202,7 +194,7 @@
     
     &:active {
       transform: translateX(0) scale(0.98);
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.25);
     }
   }
 }
@@ -587,7 +579,6 @@
   .header-top .city-name-clickable {
     // Aumentar área de toque para mobile (mínimo 44x44px recomendado)
     padding: 8px 12px;
-    margin-left: -12px;
     min-height: 44px;
     display: flex;
     align-items: center;
