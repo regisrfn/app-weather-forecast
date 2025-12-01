@@ -142,46 +142,35 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $spacing-lg;
-  padding: $spacing-xl;
-  background: $weather-surface-blur;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: $radius-xl;
-  box-shadow: 
-    0 4px 20px $weather-shadow,
-    0 0 0 1px rgba(255, 255, 255, 0.8),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  border: 2px solid $weather-border;
-  min-width: 260px;
+  gap: $spacing-md;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  min-width: auto;
   position: relative;
   transition: all $transition-normal;
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 
-      0 8px 32px rgba(59, 130, 246, 0.18),
-      0 0 0 1px rgba(255, 255, 255, 0.9),
-      inset 0 1px 0 rgba(255, 255, 255, 1);
-    border-color: $weather-primary;
+    transform: scale(1.02);
   }
   
   @include md {
-    min-width: 220px;
-    padding: $spacing-lg;
-    gap: $spacing-md;
+    min-width: auto;
+    padding: 0;
+    gap: $spacing-sm;
   }
 }
 
 .compass-svg {
   width: 100%;
-  max-width: 260px;
+  max-width: 180px;
   height: auto;
   color: $weather-text-secondary;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+  filter: drop-shadow(0 2px 8px rgba(139, 157, 225, 0.15));
   
   @include md {
-    max-width: 220px;
+    max-width: 160px;
   }
 }
 
@@ -230,29 +219,28 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding-top: $spacing-sm;
-  border-top: 2px solid $weather-border-light;
+  padding-top: $spacing-xs;
   width: 100%;
 }
 
 .wind-speed-value {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: $font-extrabold;
   color: $weather-primary;
   line-height: 1;
   font-variant-numeric: tabular-nums;
   
   @include md {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
 }
 
 .wind-speed-unit {
-  font-size: $font-sm;
+  font-size: $font-xs;
   font-weight: $font-bold;
   color: $weather-text-secondary;
   text-transform: uppercase;
   letter-spacing: $letter-spacing-wide;
-  opacity: 0.85;
+  opacity: 0.75;
 }
 </style>

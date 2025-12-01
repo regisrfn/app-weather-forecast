@@ -1,0 +1,133 @@
+@use '../../abstracts/colors' as *;
+@use '../../abstracts/variables' as *;
+@use '../../abstracts/mixins' as *;
+@use '../../abstracts/breakpoints' as *;
+
+// Metrics Container
+.metrics-container {
+  margin-top: $spacing-xl;
+  animation: fadeIn 0.6s ease-out 0.2s both;
+}
+
+.metrics-title {
+  font-size: $font-xl;
+  font-weight: $font-bold;
+  color: rgba(59, 130, 246, 0.85);
+  margin: 0 0 $spacing-lg 0;
+  
+  @include md {
+    font-size: $font-lg;
+    margin-bottom: $spacing-md;
+  }
+}
+
+// Weather Metrics Table
+.weather-metrics-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(139, 157, 225, 0.12);
+  border: 2px solid rgba(139, 157, 225, 0.15);
+  
+  tbody {
+    tr {
+      transition: background-color $transition-fast;
+      
+      &:not(:last-child) {
+        border-bottom: 1px solid rgba(139, 157, 225, 0.1);
+      }
+      
+      &:hover {
+        background: rgba(139, 157, 225, 0.04);
+      }
+    }
+  }
+  
+  th, td {
+    padding: $spacing-lg $spacing-xl;
+    text-align: left;
+    
+    @include md {
+      padding: $spacing-md $spacing-lg;
+    }
+  }
+  
+  th {
+    font-weight: $font-semibold;
+    color: rgba(59, 130, 246, 0.9);
+    font-size: $font-base;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    
+    @include md {
+      font-size: $font-sm;
+    }
+  }
+  
+  td {
+    font-weight: $font-bold;
+    color: $weather-text-primary;
+    font-size: $font-lg;
+    
+    @include md {
+      font-size: $font-base;
+    }
+  }
+  
+  .metric-icon {
+    font-size: 20px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.15));
+    
+    @include md {
+      font-size: 18px;
+    }
+  }
+  
+  // Mobile: Stack table cells
+  @media (max-width: 640px) {
+    display: block;
+    
+    tbody {
+      display: block;
+    }
+    
+    tr {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: $spacing-md;
+      padding: $spacing-md;
+      
+      &:not(:last-child) {
+        border-bottom: 1px solid rgba(139, 157, 225, 0.1);
+      }
+    }
+    
+    th, td {
+      padding: $spacing-sm;
+      display: block;
+    }
+    
+    th[colspan="3"] {
+      grid-column: 1 / 2;
+    }
+  }
+}
+
+// Fade-in animation
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

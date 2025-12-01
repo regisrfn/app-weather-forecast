@@ -49,18 +49,18 @@ $map-highlight-border: #27ae60;
 // Cores do Círculo de Raio
 $radius-circle-color: #667eea;
 
-// Cores Específicas para City Detail (usabilidade melhorada)
-$weather-primary: #3b82f6;
-$weather-secondary: #60a5fa;
-$weather-accent: #8b5cf6;
-$weather-text-primary: #0f172a;
-$weather-text-secondary: #475569;
-$weather-text-muted: #64748b;
-$weather-surface: rgba(255, 255, 255, 1);
-$weather-surface-blur: rgba(255, 255, 255, 0.95);
-$weather-border: rgba(59, 130, 246, 0.25);
-$weather-border-light: rgba(59, 130, 246, 0.15);
-$weather-shadow: rgba(59, 130, 246, 0.12);
+// Cores Específicas para City Detail (Refatoração - Tons Suaves e Discretos)
+$weather-primary: #8b9de1;        // Azul suave lavanda
+$weather-secondary: #a5b4e8;      // Azul claro acinzentado
+$weather-accent: #9d85c7;         // Roxo suave
+$weather-text-primary: #2d3748;   // Cinza escuro suave
+$weather-text-secondary: #5a6b7d; // Cinza médio
+$weather-text-muted: #8394a8;     // Cinza claro
+$weather-surface: rgba(255, 255, 255, 0.85);
+$weather-surface-blur: rgba(255, 255, 255, 0.75);
+$weather-border: rgba(139, 157, 225, 0.2);
+$weather-border-light: rgba(139, 157, 225, 0.12);
+$weather-shadow: rgba(139, 157, 225, 0.08);
 
 // Opacidades Semânticas
 $opacity-surface: 0.15;

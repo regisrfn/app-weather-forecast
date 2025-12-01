@@ -1,0 +1,239 @@
+@use '../../abstracts/colors' as *;
+@use '../../abstracts/variables' as *;
+@use '../../abstracts/mixins' as *;
+@use '../../abstracts/breakpoints' as *;
+
+// Forecast Section
+.forecast-section {
+  margin-bottom: $spacing-2xl;
+  animation: fadeIn 0.6s ease-out 0.4s both;
+  padding: $spacing-xl;
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.08) 0%,
+    rgba(99, 102, 241, 0.08) 50%,
+    rgba(139, 92, 246, 0.08) 100%
+  );
+  border-radius: $radius-2xl;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  box-shadow: 0 4px 24px rgba(59, 130, 246, 0.08);
+  
+  @include md {
+    padding: $spacing-lg;
+  }
+}
+
+.forecast-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-xl;
+  
+  @include md {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+  }
+}
+
+// Forecast Scroll Container (CSS-only, no JS carousel)
+.forecast-scroll-container {
+  display: flex;
+  gap: $spacing-lg;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: $spacing-md 0 $spacing-xl 0;
+  margin: 0 #{-$spacing-xl};
+  padding-left: $spacing-xl;
+  padding-right: $spacing-xl;
+  
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(139, 157, 225, 0.1);
+    border-radius: $radius-full;
+    margin: 0 $spacing-xl;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(139, 157, 225, 0.3);
+    border-radius: $radius-full;
+    
+    &:hover {
+      background: rgba(139, 157, 225, 0.5);
+    }
+  }
+  
+  @include md {
+    gap: $spacing-md;
+    margin: 0 #{-$spacing-lg};
+    padding-left: $spacing-lg;
+    padding-right: $spacing-lg;
+  }
+}
+
+// Forecast Card
+.forecast-card {
+  min-width: 220px;
+  max-width: 220px;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.90) 0%,
+    rgba(248, 250, 255, 0.92) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: $spacing-xl;
+  border-radius: $radius-xl;
+  box-shadow: 0 4px 16px rgba(139, 157, 225, 0.12);
+  border: 2px solid rgba(139, 157, 225, 0.15);
+  transition: all $transition-normal;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(139, 157, 225, 0.2);
+    border-color: rgba(139, 157, 225, 0.3);
+  }
+  
+  @include md {
+    min-width: 180px;
+    max-width: 180px;
+    padding: $spacing-lg;
+    gap: $spacing-sm;
+  }
+}
+
+.forecast-date {
+  font-size: $font-base;
+  font-weight: $font-bold;
+  color: rgba(59, 130, 246, 0.9);
+  text-align: center;
+  text-transform: capitalize;
+  padding-bottom: $spacing-sm;
+  border-bottom: 2px solid rgba(139, 157, 225, 0.15);
+  
+  @include md {
+    font-size: $font-sm;
+  }
+}
+
+.forecast-icon {
+  font-size: 48px;
+  text-align: center;
+  line-height: 1;
+  filter: drop-shadow(0 2px 8px rgba(59, 130, 246, 0.2));
+  margin: $spacing-sm 0;
+  
+  @include md {
+    font-size: 40px;
+  }
+}
+
+.forecast-temps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  font-size: $font-2xl;
+  font-weight: $font-bold;
+  margin: $spacing-sm 0;
+  
+  @include md {
+    font-size: $font-xl;
+  }
+}
+
+.temp-max {
+  color: #fb923c;
+}
+
+.temp-min {
+  color: #60a5fa;
+}
+
+.temp-separator {
+  color: rgba(102, 126, 234, 0.3);
+  font-weight: $font-regular;
+}
+
+.forecast-detail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(139, 157, 225, 0.08);
+  border-radius: $radius-md;
+  font-size: $font-sm;
+  
+  @include md {
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-xs;
+  }
+}
+
+.detail-icon {
+  font-size: 18px;
+  
+  @include md {
+    font-size: 16px;
+  }
+}
+
+.detail-value {
+  font-weight: $font-semibold;
+  color: $weather-text-primary;
+}
+
+.wind-dir-label {
+  font-size: $font-xs;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.forecast-uv {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  font-size: $font-sm;
+  font-weight: $font-bold;
+  margin-top: $spacing-xs;
+  
+  @include md {
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-xs;
+  }
+}
+
+.uv-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  
+  @include md {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+// Fade-in animation
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
