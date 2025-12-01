@@ -10,12 +10,19 @@
 
 import localforage from 'localforage';
 import type { WeatherData } from './mockService';
+import type { DetailedWeatherResponse } from '../types/weather';
 import { cacheLogger } from '../utils/logger';
 
 interface CacheEntry {
   data: WeatherData;
   timestamp: number; // Timestamp de quando foi cacheado
   size: number; // Tamanho em bytes do dado serializado
+}
+
+interface DetailedCacheEntry {
+  data: DetailedWeatherResponse;
+  timestamp: number;
+  size: number;
 }
 
 interface CacheMetadata {
@@ -27,6 +34,9 @@ interface CacheMetadata {
 class WeatherCache {
   // TTL para dados climáticos: 30 minutos (em milissegundos)
   private readonly WEATHER_TTL = 30 * 60 * 1000;
+  
+  // TTL para dados detalhados da cidade: 1 hora (em milissegundos)
+  private readonly DETAILED_WEATHER_TTL = 60 * 60 * 1000;
   
   // Limite máximo de cache: 10MB
   private readonly MAX_CACHE_SIZE = 10 * 1024 * 1024; // 10MB em bytes
@@ -101,6 +111,13 @@ class WeatherCache {
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
     return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+  }
+  
+  /**
+   * Serializa dados removendo proxies do Vue e outras referências não-clonáveis
+   */
+  private serialize<T>(data: T): T {
+    return JSON.parse(JSON.stringify(data));
   }
   
   /**
@@ -186,7 +203,10 @@ class WeatherCache {
    */
   async set(cityId: string, date: string, time: string, data: WeatherData): Promise<void> {
     const key = this.generateKey(cityId, date, time); // Já arredonda internamente
-    const size = this.calculateSize(data);
+    
+    // Serializar dados para remover proxies do Vue
+    const serializedData = this.serialize(data);
+    const size = this.calculateSize(serializedData);
     
     // Verificar se precisa fazer evicção
     if (this.metadata.totalSize + size > this.MAX_CACHE_SIZE) {
@@ -194,7 +214,7 @@ class WeatherCache {
     }
     
     const entry: CacheEntry = {
-      data,
+      data: serializedData,
       timestamp: Date.now(),
       size,
     };
@@ -343,6 +363,92 @@ class WeatherCache {
       limit: this.formatBytes(this.MAX_CACHE_SIZE),
       usage: `${usagePercent}%`,
     };
+  }
+  
+  /**
+   * Gera chave para dados detalhados da cidade
+   */
+  private generateDetailedKey(cityId: string): string {
+    return `detailed_${cityId}`;
+  }
+  
+  /**
+   * Armazena dados detalhados de uma cidade no cache (TTL: 1 hora)
+   */
+  async setDetailed(cityId: string, data: DetailedWeatherResponse): Promise<void> {
+    const key = this.generateDetailedKey(cityId);
+    
+    // Serializar dados para remover proxies do Vue
+    const serializedData = this.serialize(data);
+    const size = this.calculateSize(serializedData);
+    
+    // Verificar se precisa fazer evicção
+    if (this.metadata.totalSize + size > this.MAX_CACHE_SIZE) {
+      await this.evictLRU(size);
+    }
+    
+    const entry: DetailedCacheEntry = {
+      data: serializedData,
+      timestamp: Date.now(),
+      size,
+    };
+    
+    try {
+      await this.weatherStore.setItem(key, entry);
+      
+      // Atualizar metadata
+      if (!this.metadata.keys.includes(key)) {
+        this.metadata.keys.push(key);
+      }
+      this.metadata.totalSize += size;
+      this.updateLastAccess(key);
+      
+      await this.saveMetadata();
+      cacheLogger.info(`Cache detalhado salvo para cidade ${cityId} (${this.formatBytes(size)})`);
+    } catch (error) {
+      cacheLogger.error(`Erro ao salvar cache detalhado ${key}:`, error);
+    }
+  }
+  
+  /**
+   * Recupera dados detalhados de uma cidade do cache
+   * Retorna null se não existe ou expirou (TTL: 1 hora)
+   */
+  async getDetailed(cityId: string): Promise<DetailedWeatherResponse | null> {
+    const key = this.generateDetailedKey(cityId);
+    
+    try {
+      const entry = await this.weatherStore.getItem<DetailedCacheEntry>(key);
+      
+      if (!entry) {
+        cacheLogger.debug(`Cache miss para cidade ${cityId}`);
+        return null;
+      }
+      
+      if (!this.isValid(entry.timestamp, this.DETAILED_WEATHER_TTL)) {
+        cacheLogger.debug(`Cache expirado para cidade ${cityId}`);
+        await this.removeByKey(key);
+        return null;
+      }
+      
+      // Atualizar último acesso
+      this.updateLastAccess(key);
+      await this.saveMetadata();
+      
+      cacheLogger.info(`Cache hit para cidade ${cityId}`);
+      return entry.data;
+    } catch (error) {
+      cacheLogger.error(`Erro ao recuperar cache detalhado ${key}:`, error);
+      return null;
+    }
+  }
+  
+  /**
+   * Remove dados detalhados de uma cidade do cache
+   */
+  async removeDetailed(cityId: string): Promise<void> {
+    const key = this.generateDetailedKey(cityId);
+    await this.removeByKey(key);
   }
 }
 

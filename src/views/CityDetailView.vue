@@ -60,14 +60,14 @@
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 5v14m0-14l-4 4m4-4l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                  {{ detailedWeather.dailyForecasts[0]?.tempMax.toFixed(0) }}°
+                  {{ getCurrentTempRange().tempMax.toFixed(0) }}°
                 </span>
                 <span class="temp-range-separator">|</span>
                 <span class="temp-range-min">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 19V5m0 14l-4-4m4 4l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                  {{ detailedWeather.dailyForecasts[0]?.tempMin.toFixed(0) }}°
+                  {{ getCurrentTempRange().tempMin.toFixed(0) }}°
                 </span>
               </div>
             </div>
@@ -254,6 +254,7 @@ import {
   getPrecipitationIcon
 } from '../utils/weatherVisuals';
 import { componentLogger } from '../utils/logger';
+import { weatherCache } from '../services/cacheService';
 
 const logger = componentLogger('CityDetailView');
 
@@ -269,6 +270,32 @@ const metricsExpanded = ref(false);
 const forecastScrollRef = ref<HTMLElement | null>(null);
 const canScrollForecastLeft = ref(false);
 const canScrollForecastRight = ref(true);
+
+/**
+ * Retorna temperaturas máxima e mínima para o clima atual
+ * Busca no dailyForecasts o dia que corresponde à data do currentWeather
+ */
+const getCurrentTempRange = (): { tempMax: number; tempMin: number } => {
+  if (!detailedWeather.value) {
+    return { tempMax: 0, tempMin: 0 };
+  }
+
+  const current = detailedWeather.value.currentWeather;
+  const currentDate = new Date(current.timestamp);
+  
+  // Buscar no dailyForecasts o dia que corresponde à data atual
+  const todayForecast = detailedWeather.value.dailyForecasts.find(forecast => {
+    const forecastDate = new Date(forecast.date + 'T00:00:00');
+    return forecastDate.toDateString() === currentDate.toDateString();
+  });
+  
+  if (todayForecast) {
+    return { tempMax: todayForecast.tempMax, tempMin: todayForecast.tempMin };
+  }
+
+  // Fallback: retornar temperatura atual como max/min
+  return { tempMax: current.temperature, tempMin: current.temperature };
+};
 
 /**
  * Formata data para exibição no card
@@ -377,8 +404,32 @@ const loadCityDetails = async () => {
   error.value = null;
 
   try {
-    logger.info(`Carregando dados detalhados da cidade ${cityId}`);
+    // Tentar buscar do cache primeiro
+    logger.info(`Verificando cache para cidade ${cityId}`);
+    const cachedData = await weatherCache.getDetailed(cityId);
+    
+    if (cachedData) {
+      logger.info(`Dados carregados do cache para cidade ${cityId}`);
+      detailedWeather.value = cachedData;
+      
+      // Atualizar título da página
+      if (detailedWeather.value) {
+        document.title = `${detailedWeather.value.cityInfo.cityName} - Previsão do Tempo`;
+      }
+      isLoading.value = false;
+      return;
+    }
+    
+    // Cache miss - buscar da API
+    logger.info(`Cache miss - carregando dados detalhados da API para cidade ${cityId}`);
     detailedWeather.value = await getCityWeatherDetailed(cityId);
+    
+    // Armazenar no cache
+    if (detailedWeather.value) {
+      await weatherCache.setDetailed(cityId, detailedWeather.value);
+      logger.info('Dados armazenados no cache com sucesso');
+    }
+    
     logger.info('Dados carregados com sucesso');
     
     // Atualizar título da página

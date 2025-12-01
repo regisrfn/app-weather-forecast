@@ -4,11 +4,11 @@
 @use '../abstracts/breakpoints' as *;
 
 // Importar estilos específicos de alertas para city-detail
-@import './city-detail-alerts';
+@use './city-detail-alerts';
 
 // Importar módulos organizados
-@import './city-detail/layout';
-@import './city-detail/header';
-@import './city-detail/hero';
-@import './city-detail/metrics-table';
-@import './city-detail/forecast';
+@use './city-detail/layout';
+@use './city-detail/header';
+@use './city-detail/hero';
+@use './city-detail/metrics-table';
+@use './city-detail/forecast';
