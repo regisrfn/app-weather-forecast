@@ -187,15 +187,23 @@ const createChart = () => {
           bodyColor: '#e2e8f0',
           borderColor: '#64748b',
           borderWidth: 1,
-          padding: 14,
+          padding: () => {
+            return window.innerWidth < 640 ? 10 : 14;
+          },
           cornerRadius: 8,
           titleFont: {
-            size: 14,
+            size: () => {
+              return window.innerWidth < 640 ? 11 : 13;
+            },
             weight: 'bold',
           },
           bodyFont: {
-            size: 13,
+            size: () => {
+              return window.innerWidth < 640 ? 10 : 12;
+            },
           },
+          boxWidth: 8,
+          boxHeight: 8,
           callbacks: {
             label: (context) => {
               const label = context.dataset.label || '';
@@ -358,11 +366,18 @@ onUnmounted(() => {
   position: relative;
   width: 100%;
   height: 400px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
   
   @include md {
     height: 300px;
-    overflow-x: auto;
-    overflow-y: hidden;
+  }
+  
+  @include sm {
+    canvas {
+      min-width: 450px;
+    }
   }
   
   canvas {

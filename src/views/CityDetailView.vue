@@ -210,13 +210,34 @@
 
       <!-- Gráfico de Tendências -->
       <section class="visualization-section">
-        <h2 class="section-title">Tendências e Previsões</h2>
-        <WeatherChart :daily-forecasts="detailedWeather.dailyForecasts" />
+        <h2 class="section-title">Tendências e Previsões ({{ detailedWeather.dailyForecasts.length }} dias)</h2>
+        
+        <!-- Mobile: Botão para abrir modal -->
+        <button class="chart-mobile-trigger" @click="showWeatherModal = true">
+          <span class="trigger-icon">🌡️</span>
+          <span class="trigger-text">Ver Gráfico Completo ({{ detailedWeather.dailyForecasts.length }} dias)</span>
+          <span class="trigger-arrow">›</span>
+        </button>
+        
+        <!-- Desktop: Gráfico inline -->
+        <div class="chart-desktop-wrapper">
+          <WeatherChart :daily-forecasts="detailedWeather.dailyForecasts" />
+        </div>
       </section>
 
       <!-- Previsão Horária (próximas 48h) -->
       <section v-if="detailedWeather.hourlyForecasts && detailedWeather.hourlyForecasts.length > 0" class="hourly-forecast-section">
-        <HourlyChart :hourly-forecasts="detailedWeather.hourlyForecasts" :max-hours="48" />
+        <!-- Mobile: Botão para abrir modal -->
+        <button class="chart-mobile-trigger" @click="showHourlyModal = true">
+          <span class="trigger-icon">📈</span>
+          <span class="trigger-text">Ver Previsão Hora a Hora ({{ detailedWeather.hourlyForecasts.length }}h)</span>
+          <span class="trigger-arrow">›</span>
+        </button>
+        
+        <!-- Desktop: Gráfico inline -->
+        <div class="chart-desktop-wrapper">
+          <HourlyChart :hourly-forecasts="detailedWeather.hourlyForecasts" :max-hours="48" />
+        </div>
       </section>
 
       <!-- Carrossel de Previsões Diárias -->
@@ -300,17 +321,34 @@
       @close="closeSearch"
       @select="selectCityFromModal"
     />
+    
+    <!-- Chart Modals (mobile only) -->
+    <HourlyChartModal
+      v-if="detailedWeather"
+      :is-open="showHourlyModal"
+      :hourly-forecasts="detailedWeather.hourlyForecasts"
+      @close="showHourlyModal = false"
+    />
+    
+    <WeatherChartModal
+      v-if="detailedWeather"
+      :is-open="showWeatherModal"
+      :daily-forecasts="detailedWeather.dailyForecasts"
+      @close="showWeatherModal = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick, watch, computed } from 'vue';
+import { ref, onMounted, nextTick, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { getCityWeatherDetailed } from '../services/apiService';
 import type { DetailedWeatherResponse } from '../types/weather';
 import WeatherChart from '../components/WeatherChart.vue';
 import HourlyChart from '../components/HourlyChart.vue';
+import HourlyChartModal from '../components/HourlyChartModal.vue';
+import WeatherChartModal from '../components/WeatherChartModal.vue';
 import WeatherAlerts from '../components/WeatherAlerts.vue';
 import AlertDetailPanel from '../components/AlertDetailPanel.vue';
 import WindCompass from '../components/WindCompass.vue';
@@ -359,6 +397,10 @@ const isSearching = ref(false);
 const filteredCities = ref<Municipality[]>([]);
 const allMunicipalities = ref<Municipality[]>([]);
 const isSearchActive = ref(false);
+
+// Modal states
+const showHourlyModal = ref(false);
+const showWeatherModal = ref(false);
 
 /**
  * Carrega lista de municípios
@@ -677,4 +719,64 @@ watch(() => route.params.cityId, (newCityId, oldCityId) => {
 
 <style scoped lang="scss">
 @use '../styles/components/city-detail';
+@use '../styles/abstracts/breakpoints' as *;
+@use '../styles/abstracts/variables' as *;
+
+// Mobile chart trigger button
+.chart-mobile-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: $spacing-lg;
+  background: linear-gradient(135deg, 
+    rgba(102, 126, 234, 0.08) 0%,
+    rgba(118, 75, 162, 0.08) 100%
+  );
+  border: 2px solid rgba(139, 157, 225, 0.2);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  @include min-sm {
+    display: none !important; // Esconder em telas >= 480px (desktop)
+  }
+  
+  &:active {
+    transform: scale(0.98);
+    background: linear-gradient(135deg, 
+      rgba(102, 126, 234, 0.15) 0%,
+      rgba(118, 75, 162, 0.15) 100%
+    );
+  }
+  
+  .trigger-icon {
+    font-size: 24px;
+    margin-right: $spacing-sm;
+  }
+  
+  .trigger-text {
+    flex: 1;
+    font-size: $font-base;
+    font-weight: $font-bold;
+    color: #667eea;
+    text-align: left;
+  }
+  
+  .trigger-arrow {
+    font-size: 28px;
+    color: #667eea;
+    font-weight: bold;
+  }
+}
+
+// Desktop chart wrapper
+.chart-desktop-wrapper {
+  display: none;
+  
+  @include min-sm {
+    display: block !important; // Mostrar em telas >= 480px (desktop)
+  }
+}
 </style>
+

@@ -1,6 +1,6 @@
 <template>
   <div class="hourly-chart">
-    <h3 class="chart-title">Previsão Hora a Hora (Próximas 48h)</h3>
+    <h3 class="chart-title">Previsão Hora a Hora (Próximas {{ adjustedMaxHours }}h)</h3>
     <div class="chart-container">
       <canvas ref="chartCanvas" role="img" :aria-label="chartAriaLabel"></canvas>
     </div>
@@ -53,6 +53,18 @@ const props = withDefaults(defineProps<Props>(), {
 const chartCanvas = ref<HTMLCanvasElement | null>(null);
 let chartInstance: Chart | null = null;
 
+/**
+ * Ajusta quantidade de horas baseado no tamanho da tela
+ */
+const adjustedMaxHours = computed(() => {
+  if (typeof window === 'undefined') return props.maxHours;
+  
+  const width = window.innerWidth;
+  if (width < 640) return 24; // Mobile: 24 horas
+  if (width < 768) return 36; // Tablet: 36 horas
+  return props.maxHours; // Desktop: 48 horas
+});
+
 const chartAriaLabel = computed(() => 
   `Gráfico mostrando previsão horária de ${displayedForecasts.value.length} horas com temperatura e precipitação`
 );
@@ -61,7 +73,7 @@ const chartAriaLabel = computed(() =>
  * Limitar dados para exibição (primeiras N horas)
  */
 const displayedForecasts = computed(() => {
-  return props.hourlyForecasts.slice(0, props.maxHours);
+  return props.hourlyForecasts.slice(0, adjustedMaxHours.value);
 });
 
 /**
@@ -186,8 +198,23 @@ const createChart = () => {
           bodyColor: '#374151',
           borderColor: 'rgba(139, 92, 246, 0.2)',
           borderWidth: 1,
-          padding: 12,
+          padding: () => {
+            return window.innerWidth < 640 ? 8 : 12;
+          },
           displayColors: true,
+          titleFont: {
+            size: () => {
+              return window.innerWidth < 640 ? 11 : 13;
+            },
+            weight: 'bold'
+          },
+          bodyFont: {
+            size: () => {
+              return window.innerWidth < 640 ? 10 : 12;
+            }
+          },
+          boxWidth: 8,
+          boxHeight: 8,
           callbacks: {
             title: (items: any) => {
               const index = items[0].dataIndex;
@@ -371,6 +398,9 @@ watch(() => props.hourlyForecasts, () => {
   border-radius: $radius-xl;
   box-shadow: 0 4px 16px rgba(139, 157, 225, 0.12);
   border: 2px solid rgba(139, 157, 225, 0.15);
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
   
   @include md {
     height: 300px;
@@ -380,6 +410,10 @@ watch(() => props.hourlyForecasts, () => {
   @include sm {
     height: 280px;
     padding: $spacing-md;
+    
+    canvas {
+      min-width: 500px;
+    }
   }
 }
 
