@@ -22,7 +22,6 @@
   border-radius: $radius-xl;
   
   @include md {
-    padding: $spacing-lg $spacing-md;
     margin: $spacing-sm $spacing-md $spacing-lg $spacing-md;
     border-radius: $radius-lg;
   }
