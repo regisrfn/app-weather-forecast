@@ -158,16 +158,23 @@
   align-items: center;
 
   .search-toggle-btn {
-    background: none;
-    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: $text-white;
     cursor: pointer;
     padding: $spacing-xs;
     border-radius: $radius-sm;
-    transition: background-color 0.2s ease;
+    transition: all 0.3s ease;
 
     &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    &:active {
+      transform: translateY(0);
     }
 
     svg {
@@ -214,10 +221,18 @@
         padding: $spacing-sm $spacing-md;
         cursor: pointer;
         color: $text-white;
-        transition: background-color 0.2s ease;
+        transition: all 0.3s ease;
+        border-radius: $radius-sm;
+        margin: 2px;
 
         &:hover {
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.2);
+          transform: translateX(4px);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        &:active {
+          transform: translateX(2px);
         }
 
         &:not(:last-child) {

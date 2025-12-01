@@ -18,9 +18,24 @@
   width: 40px;
   height: 40px;
   position: relative;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: all 0.3s ease;
 
   @include md {
     display: flex;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 
   span {
