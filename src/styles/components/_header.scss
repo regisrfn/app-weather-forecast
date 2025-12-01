@@ -176,7 +176,7 @@
     }
   }
 
-  .search-container {
+  .main-search-dropdown {
     position: absolute;
     top: 100%;
     right: 0;
@@ -187,7 +187,7 @@
     z-index: $z-dropdown;
     margin-top: $spacing-sm;
 
-    .search-input {
+    .main-search-input {
       width: 100%;
       padding: $spacing-md;
       border: none;
@@ -206,11 +206,11 @@
       }
     }
 
-    .search-results {
+    .main-search-results {
       max-height: 200px;
       overflow-y: auto;
 
-      .search-result-item {
+      .main-search-result-item {
         padding: $spacing-sm $spacing-md;
         cursor: pointer;
         color: $text-white;

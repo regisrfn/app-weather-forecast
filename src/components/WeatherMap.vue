@@ -28,7 +28,7 @@
                 <path d="M21 21l-4.35-4.35M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
-            <div v-if="isSearchOpen" class="search-container">
+            <div v-if="isSearchOpen" class="main-search-dropdown">
               <input
                 type="text"
                 v-model="searchQuery"
@@ -36,13 +36,13 @@
                 @input="filterCities"
                 @keydown.enter="selectFirstCity"
                 ref="searchInput"
-                class="search-input"
+                class="main-search-input"
               />
-              <div v-if="filteredCities.length > 0" class="search-results">
+              <div v-if="filteredCities.length > 0" class="main-search-results">
                 <div
                   v-for="city in filteredCities.slice(0, 10)"
                   :key="city.id"
-                  class="search-result-item"
+                  class="main-search-result-item"
                   @click="selectCity(city)"
                 >
                   {{ city.name }}, {{ city.state }}
