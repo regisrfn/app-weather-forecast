@@ -583,20 +583,27 @@ const formatForecastDateLabel = (isoString: string): string => {
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
   
+  // Formatar hora e minuto
+  const time = date.toLocaleTimeString('pt-BR', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    timeZone: 'America/Sao_Paulo'
+  });
+  
   // Comparar apenas a data, não a hora
   const dateStr = date.toDateString();
   const todayStr = today.toDateString();
   const tomorrowStr = tomorrow.toDateString();
   
   if (dateStr === todayStr) {
-    return 'Hoje, ' + date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    return 'Hoje, ' + date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' às ' + time;
   } else if (dateStr === tomorrowStr) {
-    return 'Amanhã, ' + date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    return 'Amanhã, ' + date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' às ' + time;
   } else {
     const weekday = date.toLocaleDateString('pt-BR', { weekday: 'long' });
     const day = date.getDate();
     const month = String(date.getMonth() + 1).padStart(2, '0');
-    return `Previsão para ${weekday.charAt(0).toUpperCase() + weekday.slice(1)}, ${day}/${month}`;
+    return `Previsão para ${weekday.charAt(0).toUpperCase() + weekday.slice(1)}, ${day}/${month} às ${time}`;
   }
 };
 
