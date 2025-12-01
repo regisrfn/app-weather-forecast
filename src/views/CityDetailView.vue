@@ -230,7 +230,7 @@
         <!-- Mobile: Botão para abrir modal -->
         <button class="chart-mobile-trigger" @click="showHourlyModal = true">
           <span class="trigger-icon">📈</span>
-          <span class="trigger-text">Ver Previsão Hora a Hora ({{ detailedWeather.hourlyForecasts.length }}h)</span>
+          <span class="trigger-text">Ver Previsão Hora a Hora ({{ displayedHoursCount }}h)</span>
           <span class="trigger-arrow">›</span>
         </button>
         
@@ -340,7 +340,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick, watch } from 'vue';
+import { ref, onMounted, nextTick, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { getCityWeatherDetailed } from '../services/apiService';
@@ -401,6 +401,19 @@ const isSearchActive = ref(false);
 // Modal states
 const showHourlyModal = ref(false);
 const showWeatherModal = ref(false);
+
+// Computed para calcular quantas horas serão exibidas no gráfico
+const displayedHoursCount = computed(() => {
+  if (!detailedWeather.value?.hourlyForecasts) return 0;
+  
+  if (typeof window === 'undefined') return Math.min(48, detailedWeather.value.hourlyForecasts.length);
+  
+  const width = window.innerWidth;
+  if (width < 640) return Math.min(24, detailedWeather.value.hourlyForecasts.length); // Mobile: 24h
+  if (width < 768) return Math.min(36, detailedWeather.value.hourlyForecasts.length); // Tablet: 36h
+  if (width < 1025) return Math.min(36, detailedWeather.value.hourlyForecasts.length); // Tablet grande: 36h
+  return Math.min(48, detailedWeather.value.hourlyForecasts.length); // Desktop: 48h
+});
 
 /**
  * Carrega lista de municípios
