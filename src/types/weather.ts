@@ -48,19 +48,13 @@ export interface CurrentWeather extends RainfallData {
   visibility: number;
   clouds: number; // Override: sempre presente em CurrentWeather
   cloudsDescription: string;
+  windDirection: number; // Direção do vento em graus (0-360)
   timestamp: string; // Override: sempre string ISO na API
 }
 
 export interface WeatherForecast {
   cityId: string;
   forecastHours: HourlyForecast[];
-}
-
-export interface HourlyForecast {
-  timestamp: Date;
-  rainfallIntensity: number;
-  temperature: number;
-  humidity: number;
 }
 
 export interface MapBounds {
@@ -89,8 +83,22 @@ export interface DailyForecast {
   weatherDescription: string;
 }
 
+export interface HourlyForecast {
+  timestamp: string;  // ISO 8601 format
+  temperature: number;
+  precipitation: number;
+  precipitationProbability: number;
+  humidity: number;
+  windSpeed: number;
+  windDirection: number;
+  cloudCover: number;
+  weatherCode: number;
+  description: string;  // Descrição em português do weather code
+}
+
 export interface DetailedWeatherResponse {
   cityInfo: CityInfo;
   currentWeather: CurrentWeather;
   dailyForecasts: DailyForecast[];
+  hourlyForecasts: HourlyForecast[];
 }

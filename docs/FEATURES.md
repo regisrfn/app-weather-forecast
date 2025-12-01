@@ -111,6 +111,19 @@ filterCities() {
   - ▶️ Próximo horário
   - Botão de data abre carrossel
 
+### Carrossel de Previsão Horária
+
+- **Dados**: Até 168 horas (7 dias) de previsões detalhadas
+- **Granularidade**: Hora a hora
+- **Visualização**: Cards com:
+  - Horário (HH:00)
+  - Temperatura
+  - Ícone de condição
+  - Probabilidade de chuva
+  - Velocidade do vento
+  - Direção do vento
+- **Navegação**: Scroll horizontal com controles ◀️ ▶️
+
 ### Limitações Temporais
 
 - **Passado**: Não permite navegar para horários passados
@@ -124,6 +137,37 @@ canNavigatePrev(): boolean {
   return current > now;
 }
 ```
+
+## 🧭 Bússola de Vento
+
+### Visualização
+
+- **Direção**: Seta vermelha indica direção do vento (0-360°)
+- **Velocidade**: Exibida abaixo da bússola em km/h
+- **Pontos Cardeais**:
+  - N (Norte) - destacado em vermelho
+  - L (Leste), S (Sul), O (Oeste)
+- **Animação**: Oscilação realista da seta
+
+### Fonte de Dados
+
+- **Campo**: `currentWeather.windDirection`
+- **Precisão**: Dados enriquecidos com Open-Meteo hourly
+- **Medição**: Padrão meteorológico a 10m de altura
+- **Atualização**: Tempo real conforme navegação temporal
+
+### Pontos Cardeais
+
+| Graus | Direção | Abreviação |
+|-------|---------|------------|
+| 0° / 360° | Norte | N |
+| 45° | Nordeste | NE |
+| 90° | Leste | L |
+| 135° | Sudeste | SE |
+| 180° | Sul | S |
+| 225° | Sudoeste | SW |
+| 270° | Oeste | O |
+| 315° | Noroeste | NW |
 
 ## 📊 Estatísticas Regionais
 

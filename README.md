@@ -29,6 +29,8 @@ O Weather Forecast App é uma aplicação web moderna que exibe previsões meteo
 - 📍 **Busca de Cidades**: Pesquisa rápida por nome de cidade
 - 📊 **Estatísticas Regionais**: Temperatura média, extremos e condições predominantes
 - 📅 **Navegação Temporal**: Visualize previsões para os próximos 5 dias
+- ⏰ **Previsão Horária**: Até 168 horas (7 dias) de previsões hora a hora
+- 🧭 **Bússola de Vento**: Direção e velocidade do vento em tempo real
 - 🎨 **UI Moderna**: Interface responsiva com design glassmorphism
 - ⚡ **Performance**: Cache inteligente e otimizações
 - 🌐 **100% Frontend**: Funciona com dados mock (backend opcional)

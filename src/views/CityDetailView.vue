@@ -131,7 +131,7 @@
             <h3 class="wind-card-title">Vento</h3>
             <WindCompass 
               :wind-speed="detailedWeather.currentWeather.windSpeed" 
-              :wind-direction="detailedWeather.dailyForecasts[0]?.windDirection || 0"
+              :wind-direction="detailedWeather.currentWeather.windDirection || 0"
             />
           </div>
         </div>
@@ -212,6 +212,11 @@
       <section class="visualization-section">
         <h2 class="section-title">Tendências e Previsões</h2>
         <WeatherChart :daily-forecasts="detailedWeather.dailyForecasts" />
+      </section>
+
+      <!-- Previsão Horária (próximas 48h) -->
+      <section v-if="detailedWeather.hourlyForecasts && detailedWeather.hourlyForecasts.length > 0" class="hourly-forecast-section">
+        <HourlyChart :hourly-forecasts="detailedWeather.hourlyForecasts" :max-hours="48" />
       </section>
 
       <!-- Carrossel de Previsões Diárias -->
@@ -299,12 +304,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick, watch } from 'vue';
+import { ref, onMounted, nextTick, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { getCityWeatherDetailed } from '../services/apiService';
 import type { DetailedWeatherResponse } from '../types/weather';
 import WeatherChart from '../components/WeatherChart.vue';
+import HourlyChart from '../components/HourlyChart.vue';
 import WeatherAlerts from '../components/WeatherAlerts.vue';
 import AlertDetailPanel from '../components/AlertDetailPanel.vue';
 import WindCompass from '../components/WindCompass.vue';
@@ -511,6 +517,8 @@ const formatForecastDate = (dateStr: string): string => {
   return `${weekday}, ${day} ${month}`;
 };
 
+
+
 /**
  * Formata data para label do hero (Previsão para Domingo 22/11, Hoje, Amanhã)
  */
@@ -567,6 +575,8 @@ const updateForecastScrollButtons = () => {
     canScrollForecastRight.value = scrollLeft < scrollWidth - clientWidth - 5;
   }
 };
+
+
 
 /**
  * Volta para a página anterior

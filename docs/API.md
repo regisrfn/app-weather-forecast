@@ -114,7 +114,22 @@ curl "https://api.example.com/api/weather?centerCityId=3543204&radius=50&datetim
         "lat": -22.7572,
         "lng": -49.9439
       },
-      "timestamp": "2025-11-26T15:00:00Z"
+      "timestamp": "2025-11-26T15:00:00Z",
+      "hourlyForecasts": [
+        {
+          "timestamp": "2025-11-26T15:00:00Z",
+          "temperature": 28.5,
+          "precipitation": 0.0,
+          "precipitationProbability": 10,
+          "humidity": 65,
+          "windSpeed": 12.0,
+          "windDirection": 180,
+          "cloudCover": 10,
+          "weatherCode": 1,
+          "description": "Mainly clear"
+        }
+        // ... até 168 horas
+      ]
     }
   ],
   "count": 15,
@@ -231,6 +246,20 @@ interface WeatherData {
     lng: number
   }
   timestamp: string           // ISO 8601
+  hourlyForecasts?: HourlyForecast[]  // Opcional: Previsões horárias
+}
+
+interface HourlyForecast {
+  timestamp: string           // ISO 8601
+  temperature: number         // Temperatura em °C
+  precipitation: number       // Precipitação em mm
+  precipitationProbability: number  // Probabilidade de chuva (0-100)
+  humidity: number            // Umidade relativa (0-100)
+  windSpeed: number           // Velocidade do vento em km/h
+  windDirection: number       // Direção do vento em graus (0-360)
+  cloudCover: number          // Cobertura de nuvens (0-100)
+  weatherCode: number         // WMO weather code
+  description: string         // Descrição textual
 }
 ```
 
