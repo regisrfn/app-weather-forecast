@@ -3,25 +3,14 @@
     <!-- Header -->
     <header class="page-header">
       <div class="header-content">
-        <div class="header-left">
-          <button @click="goBack" class="back-button" aria-label="Voltar">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div v-if="detailedWeather" class="header-info">
-            <h1 class="city-name">{{ detailedWeather.cityInfo.cityName }}</h1>
-            <span v-if="detailedWeather.cityInfo.state" class="city-state">{{ detailedWeather.cityInfo.state }}</span>
-          </div>
-        </div>
-        <div v-if="detailedWeather" class="header-right">
-          <div class="timestamp-badge">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-              <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            <span class="timestamp-text">{{ formatTimestamp(detailedWeather.currentWeather.timestamp) }}</span>
-          </div>
+        <button @click="goBack" class="back-button" aria-label="Voltar">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div v-if="detailedWeather" class="header-info">
+          <h1 class="city-name">{{ detailedWeather.cityInfo.cityName }}</h1>
+          <span v-if="detailedWeather.cityInfo.state" class="city-state">{{ detailedWeather.cityInfo.state }}</span>
         </div>
       </div>
     </header>
@@ -47,7 +36,16 @@
     <main v-else-if="detailedWeather" class="page-content">
       <!-- Clima Atual -->
       <section class="current-weather-section">
-        <h2 class="section-title">Clima Atual</h2>
+        <div class="section-header">
+          <h2 class="section-title">Clima Atual</h2>
+          <div v-if="detailedWeather" class="forecast-date-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span>{{ formatForecastDateLabel(detailedWeather.currentWeather.timestamp) }}</span>
+          </div>
+        </div>
         
         <!-- Hero Cards Grid -->
         <div class="hero-cards-grid">
@@ -87,54 +85,65 @@
 
         <!-- Tabela de Métricas -->
         <div class="metrics-container">
-          <h3 class="metrics-title">Condições Meteorológicas</h3>
-          <table class="weather-metrics-table">
-            <tbody>
-              <tr>
-                <th>
-                  <span class="metric-icon">🌡️</span>
-                  <span>Sensação Térmica</span>
-                </th>
-                <td>{{ detailedWeather.currentWeather.feelsLike.toFixed(1) }}°C</td>
-                <th>
-                  <span class="metric-icon">💧</span>
-                  <span>Umidade</span>
-                </th>
-                <td>{{ detailedWeather.currentWeather.humidity.toFixed(0) }}%</td>
-              </tr>
-              <tr>
-                <th>
-                  <span class="metric-icon">🌪️</span>
-                  <span>Pressão</span>
-                </th>
-                <td>{{ detailedWeather.currentWeather.pressure.toFixed(0) }} hPa</td>
-                <th>
-                  <span class="metric-icon">👁️</span>
-                  <span>Visibilidade</span>
-                </th>
-                <td>{{ (detailedWeather.currentWeather.visibility / 1000).toFixed(1) }} km</td>
-              </tr>
-              <tr>
-                <th>
-                  <span class="metric-icon">☁️</span>
-                  <span>Nuvens</span>
-                </th>
-                <td>{{ detailedWeather.currentWeather.clouds.toFixed(0) }}%</td>
-                <th>
-                  <span class="metric-icon">🌅</span>
-                  <span>Nascer do Sol</span>
-                </th>
-                <td>{{ formatTime(detailedWeather.dailyForecasts[0]?.sunrise || '') }}</td>
-              </tr>
-              <tr>
-                <th colspan="3">
-                  <span class="metric-icon">🌇</span>
-                  <span>Pôr do Sol</span>
-                </th>
-                <td>{{ formatTime(detailedWeather.dailyForecasts[0]?.sunset || '') }}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="metrics-header" @click="metricsExpanded = !metricsExpanded">
+            <h3 class="metrics-title">Condições Meteorológicas</h3>
+            <button class="metrics-toggle" :class="{ 'expanded': metricsExpanded }" aria-label="Expandir/Recolher">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          <div class="metrics-grid" :class="{ 'collapsed': !metricsExpanded }">
+            <div class="metric-item">
+              <div class="metric-label">
+                <span class="metric-icon">🌡️</span>
+                <span>Sensação Térmica</span>
+              </div>
+              <div class="metric-value">{{ detailedWeather.currentWeather.feelsLike.toFixed(1) }}°C</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label">
+                <span class="metric-icon">💧</span>
+                <span>Umidade</span>
+              </div>
+              <div class="metric-value">{{ detailedWeather.currentWeather.humidity.toFixed(0) }}%</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label">
+                <span class="metric-icon">🌪️</span>
+                <span>Pressão</span>
+              </div>
+              <div class="metric-value">{{ detailedWeather.currentWeather.pressure.toFixed(0) }} hPa</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label">
+                <span class="metric-icon">👁️</span>
+                <span>Visibilidade</span>
+              </div>
+              <div class="metric-value">{{ (detailedWeather.currentWeather.visibility / 1000).toFixed(1) }} km</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label">
+                <span class="metric-icon">☁️</span>
+                <span>Nuvens</span>
+              </div>
+              <div class="metric-value">{{ detailedWeather.currentWeather.clouds.toFixed(0) }}%</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label">
+                <span class="metric-icon">🌅</span>
+                <span>Nascer do Sol</span>
+              </div>
+              <div class="metric-value">{{ formatTime(detailedWeather.dailyForecasts[0]?.sunrise || '') }}</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label">
+                <span class="metric-icon">🌇</span>
+                <span>Pôr do Sol</span>
+              </div>
+              <div class="metric-value">{{ formatTime(detailedWeather.dailyForecasts[0]?.sunset || '') }}</div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -156,8 +165,30 @@
       <section class="forecast-section">
         <div class="forecast-header">
           <h2 class="section-title">Previsão para os Próximos {{ detailedWeather.dailyForecasts.length }} Dias</h2>
+          <div class="forecast-nav-buttons">
+            <button 
+              @click="scrollForecastPrev" 
+              :disabled="!canScrollForecastLeft"
+              class="forecast-nav-btn prev"
+              aria-label="Anterior"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button 
+              @click="scrollForecastNext" 
+              :disabled="!canScrollForecastRight"
+              class="forecast-nav-btn next"
+              aria-label="Próximo"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
         </div>
-        <div class="forecast-scroll-container">
+        <div class="forecast-scroll-container" ref="forecastScrollRef" @scroll="updateForecastScrollButtons">
           <div 
             v-for="forecast in detailedWeather.dailyForecasts" 
             :key="forecast.date"
@@ -234,6 +265,10 @@ const isLoading = ref(true);
 const error = ref<string | null>(null);
 const selectedAlert = ref<any | null>(null);
 const showAlertDetail = ref(false);
+const metricsExpanded = ref(false);
+const forecastScrollRef = ref<HTMLElement | null>(null);
+const canScrollForecastLeft = ref(false);
+const canScrollForecastRight = ref(true);
 
 /**
  * Formata data para exibição no card
@@ -247,16 +282,60 @@ const formatForecastDate = (dateStr: string): string => {
 };
 
 /**
- * Formata timestamp ISO para exibição
+ * Formata data para label do hero (Previsão para Domingo 22/11, Hoje, Amanhã)
  */
-const formatTimestamp = (isoString: string): string => {
+const formatForecastDateLabel = (isoString: string): string => {
   const date = new Date(isoString);
-  return date.toLocaleString('pt-BR', { 
-    day: '2-digit', 
-    month: '2-digit', 
-    hour: '2-digit', 
-    minute: '2-digit' 
-  });
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
+  // Comparar apenas a data, não a hora
+  const dateStr = date.toDateString();
+  const todayStr = today.toDateString();
+  const tomorrowStr = tomorrow.toDateString();
+  
+  if (dateStr === todayStr) {
+    return 'Hoje, ' + date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  } else if (dateStr === tomorrowStr) {
+    return 'Amanhã, ' + date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  } else {
+    const weekday = date.toLocaleDateString('pt-BR', { weekday: 'long' });
+    const day = date.getDate();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    return `Previsão para ${weekday.charAt(0).toUpperCase() + weekday.slice(1)}, ${day}/${month}`;
+  }
+};
+
+/**
+ * Rolar carrossel de previsão para a esquerda
+ */
+const scrollForecastPrev = () => {
+  if (forecastScrollRef.value) {
+    const itemWidth = forecastScrollRef.value.querySelector('.forecast-card')?.clientWidth || 0;
+    forecastScrollRef.value.scrollBy({ left: -(itemWidth + 16), behavior: 'smooth' });
+  }
+};
+
+/**
+ * Rolar carrossel de previsão para a direita
+ */
+const scrollForecastNext = () => {
+  if (forecastScrollRef.value) {
+    const itemWidth = forecastScrollRef.value.querySelector('.forecast-card')?.clientWidth || 0;
+    forecastScrollRef.value.scrollBy({ left: itemWidth + 16, behavior: 'smooth' });
+  }
+};
+
+/**
+ * Atualizar estado dos botões de scroll
+ */
+const updateForecastScrollButtons = () => {
+  if (forecastScrollRef.value) {
+    const { scrollLeft, scrollWidth, clientWidth } = forecastScrollRef.value;
+    canScrollForecastLeft.value = scrollLeft > 0;
+    canScrollForecastRight.value = scrollLeft < scrollWidth - clientWidth - 5;
+  }
 };
 
 /**
@@ -316,6 +395,11 @@ const loadCityDetails = async () => {
 
 onMounted(() => {
   loadCityDetails();
+  
+  // Configurar listener de scroll para o carrossel
+  if (forecastScrollRef.value) {
+    updateForecastScrollButtons();
+  }
 });
 </script>
 

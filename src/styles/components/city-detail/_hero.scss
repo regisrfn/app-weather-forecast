@@ -29,36 +29,54 @@
   box-shadow: 0 4px 24px rgba(139, 157, 225, 0.12);
   display: flex;
   align-items: center;
-  gap: $spacing-2xl;
+  gap: $spacing-xl;
   border: 2px solid rgba(139, 157, 225, 0.15);
   transition: all $transition-normal;
   animation: slideDown 0.6s ease-out;
+  position: relative;
+  overflow: hidden;
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(139, 157, 225, 0.18);
-    border-color: rgba(139, 157, 225, 0.25);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(139, 157, 225, 0.2);
+    border-color: rgba(139, 157, 225, 0.3);
+    
+    .hero-icon {
+      transform: scale(1.15) rotate(5deg);
+    }
+    
+    .hero-temp-value {
+      transform: scale(1.05);
+    }
   }
   
   @include md {
     flex-direction: column;
     padding: $spacing-xl;
-    gap: $spacing-lg;
+    gap: $spacing-md;
   }
 }
 
 .hero-icon {
-  font-size: 72px;
+  font-size: 120px;
   line-height: 1;
-  filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.2));
-  transition: transform $transition-fast;
-  
-  .hero-temp-card:hover & {
-    transform: scale(1.08);
-  }
+  filter: drop-shadow(0 8px 20px rgba(59, 130, 246, 0.3));
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: floatIcon 3s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
   
   @include md {
-    font-size: 56px;
+    font-size: 96px;
+  }
+}
+
+@keyframes floatIcon {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }
 
@@ -68,20 +86,40 @@
   align-items: center;
   gap: $spacing-xs;
   flex: 1;
+  position: relative;
+  z-index: 2;
+  margin-left: -40px;
+  
+  @include md {
+    margin-left: 0;
+  }
 }
 
 .hero-temp-value {
-  font-size: 80px;
+  font-size: 96px;
   font-weight: $font-extrabold;
   background: linear-gradient(135deg, rgba(139, 157, 225, 0.9) 0%, rgba(157, 133, 199, 0.85) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   line-height: 1;
-  letter-spacing: -2px;
+  letter-spacing: -3px;
+  transition: transform 0.3s ease;
+  text-shadow: 0 4px 12px rgba(139, 157, 225, 0.2);
+  animation: pulseTemp 2s ease-in-out infinite;
   
   @include md {
-    font-size: 64px;
+    font-size: 72px;
+    letter-spacing: -2px;
+  }
+}
+
+@keyframes pulseTemp {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.95;
   }
 }
 

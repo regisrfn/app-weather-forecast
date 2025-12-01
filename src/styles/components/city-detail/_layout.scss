@@ -59,24 +59,69 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin: 0 0 $spacing-xl 0;
+  margin: 0;
   position: relative;
-  padding-bottom: $spacing-sm;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.6) 0%, transparent 100%);
-    border-radius: $radius-full;
-  }
   
   @include md {
     font-size: $font-xl;
+  }
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-xl;
+  gap: $spacing-lg;
+  
+  @include md {
+    flex-direction: column;
+    align-items: flex-start;
     margin-bottom: $spacing-lg;
+    gap: $spacing-md;
+  }
+}
+
+.forecast-date-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-sm;
+  color: rgba(59, 130, 246, 0.9);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $radius-lg;
+  border: 2px solid rgba(59, 130, 246, 0.2);
+  font-weight: $font-bold;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+  transition: all $transition-normal;
+  
+  &:hover {
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+  
+  svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.9;
+    flex-shrink: 0;
+  }
+  
+  @include md {
+    font-size: $font-xs;
+    padding: $spacing-xs $spacing-md;
+    gap: $spacing-xs;
+    width: 100%;
+    justify-content: center;
+    
+    svg {
+      width: 14px;
+      height: 14px;
+    }
   }
 }
 

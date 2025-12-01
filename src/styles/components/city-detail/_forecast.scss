@@ -37,6 +37,65 @@
   }
 }
 
+.forecast-nav-buttons {
+  display: flex;
+  gap: $spacing-sm;
+  
+  @include md {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+.forecast-nav-btn {
+  @include reset-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-md;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid rgba(59, 130, 246, 0.2);
+  color: rgba(59, 130, 246, 0.8);
+  transition: all $transition-normal;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+  
+  &:not(:disabled):hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.4);
+    color: rgba(59, 130, 246, 1);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+  
+  &:not(:disabled):active {
+    transform: scale(0.98);
+  }
+  
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+  
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  @include md {
+    width: 36px;
+    height: 36px;
+    
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
 // Forecast Scroll Container (CSS-only, no JS carousel)
 .forecast-scroll-container {
   display: flex;
@@ -47,6 +106,8 @@
   margin: 0 #{-$spacing-xl};
   padding-left: $spacing-xl;
   padding-right: $spacing-xl;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
   
   // Custom scrollbar
   &::-webkit-scrollbar {
