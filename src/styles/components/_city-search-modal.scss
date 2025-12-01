@@ -1,0 +1,312 @@
+@use '../abstracts/colors' as *;
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+@use '../abstracts/breakpoints' as *;
+
+// Search Modal Overlay
+.search-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: $spacing-md;
+}
+
+// Search Modal Container
+.search-modal {
+  background: white;
+  border-radius: $radius-xl;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  
+  @include md {
+    max-height: 90vh;
+  }
+}
+
+// Modal Header
+.search-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-lg $spacing-xl;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  
+  @include md {
+    padding: $spacing-md $spacing-lg;
+  }
+}
+
+.search-modal-title {
+  color: $text-dark;
+  font-size: $font-2xl;
+  font-weight: $font-bold;
+  margin: 0;
+  
+  @include md {
+    font-size: $font-xl;
+  }
+}
+
+.search-close-btn {
+  @include reset-button;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: $text-gray;
+  border-radius: $radius-md;
+  transition: all $transition-normal;
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: $text-dark;
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Search Input Container
+.search-input-container {
+  position: relative;
+  padding: $spacing-md $spacing-xl;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  
+  @include md {
+    padding: $spacing-md $spacing-lg;
+  }
+}
+
+.search-icon {
+  position: absolute;
+  left: calc(#{$spacing-xl} + #{$spacing-md});
+  top: 50%;
+  transform: translateY(-50%);
+  color: $text-gray;
+  pointer-events: none;
+  
+  @include md {
+    left: calc(#{$spacing-lg} + #{$spacing-md});
+  }
+}
+
+.search-input {
+  width: 100%;
+  padding: $spacing-md $spacing-md $spacing-md calc(#{$spacing-md} * 2 + 24px);
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-radius: $radius-lg;
+  font-size: $font-base;
+  color: $text-dark;
+  transition: all $transition-normal;
+  background: rgba(0, 0, 0, 0.03);
+  
+  &::placeholder {
+    color: $text-gray;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: $primary-gradient-start;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+  
+  @include md {
+    font-size: $font-sm;
+    padding: $spacing-sm $spacing-sm $spacing-sm calc(#{$spacing-sm} * 2 + 20px);
+  }
+}
+
+.search-clear-btn {
+  @include reset-button;
+  position: absolute;
+  right: calc(#{$spacing-xl} + #{$spacing-sm});
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: $text-gray;
+  border-radius: $radius-md;
+  transition: all $transition-normal;
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: $text-dark;
+  }
+  
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+  
+  @include md {
+    right: calc(#{$spacing-lg} + #{$spacing-sm});
+  }
+}
+
+// Search Results Container
+.search-results {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-md;
+  
+  @include md {
+    padding: $spacing-sm;
+  }
+}
+
+// Loading State
+.search-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-2xl $spacing-xl;
+  gap: $spacing-md;
+  color: $text-gray;
+}
+
+.search-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-top-color: $primary-gradient-start;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Empty State
+.search-empty,
+.search-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-2xl $spacing-xl;
+  gap: $spacing-md;
+  color: $text-gray;
+  text-align: center;
+  
+  svg {
+    opacity: 0.5;
+  }
+  
+  p {
+    margin: 0;
+    font-size: $font-base;
+  }
+}
+
+// Results List
+.search-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.search-result-item {
+  @include reset-button;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md $spacing-lg;
+  background: white;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-radius: $radius-lg;
+  transition: all $transition-normal;
+  cursor: pointer;
+  text-align: left;
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: $primary-gradient-start;
+    transform: translateX(4px);
+    
+    .result-arrow {
+      transform: translateX(4px);
+    }
+  }
+  
+  &:active {
+    transform: translateX(2px);
+  }
+  
+  @include md {
+    padding: $spacing-sm $spacing-md;
+  }
+}
+
+.result-city-info {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  flex: 1;
+}
+
+.result-city-name {
+  color: $text-dark;
+  font-size: $font-lg;
+  font-weight: $font-semibold;
+  
+  @include md {
+    font-size: $font-base;
+  }
+}
+
+.result-city-state {
+  color: $text-gray;
+  font-size: $font-sm;
+  
+  @include md {
+    font-size: $font-xs;
+  }
+}
+
+.result-arrow {
+  color: $text-gray;
+  transition: all $transition-normal;
+  flex-shrink: 0;
+}
+
+// Modal Transitions
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity $transition-normal;
+  
+  .search-modal {
+    transition: transform $transition-normal;
+  }
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+  
+  .search-modal {
+    transform: scale(0.95) translateY(-20px);
+  }
+}

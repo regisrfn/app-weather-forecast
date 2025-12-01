@@ -8,9 +8,62 @@
             <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
-        <div v-if="detailedWeather" class="header-info">
-          <h1 class="city-name">{{ detailedWeather.cityInfo.cityName }}</h1>
-          <span v-if="detailedWeather.cityInfo.state" class="city-state">{{ detailedWeather.cityInfo.state }}</span>
+        <div v-if="detailedWeather" class="city-search-container">
+          <button 
+            v-if="!isSearchActive" 
+            @click="activateSearch" 
+            class="city-search-button" 
+            aria-label="Pesquisar cidade"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="location-icon">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <div class="city-info">
+              <span class="city-name">{{ detailedWeather.cityInfo.cityName }}</span>
+              <span v-if="detailedWeather.cityInfo.state" class="city-state">{{ detailedWeather.cityInfo.state }}</span>
+            </div>
+          </button>
+          
+          <div v-else class="inline-search-box">
+            <input
+              ref="inlineSearchInputRef"
+              v-model="searchQuery"
+              type="text"
+              placeholder="Digite o nome da cidade..."
+              class="inline-search-input"
+              @input="handleSearchInput"
+              @blur="handleSearchBlur"
+            />
+            <button v-if="searchQuery" @click="clearInlineSearch" class="inline-clear-btn" aria-label="Limpar">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Dropdown de resultados -->
+          <div v-if="searchQuery && filteredCities.length > 0" class="search-dropdown">
+            <button
+              v-for="city in filteredCities"
+              :key="city.id"
+              @mousedown.prevent="selectCity(city)"
+              class="dropdown-item"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              <div class="dropdown-city-info">
+                <span class="dropdown-city-name">{{ city.name }}</span>
+                <span class="dropdown-city-state">{{ city.state_name }} ({{ city.state }})</span>
+              </div>
+            </button>
+          </div>
+          
+          <div v-if="searchQuery && !isSearching && filteredCities.length === 0" class="search-dropdown-empty">
+            Nenhuma cidade encontrada
+          </div>
         </div>
       </div>
     </header>
@@ -234,11 +287,19 @@
       :is-open="showAlertDetail"
       @close="closeAlertDetail"
     />
+
+    <!-- City Search Modal -->
+    <CitySearchModal
+      :is-open="showSearch"
+      :municipalities="allMunicipalities"
+      @close="closeSearch"
+      @select="selectCityFromModal"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { getCityWeatherDetailed } from '../services/apiService';
@@ -247,6 +308,7 @@ import WeatherChart from '../components/WeatherChart.vue';
 import WeatherAlerts from '../components/WeatherAlerts.vue';
 import AlertDetailPanel from '../components/AlertDetailPanel.vue';
 import WindCompass from '../components/WindCompass.vue';
+import CitySearchModal from '../components/CitySearchModal.vue';
 import { 
   getWeatherIcon, 
   formatTime, 
@@ -257,6 +319,18 @@ import { componentLogger } from '../utils/logger';
 import { weatherCache } from '../services/cacheService';
 
 const logger = componentLogger('CityDetailView');
+
+interface Municipality {
+  id: string;
+  name: string;
+  state: string;
+  state_name: string;
+  microregion: string;
+  mesoregion: string;
+  region: string;
+  latitude: number;
+  longitude: number;
+}
 
 const route = useRoute();
 const router = useRouter();
@@ -270,6 +344,135 @@ const metricsExpanded = ref(false);
 const forecastScrollRef = ref<HTMLElement | null>(null);
 const canScrollForecastLeft = ref(false);
 const canScrollForecastRight = ref(true);
+
+// Search state
+const showSearch = ref(false);
+const searchQuery = ref('');
+const inlineSearchInputRef = ref<HTMLInputElement | null>(null);
+const isSearching = ref(false);
+const filteredCities = ref<Municipality[]>([]);
+const allMunicipalities = ref<Municipality[]>([]);
+const isSearchActive = ref(false);
+
+/**
+ * Carrega lista de municípios
+ */
+const loadMunicipalities = async () => {
+  try {
+    const response = await fetch('/data/municipalities_db.json');
+    if (!response.ok) {
+      throw new Error('Falha ao carregar municípios');
+    }
+    allMunicipalities.value = await response.json();
+    logger.info(`${allMunicipalities.value.length} municípios carregados`);
+  } catch (err) {
+    logger.error('Erro ao carregar municípios:', err);
+  }
+};
+
+/**
+ * Normaliza string removendo acentos, cedilha e convertendo para minúsculas
+ */
+const normalizeString = (str: string): string => {
+  return str
+    .toLowerCase()
+    .normalize('NFD') // Decompõe caracteres acentuados
+    .replace(/[\u0300-\u036f]/g, '') // Remove marcas diacríticas (acentos)
+    .replace(/ç/g, 'c') // Substitui ç por c
+    .replace(/[^a-z0-9\s]/g, ''); // Remove outros caracteres especiais
+};
+
+/**
+ * Filtra cidades conforme digitação
+ */
+const handleSearchInput = () => {
+  isSearching.value = true;
+  
+  // Debounce simples
+  setTimeout(() => {
+    const query = searchQuery.value.trim();
+    
+    if (!query || query.length < 2) {
+      filteredCities.value = [];
+      isSearching.value = false;
+      return;
+    }
+    
+    const normalizedQuery = normalizeString(query);
+    
+    // Filtrar cidades (limitar a 50 resultados para performance)
+    filteredCities.value = allMunicipalities.value
+      .filter(city => {
+        const normalizedName = normalizeString(city.name);
+        const normalizedState = normalizeString(city.state);
+        const normalizedStateName = normalizeString(city.state_name);
+        
+        return normalizedName.includes(normalizedQuery) ||
+               normalizedState.includes(normalizedQuery) ||
+               normalizedStateName.includes(normalizedQuery);
+      })
+      .slice(0, 50);
+    
+    isSearching.value = false;
+  }, 150);
+};
+
+/**
+ * Ativa o modo de busca inline
+ */
+const activateSearch = async () => {
+  isSearchActive.value = true;
+  await nextTick();
+  inlineSearchInputRef.value?.focus();
+};
+
+/**
+ * Desativa o modo de busca inline
+ */
+const handleSearchBlur = () => {
+  // Delay para permitir clique nos resultados
+  setTimeout(() => {
+    if (!searchQuery.value) {
+      isSearchActive.value = false;
+      filteredCities.value = [];
+    }
+  }, 200);
+};
+
+/**
+ * Limpa a busca inline
+ */
+const clearInlineSearch = () => {
+  searchQuery.value = '';
+  filteredCities.value = [];
+  isSearchActive.value = false;
+};
+
+/**
+ * Seleciona uma cidade e navega para ela (busca inline)
+ */
+const selectCity = (city: Municipality) => {
+  logger.info(`Navegando para cidade: ${city.name} (${city.id})`);
+  searchQuery.value = '';
+  filteredCities.value = [];
+  isSearchActive.value = false;
+  router.push(`/city/${city.id}`);
+};
+
+/**
+ * Fecha modal de pesquisa
+ */
+const closeSearch = () => {
+  showSearch.value = false;
+};
+
+/**
+ * Seleciona cidade do modal
+ */
+const selectCityFromModal = (city: Municipality) => {
+  logger.info(`Navegando para cidade do modal: ${city.name} (${city.id})`);
+  router.push(`/city/${city.id}`);
+};
 
 /**
  * Retorna temperaturas máxima e mínima para o clima atual
@@ -446,10 +649,18 @@ const loadCityDetails = async () => {
 
 onMounted(() => {
   loadCityDetails();
+  loadMunicipalities();
   
   // Configurar listener de scroll para o carrossel
   if (forecastScrollRef.value) {
     updateForecastScrollButtons();
+  }
+});
+
+// Watch para mudanças na rota (quando navega para outra cidade)
+watch(() => route.params.cityId, (newCityId, oldCityId) => {
+  if (newCityId && newCityId !== oldCityId) {
+    loadCityDetails();
   }
 });
 </script>

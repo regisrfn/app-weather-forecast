@@ -11,7 +11,7 @@
   );
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  padding: $spacing-xl;
+  padding: 0.3rem;
   box-shadow: 0 4px 20px rgba(102, 126, 234, 0.25);
   position: sticky;
   top: 0;
@@ -31,20 +31,13 @@
 .header-content {
   display: flex;
   align-items: center;
-  gap: $spacing-xl;
+  gap: $spacing-md;
   max-width: 1400px;
   margin: 0 auto;
   
   @include md {
-    gap: $spacing-lg;
+    gap: $spacing-sm;
   }
-}
-
-.header-info {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-xs;
-  flex: 1;
 }
 
 .back-button {
@@ -77,28 +70,310 @@
     width: 24px;
     height: 24px;
   }
-}
-
-.city-name {
-  color: white;
-  font-size: $font-4xl;
-  font-weight: $font-extrabold;
-  margin: 0;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  letter-spacing: -0.5px;
   
   @include md {
-    font-size: $font-3xl;
+    width: 40px;
+    height: 40px;
+    
+    svg {
+      width: 20px;
+      height: 20px;
+    }
   }
 }
 
-.city-state {
-  color: rgba(255, 255, 255, 0.85);
+.city-search-container {
+  position: relative;
+  flex: 1;
+  max-width: 600px;
+}
+
+.city-search-button {
+  @include reset-button;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  width: 100%;
+  color: white;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: $radius-lg;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  .location-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .city-info {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .city-name {
+    color: white;
+    font-size: $font-xl;
+    font-weight: $font-bold;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .city-state {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: $font-base;
+    font-weight: $font-semibold;
+    background: rgba(255, 255, 255, 0.2);
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $radius-sm;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  
+  @include md {
+    padding: $spacing-sm $spacing-md;
+    gap: $spacing-sm;
+    
+    .location-icon {
+      width: 18px;
+      height: 18px;
+    }
+    
+    .city-name {
+      font-size: $font-base;
+    }
+    
+    .city-state {
+      font-size: $font-sm;
+      padding: 2px $spacing-xs;
+    }
+  }
+}
+
+.inline-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: $radius-lg;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: searchBoxFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  
+  @include md {
+    padding: $spacing-sm $spacing-md;
+    gap: $spacing-sm;
+  }
+}
+
+@keyframes searchBoxFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.inline-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
   font-size: $font-base;
-  font-weight: $font-regular;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  color: white;
+  outline: none;
+  font-weight: $font-semibold;
+  
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: $font-regular;
+  }
   
   @include md {
     font-size: $font-sm;
   }
+}
+
+.inline-clear-btn {
+  @include reset-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: $radius-md;
+  transition: all $transition-fast;
+  flex-shrink: 0;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + $spacing-sm);
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: $radius-lg;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+  animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid rgba(139, 157, 225, 0.2);
+  
+  @include md {
+    max-height: 300px;
+  }
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-item {
+  @include reset-button;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  width: 100%;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  
+  svg {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    color: $text-gray;
+    transition: all 0.2s ease;
+  }
+  
+  &:hover {
+    background: linear-gradient(135deg, 
+      rgba(139, 157, 225, 0.08) 0%,
+      rgba(102, 126, 234, 0.05) 100%
+    );
+    
+    svg {
+      color: $primary-gradient-start;
+      transform: scale(1.1);
+    }
+    
+    .dropdown-city-name {
+      color: $primary-gradient-start;
+    }
+  }
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  &:first-child {
+    border-top-left-radius: $radius-lg;
+    border-top-right-radius: $radius-lg;
+  }
+  
+  &:last-child {
+    border-bottom-left-radius: $radius-lg;
+    border-bottom-right-radius: $radius-lg;
+  }
+  
+  @include md {
+    padding: $spacing-sm $spacing-md;
+    gap: $spacing-sm;
+  }
+}
+
+.dropdown-city-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dropdown-city-name {
+  color: $text-dark;
+  font-size: $font-base;
+  font-weight: $font-semibold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s ease;
+  
+  @include md {
+    font-size: $font-sm;
+  }
+}
+
+.dropdown-city-state {
+  color: $text-gray;
+  font-size: $font-sm;
+  
+  @include md {
+    font-size: $font-xs;
+  }
+}
+
+.search-dropdown-empty {
+  padding: $spacing-xl;
+  text-align: center;
+  color: $text-gray;
+  font-size: $font-sm;
+  background: white;
+  border-radius: $radius-lg;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: calc(100% + $spacing-sm);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid rgba(139, 157, 225, 0.2);
 }
