@@ -84,6 +84,7 @@ const createChart = () => {
   const tempMaxData = props.dailyForecasts.map(f => f.tempMax);
   const tempMinData = props.dailyForecasts.map(f => f.tempMin);
   const precipData = props.dailyForecasts.map(f => f.precipitationMm);
+  const rainProbData = props.dailyForecasts.map(f => f.rainProbability);
 
   const config: ChartConfiguration = {
     type: 'bar',
@@ -138,9 +139,22 @@ const createChart = () => {
           type: 'bar',
           label: 'Precipitação (mm)',
           data: precipData,
-          backgroundColor: 'rgba(139, 157, 225, 0.5)',
-          borderColor: 'rgba(102, 126, 234, 0.8)',
+          backgroundColor: (context: any) => {
+            const prob = rainProbData[context.dataIndex] ?? 0;
+            
+            // Cor baseada na probabilidade de chuva
+            if (prob >= 70) {
+              return 'rgba(59, 130, 246, 0.7)'; // Azul forte
+            } else if (prob >= 40) {
+              return 'rgba(59, 130, 246, 0.5)'; // Azul médio
+            } else if (prob >= 20) {
+              return 'rgba(59, 130, 246, 0.3)'; // Azul claro
+            }
+            return 'rgba(59, 130, 246, 0.15)'; // Azul muito claro
+          },
+          borderColor: 'rgba(59, 130, 246, 0.8)',
           borderWidth: 1,
+          borderRadius: 4,
           yAxisID: 'y1',
           barPercentage: 0.6,
         },
@@ -188,7 +202,8 @@ const createChart = () => {
               const value = context.parsed.y;
               if (value === null || value === undefined) return label;
               if (label.includes('Precipitação')) {
-                return `${label}: ${value.toFixed(1)} mm`;
+                const prob = rainProbData[context.dataIndex];
+                return `${label}: ${value.toFixed(1)} mm (${prob}%)`;
               }
               return `${label}: ${value.toFixed(1)}°C`;
             },
