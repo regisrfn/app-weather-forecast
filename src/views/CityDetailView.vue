@@ -70,43 +70,11 @@
             </div>
           </div>
           
-          <!-- Bússola Compacta -->
-          <div class="hero-wind-compass">
-            <div class="compass-mini">
-              <svg viewBox="0 0 120 120" class="compass-svg-mini">
-                <!-- Círculo externo -->
-                <circle cx="60" cy="60" r="50" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.15" />
-                
-                <!-- Pontos cardeais -->
-                <text x="60" y="20" text-anchor="middle" class="cardinal-mini cardinal-n" font-size="12" font-weight="bold">N</text>
-                <text x="100" y="65" text-anchor="middle" class="cardinal-mini" font-size="10">L</text>
-                <text x="60" y="105" text-anchor="middle" class="cardinal-mini" font-size="10">S</text>
-                <text x="20" y="65" text-anchor="middle" class="cardinal-mini" font-size="10">O</text>
-                
-                <!-- Seta indicadora aprimorada -->
-                <g :transform="`rotate(${detailedWeather.dailyForecasts[0]?.windDirection || 0} 60 60)`" class="wind-arrow-mini">
-                  <!-- Sombra da seta -->
-                  <path d="M 61 21 L 66 56 L 61 53 L 56 56 Z" fill="rgba(0, 0, 0, 0.2)" />
-                  <!-- Corpo principal da seta -->
-                  <path d="M 60 18 L 66 56 L 60 53 L 54 56 Z" fill="#ef4444" stroke="#dc2626" stroke-width="1.5" stroke-linejoin="round" />
-                  <!-- Ponta afiada -->
-                  <path d="M 60 12 L 70 24 L 60 18 L 50 24 Z" fill="#b91c1c" stroke="#991b1b" stroke-width="1" stroke-linejoin="round" />
-                  <!-- Destaque na ponta -->
-                  <path d="M 60 12 L 65 18 L 60 16 L 55 18 Z" fill="#fca5a5" opacity="0.8" />
-                  <!-- Base circular -->
-                  <circle cx="60" cy="58" r="5" fill="#dc2626" stroke="#991b1b" stroke-width="1" />
-                  <circle cx="60" cy="57" r="3" fill="#ef4444" opacity="0.7" />
-                </g>
-                
-                <!-- Centro -->
-                <circle cx="60" cy="60" r="2" fill="currentColor" opacity="0.5" />
-              </svg>
-            </div>
-            <div class="wind-info-mini">
-              <span class="wind-speed-mini">{{ detailedWeather.currentWeather.windSpeed.toFixed(1) }} km/h</span>
-              <span class="wind-dir-mini">{{ getWindDirectionLabel(detailedWeather.dailyForecasts[0]?.windDirection || 0) }}</span>
-            </div>
-          </div>
+          <!-- Bússola de Vento -->
+          <WindCompass 
+            :wind-speed="detailedWeather.currentWeather.windSpeed" 
+            :wind-direction="detailedWeather.dailyForecasts[0]?.windDirection || 0"
+          />
         </div>
 
         <!-- Grid de Métricas -->
@@ -121,15 +89,6 @@
             <span class="card-icon">💧</span>
             <span class="card-label">Umidade</span>
             <span class="card-value">{{ detailedWeather.currentWeather.humidity.toFixed(0) }}%</span>
-          </div>
-
-          <div class="weather-card">
-            <span class="card-icon">💨</span>
-            <span class="card-label">Vento</span>
-            <span class="card-value">
-              {{ detailedWeather.currentWeather.windSpeed.toFixed(1) }} km/h
-              <span class="wind-direction">{{ getWindDirectionLabel(detailedWeather.dailyForecasts[0]?.windDirection || 0) }}</span>
-            </span>
           </div>
 
           <div class="weather-card">
@@ -190,7 +149,12 @@
 
       <!-- Carrossel de Previsões Diárias -->
       <section class="forecast-section">
-        <h2 class="section-title">Previsão para os Próximos {{ detailedWeather.dailyForecasts.length }} Dias</h2>
+        <div class="forecast-header">
+          <h2 class="section-title">Previsão para os Próximos {{ detailedWeather.dailyForecasts.length }} Dias</h2>
+          <div v-if="totalSlides > 0" class="swiper-counter">
+            {{ currentSlideIndex + 1 }} / {{ totalSlides }}
+          </div>
+        </div>
         <swiper
           :modules="[Navigation, Pagination]"
           :slides-per-view="1.2"
@@ -203,6 +167,7 @@
           }"
           :pagination="{ clickable: true }"
           :navigation="true"
+          @slideChange="onSlideChange"
           class="forecast-swiper"
         >
           <swiper-slide v-for="forecast in detailedWeather.dailyForecasts" :key="forecast.date">
@@ -303,6 +268,7 @@ import type { DetailedWeatherResponse } from '../types/weather';
 import WeatherChart from '../components/WeatherChart.vue';
 import WeatherAlerts from '../components/WeatherAlerts.vue';
 import AlertDetailPanel from '../components/AlertDetailPanel.vue';
+import WindCompass from '../components/WindCompass.vue';
 import { 
   getWeatherIcon, 
   formatTime, 
@@ -325,6 +291,15 @@ const isLoading = ref(true);
 const error = ref<string | null>(null);
 const selectedAlert = ref<any | null>(null);
 const showAlertDetail = ref(false);
+const currentSlideIndex = ref(0);
+const totalSlides = ref(0);
+
+/**
+ * Atualiza o índice do slide atual
+ */
+const onSlideChange = (swiper: any) => {
+  currentSlideIndex.value = swiper.activeIndex;
+};
 
 /**
  * Formata data para exibição no card
@@ -391,6 +366,7 @@ const loadCityDetails = async () => {
   try {
     logger.info(`Carregando dados detalhados da cidade ${cityId}`);
     detailedWeather.value = await getCityWeatherDetailed(cityId);
+    totalSlides.value = detailedWeather.value.dailyForecasts.length;
     logger.info('Dados carregados com sucesso');
     
     // Atualizar título da página

@@ -3,6 +3,9 @@
 @use '../abstracts/mixins' as *;
 @use '../abstracts/breakpoints' as *;
 
+// Importar estilos específicos de alertas para city-detail
+@import './city-detail-alerts';
+
 .city-detail-page {
   min-height: 100vh;
   height: 100vh;
@@ -29,7 +32,7 @@
   padding: $spacing-lg $spacing-xl;
   box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);
   position: sticky;
-  top: $spacing-md;
+  top: 0;
   z-index: 100;
   flex-shrink: 0;
   border: 1px solid rgba(59, 130, 246, 0.2);
@@ -39,7 +42,6 @@
   @include md {
     padding: $spacing-md;
     margin: $spacing-sm $spacing-md $spacing-lg $spacing-md;
-    top: $spacing-sm;
     border-radius: $radius-lg;
   }
 }
@@ -52,8 +54,9 @@
   margin: 0 auto;
   
   @include md {
+    flex-direction: column;
+    align-items: flex-start;
     gap: $spacing-md;
-    flex-wrap: wrap;
   }
 }
 
@@ -77,23 +80,23 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  color: rgba(59, 130, 246, 0.9);
+  color: $weather-primary;
   border-radius: $radius-lg;
   transition: all $transition-normal;
-  background: rgba(255, 255, 255, 0.8);
-  border: 2px solid rgba(59, 130, 246, 0.2);
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid $weather-border;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 2px 8px $weather-shadow;
   
   &:hover {
-    background: rgba(255, 255, 255, 1);
-    transform: translateX(-4px) scale(1.05);
+    background: $weather-surface;
+    transform: scale(1.05);
     box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
-    border-color: rgba(59, 130, 246, 0.4);
+    border-color: $weather-primary;
   }
   
   &:active {
-    transform: translateX(-2px) scale(1.02);
+    transform: scale(1.02);
   }
   
   svg {
@@ -103,11 +106,11 @@
 }
 
 .city-name {
-  color: rgba(30, 58, 138, 0.95);
+  color: $weather-text-primary;
   font-size: $font-4xl;
   font-weight: $font-extrabold;
   margin: 0;
-  text-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   letter-spacing: -0.5px;
   
   @include md {
@@ -116,9 +119,9 @@
 }
 
 .city-state {
-  color: rgba(51, 65, 85, 0.75);
+  color: $weather-text-secondary;
   font-size: $font-lg;
-  font-weight: $font-semibold;
+  font-weight: $font-bold;
   
   @include md {
     font-size: $font-base;
@@ -130,23 +133,21 @@
   align-items: center;
   gap: $spacing-sm;
   font-size: $font-sm;
-  color: rgba(30, 58, 138, 0.9);
-  background: rgba(255, 255, 255, 0.7);
+  color: $weather-text-primary;
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   padding: $spacing-sm $spacing-lg;
   border-radius: $radius-lg;
-  border: 2px solid rgba(59, 130, 246, 0.2);
-  font-weight: $font-semibold;
+  border: 2px solid $weather-border;
+  font-weight: $font-bold;
   margin-left: auto;
   white-space: nowrap;
-  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.1);
-  transition: all $transition-normal;
+  box-shadow: 0 2px 12px $weather-shadow;
+  transition: border-color $transition-normal;
   
   &:hover {
-    border-color: rgba(59, 130, 246, 0.3);
-    background: rgba(255, 255, 255, 0.85);
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+    border-color: $weather-primary;
   }
   
   svg {
@@ -154,6 +155,7 @@
     height: 16px;
     opacity: 0.9;
     flex-shrink: 0;
+    color: $weather-primary;
   }
   
   .timestamp-text {
@@ -166,6 +168,7 @@
     gap: $spacing-xs;
     width: 100%;
     justify-content: center;
+    margin-left: 0;
     
     svg {
       width: 14px;
@@ -456,158 +459,56 @@
   }
 }
 
-// Bússola Compacta no Hero
-.hero-wind-compass {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-sm;
-  padding: $spacing-md;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(248, 250, 255, 0.95) 100%
-  );
-  border-radius: $radius-lg;
-  border: 2px solid rgba(59, 130, 246, 0.2);
-  min-width: 140px;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.12);
-  transition: all $transition-normal;
-  
-  &:hover {
-    transform: scale(1.03);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.18);
-    border-color: rgba(59, 130, 246, 0.35);
-  }
-  
-  @include md {
-    min-width: 120px;
-    padding: $spacing-sm;
-    width: 100%;
-  }
-}
-
-.compass-mini {
-  width: 100px;
-  height: 100px;
-  position: relative;
-  background: radial-gradient(circle at center, 
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(248, 250, 255, 0.9) 50%,
-    rgba(240, 244, 255, 0.85) 100%
-  );
-  border-radius: $radius-full;
-  box-shadow: 
-    inset 0 2px 8px rgba(59, 130, 246, 0.12),
-    0 4px 16px rgba(59, 130, 246, 0.2),
-    0 0 0 3px rgba(59, 130, 246, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  
-  @include md {
-    width: 80px;
-    height: 80px;
-  }
-}
-
-.compass-svg-mini {
-  width: 100%;
-  height: 100%;
-  color: rgba(71, 85, 105, 0.7);
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.15));
-}
-
-.cardinal-mini {
-  fill: rgba(71, 85, 105, 0.75);
-  font-weight: bold;
-  
-  &.cardinal-n {
-    fill: rgba(239, 68, 68, 1);
-    font-size: 14px;
-    font-weight: 900;
-    filter: drop-shadow(0 1px 2px rgba(239, 68, 68, 0.5));
-  }
-}
-
-.wind-arrow-mini {
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: center;
-  filter: drop-shadow(0 3px 8px rgba(239, 68, 68, 0.5));
-}
-
-.wind-info-mini {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding-top: $spacing-xs;
-  border-top: 1px solid rgba(59, 130, 246, 0.15);
-  width: 100%;
-}
-
-.wind-speed-mini {
-  font-size: $font-lg;
-  font-weight: $font-extrabold;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.95) 0%, rgba(99, 102, 241, 0.9) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1;
-  
-  @include md {
-    font-size: $font-base;
-  }
-}
-
-.wind-dir-mini {
-  font-size: 10px;
-  font-weight: $font-bold;
-  color: rgba(71, 85, 105, 0.75);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 1px 6px;
-  background: rgba(59, 130, 246, 0.08);
-  border-radius: $radius-sm;
-}
+// WindCompass agora é um componente separado
 
 .current-weather-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: $spacing-md;
-  animation: fadeIn 0.8s ease-out 0.2s both;
+  gap: $spacing-lg;
   max-width: 100%;
   
   @media (min-width: 768px) {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: $spacing-xl;
   }
   
   @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     max-width: 1200px;
+  }
+  
+  @media (min-width: 1440px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: $spacing-md;
   }
   
   @include md {
     grid-template-columns: repeat(2, 1fr);
-    gap: $spacing-sm;
+    gap: $spacing-md;
   }
 }
 
 .weather-card {
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(248, 250, 255, 0.9) 100%
-  );
+  background: $weather-surface;
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
-  padding: $spacing-lg;
-  border-radius: $radius-lg;
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.08);
+  padding: $spacing-xl;
+  border-radius: $radius-xl;
+  box-shadow: 0 4px 16px $weather-shadow;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $spacing-xs;
+  gap: $spacing-sm;
   transition: all $transition-normal;
-  border: 2px solid rgba(59, 130, 246, 0.15);
+  border: 2px solid $weather-border;
+  border-top: 4px solid $weather-primary;
   position: relative;
   overflow: hidden;
+  min-height: 140px;
   
   &::before {
     content: '';
@@ -623,17 +524,28 @@
   }
   
   &:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.16);
-    border-color: rgba(59, 130, 246, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.18);
+    border-color: $weather-primary;
     
     &::before {
       opacity: 1;
     }
   }
   
+  &:focus-visible {
+    outline: 3px solid rgba(59, 130, 246, 0.5);
+    outline-offset: 2px;
+  }
+  
   @include md {
-    padding: $spacing-md;
+    padding: $spacing-lg;
+    min-height: 120px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: $spacing-xl;
+    min-height: 130px;
   }
 }
 
@@ -666,34 +578,46 @@
 }
 
 .card-icon {
-  font-size: 28px;
+  font-size: 36px;
   line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  
+  @include md {
+    font-size: 32px;
+  }
 }
 
 .card-icon-svg {
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
+  
+  @include md {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 .card-label {
-  font-size: $font-xs;
-  color: rgba(59, 130, 246, 0.7);
-  font-weight: $font-semibold;
+  font-size: $font-sm;
+  color: $weather-text-secondary;
+  font-weight: $font-bold;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
+  line-height: 1.4;
+  margin-top: $spacing-xs;
 }
 
 .card-value {
-  font-size: $font-xl;
-  font-weight: $font-bold;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.85) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 1.5rem;
+  font-weight: $font-extrabold;
+  color: $weather-text-primary;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
   
   @include md {
-    font-size: $font-lg;
+    font-size: 1.25rem;
   }
 }
 
@@ -751,7 +675,6 @@
 
 .forecast-section {
   margin-bottom: $spacing-2xl;
-  animation: fadeIn 1s ease-out 0.5s both;
   padding: $spacing-xl;
   background: linear-gradient(135deg, 
     rgba(59, 130, 246, 0.08) 0%,
@@ -768,28 +691,61 @@
   }
 }
 
+.forecast-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-xl;
+  gap: $spacing-md;
+  
+  @include md {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-sm;
+  }
+}
+
+.swiper-counter {
+  background: $weather-primary;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: $font-sm;
+  font-weight: $font-extrabold;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  letter-spacing: 0.5px;
+  min-width: 70px;
+  text-align: center;
+  
+  @include md {
+    font-size: $font-xs;
+    padding: 6px 12px;
+  }
+}
+
 .forecast-swiper {
   padding: $spacing-md 0 $spacing-2xl 0;
   
   :deep(.swiper-button-next),
   :deep(.swiper-button-prev) {
-    color: rgba(59, 130, 246, 0.9);
-    background: rgba(255, 255, 255, 0.95);
-    width: 44px;
-    height: 44px;
+    color: $weather-primary;
+    background: $weather-surface;
+    width: 52px;
+    height: 52px;
     border-radius: $radius-full;
-    border: 2px solid rgba(59, 130, 246, 0.2);
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
+    border: 2px solid $weather-border;
+    box-shadow: 0 4px 16px $weather-shadow;
     transition: all $transition-normal;
     
     &::after {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
     }
     
     &:hover {
-      background: rgba(255, 255, 255, 1);
-      border-color: rgba(59, 130, 246, 0.4);
+      background: $weather-surface;
+      border-color: $weather-primary;
       transform: scale(1.1);
       box-shadow: 0 6px 24px rgba(59, 130, 246, 0.3);
     }
@@ -799,22 +755,28 @@
     }
     
     @include md {
-      display: none;
+      width: 44px;
+      height: 44px;
+      
+      &::after {
+        font-size: 18px;
+      }
     }
   }
   
   :deep(.swiper-pagination-bullet) {
-    background: rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.5);
     opacity: 1;
     transition: all $transition-fast;
-    width: 8px;
-    height: 8px;
+    width: 12px;
+    height: 12px;
   }
   
   :deep(.swiper-pagination-bullet-active) {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.9) 100%);
-    width: 24px;
+    background: $weather-primary;
+    width: 32px;
     border-radius: $radius-full;
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
   }
 }
 

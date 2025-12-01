@@ -4,76 +4,110 @@
       viewBox="0 0 200 200"
       class="compass-svg"
       role="img"
-      aria-label="Bússola indicando direção do vento"
+      :aria-label="`Bússola indicando vento de ${windSpeed.toFixed(1)} km/h`"
     >
-      <!-- Círculo externo -->
+      <!-- Definições de gradientes -->
+      <defs>
+        <!-- Gradiente metálico do anel -->
+        <radialGradient id="metalGradient" cx="50%" cy="30%">
+          <stop offset="0%" style="stop-color:#f1f5f9;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#cbd5e1;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#94a3b8;stop-opacity:1" />
+        </radialGradient>
+        
+        <!-- Gradiente do fundo -->
+        <radialGradient id="backgroundGradient" cx="50%" cy="50%">
+          <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+          <stop offset="50%" style="stop-color:#f8faff;stop-opacity:0.95" />
+          <stop offset="100%" style="stop-color:#f0f4ff;stop-opacity:0.9" />
+        </radialGradient>
+
+        <!-- Sombra interna -->
+        <radialGradient id="innerShadow" cx="50%" cy="50%">
+          <stop offset="80%" style="stop-color:#000000;stop-opacity:0" />
+          <stop offset="100%" style="stop-color:#000000;stop-opacity:0.1" />
+        </radialGradient>
+      </defs>
+
+      <!-- Fundo do disco -->
+      <circle cx="100" cy="100" r="90" fill="url(#backgroundGradient)" />
+      
+      <!-- Anel externo metálico -->
       <circle
         cx="100"
         cy="100"
-        r="90"
+        r="92"
         fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        opacity="0.2"
+        stroke="url(#metalGradient)"
+        stroke-width="6"
+        opacity="0.9"
       />
       
-      <!-- Círculo interno -->
-      <circle
-        cx="100"
-        cy="100"
-        r="70"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-        opacity="0.15"
-      />
+      <!-- Círculos concêntricos -->
+      <circle cx="100" cy="100" r="75" fill="none" stroke="currentColor" stroke-width="1" opacity="0.15" />
+      <circle cx="100" cy="100" r="60" fill="none" stroke="currentColor" stroke-width="1" opacity="0.12" />
+      <circle cx="100" cy="100" r="45" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.10" />
+      <circle cx="100" cy="100" r="30" fill="none" stroke="currentColor" stroke-width="0.6" opacity="0.08" />
       
-      <!-- Pontos cardeais -->
-      <text x="100" y="25" text-anchor="middle" class="cardinal-point cardinal-n" font-weight="bold">N</text>
-      <text x="175" y="105" text-anchor="middle" class="cardinal-point cardinal-e" font-weight="bold">L</text>
-      <text x="100" y="185" text-anchor="middle" class="cardinal-point cardinal-s" font-weight="bold">S</text>
-      <text x="25" y="105" text-anchor="middle" class="cardinal-point cardinal-w" font-weight="bold">O</text>
-      
-      <!-- Marcações intermediárias -->
-      <text x="148" y="42" text-anchor="middle" class="cardinal-point-small" font-size="10">NE</text>
-      <text x="158" y="158" text-anchor="middle" class="cardinal-point-small" font-size="10">SE</text>
-      <text x="52" y="158" text-anchor="middle" class="cardinal-point-small" font-size="10">SO</text>
-      <text x="42" y="42" text-anchor="middle" class="cardinal-point-small" font-size="10">NO</text>
-      
-      <!-- Seta indicadora de direção (rotaciona conforme windDirection) -->
-      <g
-        :transform="`rotate(${windDirection || 0} 100 100)`"
-        class="wind-arrow"
-      >
-        <!-- Corpo da seta -->
-        <path
-          d="M 100 40 L 105 90 L 100 85 L 95 90 Z"
-          fill="#ef4444"
-          stroke="#dc2626"
-          stroke-width="1"
-        />
-        <!-- Ponta da seta -->
-        <path
-          d="M 100 30 L 110 45 L 100 40 L 90 45 Z"
-          fill="#dc2626"
-        />
-        <!-- Cauda -->
-        <circle cx="100" cy="95" r="5" fill="#dc2626" opacity="0.6"/>
+      <!-- Marcações de graus a cada 30° -->
+      <g class="degree-marks" opacity="0.3">
+        <line x1="100" y1="15" x2="100" y2="25" stroke="currentColor" stroke-width="2" />
+        <line x1="143.3" y1="25" x2="138.3" y2="32.68" stroke="currentColor" stroke-width="1.5" />
+        <line x1="175" y1="56.7" x2="167.32" y2="61.7" stroke="currentColor" stroke-width="1.5" />
+        <line x1="185" y1="100" x2="175" y2="100" stroke="currentColor" stroke-width="2" />
+        <line x1="175" y1="143.3" x2="167.32" y2="138.3" stroke="currentColor" stroke-width="1.5" />
+        <line x1="143.3" y1="175" x2="138.3" y2="167.32" stroke="currentColor" stroke-width="1.5" />
+        <line x1="100" y1="185" x2="100" y2="175" stroke="currentColor" stroke-width="2" />
+        <line x1="56.7" y1="175" x2="61.7" y2="167.32" stroke="currentColor" stroke-width="1.5" />
+        <line x1="25" y1="143.3" x2="32.68" y2="138.3" stroke="currentColor" stroke-width="1.5" />
+        <line x1="15" y1="100" x2="25" y2="100" stroke="currentColor" stroke-width="2" />
+        <line x1="25" y1="56.7" x2="32.68" y2="61.7" stroke="currentColor" stroke-width="1.5" />
+        <line x1="56.7" y1="25" x2="61.7" y2="32.68" stroke="currentColor" stroke-width="1.5" />
       </g>
       
-      <!-- Centro -->
-      <circle cx="100" cy="100" r="3" fill="currentColor" opacity="0.5"/>
+      <!-- Pontos cardeais -->
+      <text x="100" y="35" text-anchor="middle" class="cardinal-point cardinal-n" font-size="20" font-weight="bold">N</text>
+      <text x="165" y="108" text-anchor="middle" class="cardinal-point" font-size="16" font-weight="600">L</text>
+      <text x="100" y="175" text-anchor="middle" class="cardinal-point" font-size="16" font-weight="600">S</text>
+      <text x="35" y="108" text-anchor="middle" class="cardinal-point" font-size="16" font-weight="600">O</text>
+      
+      <!-- Seta indicadora com animação de oscilação -->
+      <g
+        class="wind-arrow"
+        :style="`--wind-direction: ${windDirection || 0}deg`"
+      >
+        <!-- Sombra da seta -->
+        <path d="M 101.5 35 L 108 88 L 101.5 84 L 95 88 Z" fill="rgba(0, 0, 0, 0.25)" />
+        
+        <!-- Corpo principal da seta -->
+        <path d="M 100 30 L 108 88 L 100 84 L 92 88 Z" fill="#ef4444" stroke="#dc2626" stroke-width="2" stroke-linejoin="round" />
+        
+        <!-- Ponta afiada -->
+        <path d="M 100 20 L 112 36 L 100 30 L 88 36 Z" fill="#b91c1c" stroke="#991b1b" stroke-width="1.5" stroke-linejoin="round" />
+        
+        <!-- Destaque na ponta -->
+        <path d="M 100 20 L 106 28 L 100 25 L 94 28 Z" fill="#fca5a5" opacity="0.9" />
+        
+        <!-- Base circular -->
+        <circle cx="100" cy="90" r="8" fill="#dc2626" stroke="#991b1b" stroke-width="1.5" />
+        <circle cx="100" cy="88" r="5" fill="#ef4444" opacity="0.8" />
+      </g>
+      
+      <!-- Centro com brilho -->
+      <circle cx="100" cy="100" r="4" fill="currentColor" opacity="0.6" />
+      <circle cx="100" cy="100" r="2" fill="#ffffff" opacity="0.9" />
+      
+      <!-- Sombra interna do disco -->
+      <circle cx="100" cy="100" r="90" fill="url(#innerShadow)" />
+      
+      <!-- Efeito de vidro/brilho -->
+      <ellipse cx="100" cy="50" rx="60" ry="30" fill="rgba(255, 255, 255, 0.15)" />
     </svg>
     
     <!-- Velocidade do vento -->
     <div class="wind-speed">
       <span class="wind-speed-value">{{ windSpeed.toFixed(1) }}</span>
       <span class="wind-speed-unit">km/h</span>
-    </div>
-    
-    <!-- Direção em texto -->
-    <div v-if="windDirection !== undefined" class="wind-direction-text">
-      {{ getDirectionName(windDirection) }}
     </div>
   </div>
 </template>
@@ -96,22 +130,6 @@ onMounted(() => {
     windDirection: props.windDirection
   });
 });
-
-/**
- * Converte direção em graus para nome cardinal
- */
-const getDirectionName = (degrees: number): string => {
-  const normalized = ((degrees % 360) + 360) % 360;
-  
-  if (normalized >= 337.5 || normalized < 22.5) return 'Norte';
-  if (normalized >= 22.5 && normalized < 67.5) return 'Nordeste';
-  if (normalized >= 67.5 && normalized < 112.5) return 'Leste';
-  if (normalized >= 112.5 && normalized < 157.5) return 'Sudeste';
-  if (normalized >= 157.5 && normalized < 202.5) return 'Sul';
-  if (normalized >= 202.5 && normalized < 247.5) return 'Sudoeste';
-  if (normalized >= 247.5 && normalized < 292.5) return 'Oeste';
-  return 'Noroeste';
-};
 </script>
 
 <style scoped lang="scss">
@@ -126,25 +144,30 @@ const getDirectionName = (degrees: number): string => {
   align-items: center;
   gap: $spacing-lg;
   padding: $spacing-xl;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.98) 0%,
-    rgba(248, 250, 255, 0.98) 100%
-  );
+  background: $weather-surface-blur;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-radius: $radius-xl;
-  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.12);
-  border: 2px solid rgba(139, 157, 225, 0.2);
-  min-width: 240px;
+  box-shadow: 
+    0 4px 20px $weather-shadow,
+    0 0 0 1px rgba(255, 255, 255, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border: 2px solid $weather-border;
+  min-width: 260px;
   position: relative;
   transition: all $transition-normal;
   
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
-    border-color: rgba(102, 126, 234, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 
+      0 8px 32px rgba(59, 130, 246, 0.18),
+      0 0 0 1px rgba(255, 255, 255, 0.9),
+      inset 0 1px 0 rgba(255, 255, 255, 1);
+    border-color: $weather-primary;
   }
   
   @include md {
-    min-width: 200px;
+    min-width: 220px;
     padding: $spacing-lg;
     gap: $spacing-md;
   }
@@ -152,81 +175,84 @@ const getDirectionName = (degrees: number): string => {
 
 .compass-svg {
   width: 100%;
-  max-width: 240px;
+  max-width: 260px;
   height: auto;
-  color: $text-dark;
+  color: $weather-text-secondary;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
   
   @include md {
-    max-width: 200px;
+    max-width: 220px;
   }
 }
 
 .cardinal-point {
-  font-size: 18px;
-  fill: rgba(102, 126, 234, 0.8);
-  font-weight: $font-bold;
+  fill: $weather-text-secondary;
+  font-weight: $font-semibold;
   
-  @include md {
-    font-size: 16px;
+  &.cardinal-n {
+    fill: #ef4444;
+    font-weight: $font-extrabold;
+    filter: drop-shadow(0 1px 2px rgba(239, 68, 68, 0.5));
   }
 }
 
-.cardinal-n {
-  fill: rgba(102, 126, 234, 0.95);
+.degree-marks {
+  stroke: $weather-text-muted;
 }
 
-.cardinal-point-small {
-  fill: $text-dark;
-  opacity: 0.6;
-  font-size: 10px;
+// Animação de oscilação realista da seta
+@keyframes windOscillation {
+  0%, 100% {
+    transform: rotate(calc(var(--wind-direction) - 3deg));
+  }
+  50% {
+    transform: rotate(calc(var(--wind-direction) + 3deg));
+  }
 }
 
 .wind-arrow {
-  transition: transform 0.5s ease-out;
-  transform-origin: center;
+  transform-origin: 100px 100px;
+  transform: rotate(var(--wind-direction));
+  animation: windOscillation 2s ease-in-out infinite;
+  filter: drop-shadow(0 3px 8px rgba(239, 68, 68, 0.4));
+  will-change: transform;
+}
+
+// Pausa animação se usuário preferir movimento reduzido
+@media (prefers-reduced-motion: reduce) {
+  .wind-arrow {
+    animation: none;
+  }
 }
 
 .wind-speed {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
-  margin-top: -$spacing-sm;
+  gap: 2px;
+  padding-top: $spacing-sm;
+  border-top: 2px solid $weather-border-light;
+  width: 100%;
 }
 
 .wind-speed-value {
-  font-size: $font-5xl;
+  font-size: 2rem;
   font-weight: $font-extrabold;
-  @include text-gradient;
+  color: $weather-primary;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
   
   @include md {
-    font-size: $font-4xl;
+    font-size: 1.75rem;
   }
 }
 
 .wind-speed-unit {
   font-size: $font-sm;
-  font-weight: $font-semibold;
-  color: $text-dark;
-  opacity: 0.7;
+  font-weight: $font-bold;
+  color: $weather-text-secondary;
   text-transform: uppercase;
   letter-spacing: $letter-spacing-wide;
-  
-  @include md {
-    font-size: $font-xs;
-  }
-}
-
-.wind-direction-text {
-  font-size: $font-base;
-  font-weight: $font-semibold;
-  color: $text-dark;
-  opacity: 0.8;
-  text-align: center;
-  
-  @include md {
-    font-size: $font-sm;
-  }
+  opacity: 0.85;
 }
 </style>

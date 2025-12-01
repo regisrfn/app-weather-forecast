@@ -1,0 +1,257 @@
+// =================================
+// ALERTAS ESPECÍFICOS PARA CITY DETAIL
+// Tema azul harmonizado com a página
+// =================================
+
+@use '../abstracts/colors' as *;
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+@use '../abstracts/breakpoints' as *;
+
+// Sobrescrever estilos de alertas apenas dentro de city-detail-page
+.city-detail-page {
+  .weather-alerts {
+    background: linear-gradient(135deg, 
+      rgba(219, 234, 254, 0.6) 0%, 
+      rgba(191, 219, 254, 0.5) 100%
+    );
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: $spacing-xl;
+    border-left: 4px solid $weather-primary;
+    border-radius: $radius-xl;
+    box-shadow: 0 4px 16px $weather-shadow;
+    border: 2px solid $weather-border;
+    border-left-width: 4px;
+    
+    @include md {
+      padding: $spacing-lg;
+    }
+  }
+
+  .alerts-header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+    color: $weather-primary;
+
+    svg {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.2));
+      
+      @include md {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    h3 {
+      margin: 0;
+      font-size: $font-xl;
+      font-weight: $font-extrabold;
+      color: $weather-text-primary;
+      letter-spacing: -0.3px;
+      
+      @include md {
+        font-size: $font-lg;
+      }
+    }
+  }
+
+  .alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  .alert-item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-lg;
+    padding: $spacing-lg;
+    border-radius: $radius-lg;
+    background: $weather-surface;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-left: 4px solid;
+    transition: all $transition-normal;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08);
+
+    &:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+      background: rgba(255, 255, 255, 1);
+    }
+
+    &:active {
+      transform: translateX(2px) scale(0.99);
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba(59, 130, 246, 0.5);
+      outline-offset: 2px;
+    }
+    
+    @include md {
+      padding: $spacing-md;
+      gap: $spacing-md;
+    }
+  }
+
+  .alert-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    
+    svg {
+      width: 28px;
+      height: 28px;
+    }
+    
+    @include md {
+      width: 36px;
+      height: 36px;
+      
+      svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+
+  .alert-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .alert-description {
+    font-size: $font-base;
+    font-weight: $font-bold;
+    margin-bottom: $spacing-sm;
+    line-height: 1.5;
+    color: $weather-text-primary;
+    
+    .alert-emoji {
+      margin-right: $spacing-xs;
+      font-size: 1.2em;
+    }
+    
+    @include md {
+      font-size: $font-sm;
+    }
+  }
+
+  .alert-meta {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    flex-wrap: wrap;
+    font-size: $font-sm;
+    color: $weather-text-secondary;
+    
+    @include md {
+      font-size: $font-xs;
+      gap: $spacing-sm;
+    }
+  }
+
+  .alert-code {
+    font-weight: $font-extrabold;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 4px 10px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: $radius-md;
+    color: $weather-primary;
+  }
+
+  .alert-time {
+    color: $weather-text-muted;
+    font-weight: $font-semibold;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .alert-arrow {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: $weather-text-muted;
+    opacity: 0.5;
+    transition: all $transition-normal;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .alert-item:hover & {
+      opacity: 1;
+      transform: translateX(4px);
+      color: $weather-primary;
+    }
+  }
+
+  // Estilos por severidade com cores mantidas
+  .alert-item.severity-danger {
+    border-left-color: #dc2626;
+
+    .alert-icon {
+      color: #dc2626;
+    }
+    
+    .alert-code {
+      background: rgba(220, 38, 38, 0.1);
+      color: #dc2626;
+    }
+  }
+
+  .alert-item.severity-alert {
+    border-left-color: #ea580c;
+
+    .alert-icon {
+      color: #ea580c;
+    }
+    
+    .alert-code {
+      background: rgba(234, 88, 12, 0.1);
+      color: #ea580c;
+    }
+  }
+
+  .alert-item.severity-warning {
+    border-left-color: #d97706;
+
+    .alert-icon {
+      color: #d97706;
+    }
+    
+    .alert-code {
+      background: rgba(217, 119, 6, 0.1);
+      color: #d97706;
+    }
+  }
+
+  .alert-item.severity-info {
+    border-left-color: #0284c7;
+
+    .alert-icon {
+      color: #0284c7;
+    }
+    
+    .alert-code {
+      background: rgba(2, 132, 199, 0.1);
+      color: #0284c7;
+    }
+  }
+}
