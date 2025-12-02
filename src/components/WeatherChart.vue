@@ -85,6 +85,7 @@ const createChart = () => {
   const tempMinData = props.dailyForecasts.map(f => f.tempMin);
   const precipData = props.dailyForecasts.map(f => f.precipitationMm);
   const rainProbData = props.dailyForecasts.map(f => f.rainProbability);
+  const rainfallIntensityData = props.dailyForecasts.map(f => f.rainfallIntensity || 0);
 
   const config: ChartConfiguration = {
     type: 'bar',
@@ -140,19 +141,29 @@ const createChart = () => {
           label: 'Precipitação (mm)',
           data: precipData,
           backgroundColor: (context: any) => {
-            const prob = rainProbData[context.dataIndex] ?? 0;
+            const intensity = rainfallIntensityData[context.dataIndex] ?? 0;
             
-            // Cor baseada na probabilidade de chuva
-            if (prob >= 70) {
-              return 'rgba(59, 130, 246, 0.7)'; // Azul forte
-            } else if (prob >= 40) {
-              return 'rgba(59, 130, 246, 0.5)'; // Azul médio
-            } else if (prob >= 20) {
-              return 'rgba(59, 130, 246, 0.3)'; // Azul claro
+            // Não exibir barra se intensidade é 0
+            if (intensity === 0) {
+              return 'transparent';
             }
-            return 'rgba(59, 130, 246, 0.15)'; // Azul muito claro
+            
+            // Cor baseada na intensidade de chuva (rainfallIntensity)
+            if (intensity >= 75) {
+              return 'rgba(59, 130, 246, 0.8)'; // Intensidade muito forte
+            } else if (intensity >= 50) {
+              return 'rgba(59, 130, 246, 0.6)'; // Intensidade forte
+            } else if (intensity >= 25) {
+              return 'rgba(59, 130, 246, 0.4)'; // Intensidade média
+            } else if (intensity >= 10) {
+              return 'rgba(59, 130, 246, 0.25)'; // Intensidade leve
+            }
+            return 'rgba(59, 130, 246, 0.1)'; // Intensidade muito leve
           },
-          borderColor: 'rgba(59, 130, 246, 0.8)',
+          borderColor: (context: any) => {
+            const intensity = rainfallIntensityData[context.dataIndex] ?? 0;
+            return intensity === 0 ? 'transparent' : 'rgba(59, 130, 246, 0.8)';
+          },
           borderWidth: 1,
           borderRadius: 4,
           yAxisID: 'y1',
@@ -211,7 +222,8 @@ const createChart = () => {
               if (value === null || value === undefined) return label;
               if (label.includes('Precipitação')) {
                 const prob = rainProbData[context.dataIndex];
-                return `${label}: ${value.toFixed(1)} mm (${prob}%)`;
+                const intensity = rainfallIntensityData[context.dataIndex];
+                return `${label}: ${value.toFixed(1)} mm (${prob}%, intensidade: ${intensity.toFixed(1)})`;
               }
               return `${label}: ${value.toFixed(1)}°C`;
             },

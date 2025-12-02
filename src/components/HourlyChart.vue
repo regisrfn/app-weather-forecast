@@ -114,31 +114,43 @@ const createChart = () => {
   const tempData = displayedForecasts.value.map(f => f.temperature);
   const precipData = displayedForecasts.value.map(f => f.precipitation);
   const precipProbData = displayedForecasts.value.map(f => f.precipitationProbability);
+  const rainfallIntensityData = displayedForecasts.value.map(f => f.rainfallIntensity || 0);
 
   const config: ChartConfiguration = {
     type: 'bar',
     data: {
       labels,
       datasets: [
-        // Barras de precipitação
+        // Barras de precipitação (baseadas em rainfallIntensity)
         {
           type: 'bar',
           label: 'Precipitação (mm)',
           data: precipData,
           backgroundColor: (context: any) => {
-            const prob = precipProbData[context.dataIndex] ?? 0;
+            const intensity = rainfallIntensityData[context.dataIndex] ?? 0;
             
-            // Cor baseada na probabilidade de chuva
-            if (prob >= 70) {
-              return 'rgba(59, 130, 246, 0.7)'; // Azul forte
-            } else if (prob >= 40) {
-              return 'rgba(59, 130, 246, 0.5)'; // Azul médio
-            } else if (prob >= 20) {
-              return 'rgba(59, 130, 246, 0.3)'; // Azul claro
+            // Não exibir barra se intensidade é 0
+            if (intensity === 0) {
+              return 'transparent';
             }
-            return 'rgba(59, 130, 246, 0.15)'; // Azul muito claro
+            
+            // Cor baseada na intensidade da chuva (rainfall_intensity)
+            // 0-25: muito fraca, 25-50: fraca, 50-75: moderada, 75-100: forte
+            if (intensity >= 75) {
+              return 'rgba(59, 130, 246, 0.8)'; // Azul muito forte
+            } else if (intensity >= 50) {
+              return 'rgba(59, 130, 246, 0.6)'; // Azul forte
+            } else if (intensity >= 25) {
+              return 'rgba(59, 130, 246, 0.4)'; // Azul médio
+            } else if (intensity >= 10) {
+              return 'rgba(59, 130, 246, 0.25)'; // Azul claro
+            }
+            return 'rgba(59, 130, 246, 0.1)'; // Azul muito claro
           },
-          borderColor: 'rgba(59, 130, 246, 0.8)',
+          borderColor: (context: any) => {
+            const intensity = rainfallIntensityData[context.dataIndex] ?? 0;
+            return intensity === 0 ? 'transparent' : 'rgba(59, 130, 246, 0.8)';
+          },
           borderWidth: 1,
           borderRadius: 4,
           yAxisID: 'y-precip',
@@ -234,7 +246,8 @@ const createChart = () => {
               
               if (context.dataset.yAxisID === 'y-precip') {
                 const prob = precipProbData[context.dataIndex];
-                return `${label}: ${value.toFixed(1)}mm (${prob}%)`;
+                const intensity = rainfallIntensityData[context.dataIndex];
+                return `${label}: ${value.toFixed(1)}mm (${prob}%, intensidade: ${intensity.toFixed(0)})`;
               }
               
               return `${label}: ${value.toFixed(1)}°`;

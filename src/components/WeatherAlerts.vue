@@ -86,8 +86,11 @@ const sortedAlerts = computed(() => {
     // Visibilidade (prioridade 5)
     'LOW_VISIBILITY': 5,
     
-    // Outros (prioridade 6)
-    'SNOW': 6
+    // UV (prioridade 6)
+    'EXTREME_UV': 6,
+    
+    // Outros (prioridade 7)
+    'SNOW': 7
   };
   
   // Mapa de prioridade de severidade (maior = mais crítico)
@@ -246,6 +249,11 @@ const ALERT_CONFIG: Record<string, { label: string; description: string; icon: s
     label: 'Visibilidade Reduzida', 
     description: 'Baixa visibilidade',
     icon: '🌫️'
+  },
+  EXTREME_UV: { 
+    label: 'UV Extremo', 
+    description: 'Índice UV muito alto',
+    icon: '☀️'
   }
 };
 
