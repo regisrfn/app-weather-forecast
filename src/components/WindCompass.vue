@@ -4,7 +4,7 @@
       viewBox="0 0 200 200"
       class="compass-svg"
       role="img"
-      :aria-label="`Bússola indicando vento de ${windSpeed.toFixed(1)} km/h`"
+      :aria-label="`Bússola indicando vento soprando para ${Math.round(displayedDirection)}° a ${windSpeed.toFixed(1)} km/h`"
     >
       <!-- Definições de gradientes -->
       <defs>
@@ -74,7 +74,7 @@
       <!-- Seta indicadora com animação de oscilação -->
       <g
         class="wind-arrow"
-        :style="`--wind-direction: ${windDirection || 0}deg`"
+        :style="`--wind-direction: ${displayedDirection}deg`"
       >
         <!-- Sombra da seta -->
         <path d="M 101.5 35 L 108 88 L 101.5 84 L 95 88 Z" fill="rgba(0, 0, 0, 0.25)" />
@@ -113,7 +113,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 
 interface Props {
   windSpeed: number;
@@ -123,6 +123,9 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   windDirection: 0,
 });
+
+// UI mostra a direção para onde o vento sopra (origem + 180°)
+const displayedDirection = computed(() => ((props.windDirection ?? 0) + 180) % 360);
 
 onMounted(() => {
   console.log('[WindCompass] Mounted with:', {
