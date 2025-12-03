@@ -89,6 +89,7 @@ export interface HourlyForecast {
   temperature: number;
   precipitation: number;
   precipitationProbability: number;
+  rainfallIntensity?: number; // 0-100 (0 = sem chuva, 100 = chuva intensa)
   humidity: number;
   windSpeed: number;
   windDirection: number;

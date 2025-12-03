@@ -246,7 +246,7 @@ const createChart = () => {
               
               if (context.dataset.yAxisID === 'y-precip') {
                 const prob = precipProbData[context.dataIndex];
-                const intensity = rainfallIntensityData[context.dataIndex];
+                const intensity = rainfallIntensityData[context.dataIndex] ?? 0;
                 return `${label}: ${value.toFixed(1)}mm (${prob}%, intensidade: ${intensity.toFixed(0)})`;
               }
               

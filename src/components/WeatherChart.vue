@@ -222,7 +222,7 @@ const createChart = () => {
               if (value === null || value === undefined) return label;
               if (label.includes('Precipitação')) {
                 const prob = rainProbData[context.dataIndex];
-                const intensity = rainfallIntensityData[context.dataIndex];
+                const intensity = rainfallIntensityData[context.dataIndex] ?? 0;
                 return `${label}: ${value.toFixed(1)} mm (${prob}%, intensidade: ${intensity.toFixed(1)})`;
               }
               return `${label}: ${value.toFixed(1)}°C`;
