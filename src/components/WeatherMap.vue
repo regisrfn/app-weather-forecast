@@ -305,9 +305,14 @@
           :key="index"
           class="forecast-card"
           :class="{ 'is-current': index === 0, 'is-loading': forecast.loading }"
-          @click="jumpToTime(forecast.time)"
+          @click="jumpToTime(forecast.time, forecast.date)"
         >
-          <div class="forecast-time">{{ forecast.time }}</div>
+          <div class="forecast-time">
+            {{ forecast.time }}
+            <span v-if="forecast.date !== forecastDate" class="forecast-date-label">
+              {{ formatDateShort(forecast.date) }}
+            </span>
+          </div>
           <div v-if="!forecast.loading && forecast.data" class="forecast-content">
             <div class="forecast-temp">{{ forecast.data.temperature.toFixed(1) }}°C</div>
             <div class="forecast-rain" v-if="forecast.data.rainfallProbability !== undefined">
@@ -328,7 +333,7 @@
           <span class="weather-label">Prob. Chuva</span>
           <span class="weather-value">{{ selectedCity.rainfallProbability.toFixed(0) }}%</span>
         </div>
-        <div class="weather-item" v-if="selectedCity.dailyRainAccumulation !== undefined && selectedCity.dailyRainAccumulation > 0">
+        <div class="weather-item" v-if="selectedCity.dailyRainAccumulation !== undefined && selectedCity.rainfallIntensity > 0">
           <span class="weather-label">Acum. Dia</span>
           <span class="weather-value">{{ selectedCity.dailyRainAccumulation.toFixed(1) }} mm</span>
         </div>
@@ -439,14 +444,15 @@ const isLoading = ref<boolean>(false);
 // Previsões de múltiplos horários
 interface ForecastSlot {
   time: string;
+  date: string; // YYYY-MM-DD
   data: WeatherData | null;
   loading: boolean;
 }
 
 const forecastTimeSlots = ref<ForecastSlot[]>([
-  { time: '00:00', data: null, loading: false },
-  { time: '03:00', data: null, loading: false },
-  { time: '06:00', data: null, loading: false }
+  { time: '00:00', date: '', data: null, loading: false },
+  { time: '03:00', date: '', data: null, loading: false },
+  { time: '06:00', date: '', data: null, loading: false }
 ]);
 
 const togglePanel = () => {
@@ -473,8 +479,11 @@ const handleJumpToDate = async (date: string, time: string) => {
   await updateRegionalData();
 };
 
-const jumpToTime = async (time: string) => {
+const jumpToTime = async (time: string, date?: string) => {
   forecastTime.value = time;
+  if (date) {
+    forecastDate.value = date;
+  }
   await updateRegionalData();
 };
 
@@ -495,34 +504,56 @@ const updateForecastSlots = async () => {
   const parts = currentTime.split(':');
   const currentHours = parts[0] ? parseInt(parts[0]) : 0;
   
-  // Calcular os 3 slots de tempo (atual, +3h, +6h)
-  const slots: string[] = [];
+  // Calcular os 3 slots de tempo (atual, +3h, +6h) com transição de dia
+  const slots: Array<{ time: string; date: string }> = [];
+  let currentDate = forecastDate.value;
+  
   for (let i = 0; i < 3; i++) {
     let hour = currentHours + (i * 3);
-    if (hour >= 24) hour = hour - 24;
-    slots.push(`${String(hour).padStart(2, '0')}:00`);
+    let dateToUse = currentDate;
+    
+    // Se hora passa de 24, ajustar para próximo dia
+    if (hour >= 24) {
+      hour = hour - 24;
+      // Incrementar data em 1 dia
+      const date = new Date(currentDate + 'T00:00:00');
+      date.setDate(date.getDate() + 1);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      dateToUse = `${year}-${month}-${day}`;
+    }
+    
+    slots.push({
+      time: `${String(hour).padStart(2, '0')}:00`,
+      date: dateToUse
+    });
   }
   
   // Atualizar os slots
-  forecastTimeSlots.value = slots.map((time, index) => ({
+  forecastTimeSlots.value = slots.map(({ time, date }, index) => ({
     time,
+    date,
     data: index === 0 ? selectedCity.value : null,
     loading: index > 0
   }));
   
   // Buscar dados para os próximos horários
   for (let i = 1; i < slots.length; i++) {
-    const time = slots[i];
+    const slotData = slots[i];
+    if (!slotData) continue;
+    
+    const { time, date } = slotData;
     const slot = forecastTimeSlots.value[i];
     if (!slot) continue;
     
     try {
-      const weatherData = await getRegionalWeather([selectedCity.value.cityId], forecastDate.value, time);
+      const weatherData = await getRegionalWeather([selectedCity.value.cityId], date, time);
       if (weatherData.length > 0 && weatherData[0]) {
         slot.data = weatherData[0];
       }
     } catch (error) {
-      logger.error(`Erro ao buscar previsão para ${time}:`, error);
+      logger.error(`Erro ao buscar previsão para ${date} ${time}:`, error);
     } finally {
       slot.loading = false;
     }
@@ -640,6 +671,14 @@ const formatTime = (timestamp: string): string => {
     minute: '2-digit',
     timeZone: 'America/Sao_Paulo', // Garantir timezone do Brasil
   });
+};
+
+const formatDateShort = (dateStr: string): string => {
+  if (!dateStr) return '';
+  const date = new Date(dateStr + 'T00:00:00');
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  return `${day}/${month}`;
 };
 
 const initMap = () => {

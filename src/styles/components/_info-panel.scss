@@ -399,9 +399,24 @@
   font-size: $font-lg;
   font-weight: $font-bold;
   color: $text-dark;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
 
   @include md {
     font-size: $font-base;
+  }
+}
+
+.forecast-date-label {
+  font-size: $font-xs;
+  font-weight: $font-semibold;
+  color: $primary-gradient-start;
+  opacity: 0.8;
+
+  @include md {
+    font-size: 0.6rem;
   }
 }
 
@@ -552,6 +567,10 @@
   font-size: $font-6xl;
   font-weight: $font-extrabold;
   @include text-gradient;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   @include md {
     font-size: $font-4xl;
