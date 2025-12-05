@@ -1,0 +1,52 @@
+# ==============================================================================
+# TERRAFORM VARIABLES - EXEMPLO
+# ==============================================================================
+# Copie este arquivo para terraform.tfvars e ajuste os valores
+
+# ==============================================================================
+# CENÁRIO 1: SEM DOMÍNIO CUSTOMIZADO (Recomendado para testes/MVP)
+# ==============================================================================
+# Use esta configuração se:
+# - Está testando a infraestrutura
+# - Não tem domínio ainda
+# - Quer economizar (não paga Route53)
+# - Vai usar apenas URL CloudFront
+
+# enable_custom_domain = false
+# aws_region = "sa-east-1"
+# environment = "production"
+
+# ==============================================================================
+# CENÁRIO 2: COM DOMÍNIO CUSTOMIZADO
+# ==============================================================================
+# Use esta configuração se:
+# - Já tem domínio próprio
+# - Quer URL customizada (ex: www.meusite.com)
+# - Precisa de SSL customizado
+
+enable_custom_domain = true
+domain_name          = "vemchuvabrasil.com"
+aws_region           = "sa-east-1"
+environment          = "production"
+
+# ==============================================================================
+# CONFIGURAÇÕES OPCIONAIS
+# ==============================================================================
+
+# Nome customizado do bucket S3 (deixe vazio para gerar automaticamente)
+# bucket_name = "meu-bucket-customizado"
+
+# Habilitar versionamento no S3 (backup automático de arquivos)
+# enable_versioning = true
+
+# Classe de preço do CloudFront
+# - PriceClass_All: Todas as regiões (mais caro, melhor performance global)
+# - PriceClass_200: América do Norte, Europa, Ásia, Oriente Médio, África (recomendado)
+# - PriceClass_100: América do Norte e Europa apenas (mais barato)
+# cloudfront_price_class = "PriceClass_200"
+
+# Tags adicionais para todos os recursos AWS
+# tags = {
+#   Project = "Weather Forecast"
+#   Team    = "DevOps"
+# }

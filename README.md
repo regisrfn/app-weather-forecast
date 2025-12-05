@@ -6,7 +6,8 @@ Aplicação web de previsão do tempo com visualização em mapa interativo, des
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-7.2-646CFF?logo=vite&logoColor=white)
 [![Live Demo](https://img.shields.io/badge/🚀_Live-Demo-brightgreen?style=flat-square)](https://vemchuvabrasil.com)
-![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?logo=vercel&logoColor=white)
+![Deployed on AWS](https://img.shields.io/badge/Deployed%20on-AWS-FF9900?logo=amazon-aws&logoColor=white)
+![Monitored by Datadog](https://img.shields.io/badge/Monitored-Datadog-632CA6?logo=datadog&logoColor=white)
 
 ## 📋 Índice
 
@@ -93,7 +94,12 @@ O Weather Forecast App é uma aplicação web moderna que exibe previsões meteo
 - **Axios**: Cliente HTTP
 
 ### Infraestrutura
-- **Vercel**: Plataforma de deploy e hosting
+- **AWS S3**: Hospedagem de arquivos estáticos
+- **AWS CloudFront**: CDN global com edge locations
+- **AWS Route53**: Gerenciamento de DNS
+- **AWS ACM**: Certificados SSL/TLS
+- **Terraform**: Infraestrutura como código
+- **Datadog RUM**: Monitoramento de performance e erros
 - **LocalForage**: Armazenamento local assíncrono
 
 ### Qualidade
@@ -122,16 +128,21 @@ npm install
 
 3. **Configure as variáveis de ambiente**
 ```bash
-cp .env.example .env
+cp .env.production.example .env.development.local
 ```
 
-Edite o arquivo `.env`:
+Edite o arquivo `.env.development.local`:
 ```env
 # Modo de desenvolvimento - usa dados mockados
 VITE_USE_MOCK=true
 
 # URL da API backend (quando disponível)
-VITE_API_BASE_URL=
+VITE_API_BASE_URL=http://localhost:3000
+
+# Datadog RUM (opcional para desenvolvimento)
+VITE_DATADOG_APPLICATION_ID=
+VITE_DATADOG_CLIENT_TOKEN=
+VITE_ENVIRONMENT=development
 ```
 
 4. **Inicie o servidor de desenvolvimento**
@@ -148,6 +159,27 @@ npm run build
 ```
 
 Os arquivos otimizados serão gerados em `dist/`.
+
+### Deploy para AWS
+
+Para deploy na infraestrutura AWS:
+
+```bash
+# Configurar variáveis de produção
+cp .env.production.example .env.production.local
+# Edite .env.production.local com valores reais
+
+# Provisionar infraestrutura (primeira vez)
+cd terraform
+terraform init
+terraform apply
+
+# Fazer deploy da aplicação
+cd ..
+./deploy.sh production
+```
+
+Veja [docs/AWS_DEPLOY.md](docs/AWS_DEPLOY.md) para guia completo de migração.
 
 ### Preview do Build
 

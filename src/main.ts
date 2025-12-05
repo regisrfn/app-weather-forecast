@@ -2,11 +2,10 @@ import { createApp } from 'vue'
 import './styles/index.scss'
 import App from './App.vue'
 import router from './router'
-import { inject } from '@vercel/analytics'
-import { injectSpeedInsights } from '@vercel/speed-insights'
+import { initDatadogRUM } from './config/datadog'
 
-// Inicializa Vercel Analytics e Speed Insights
-inject()
-injectSpeedInsights()
+// Inicializar Datadog RUM
+initDatadogRUM()
 
+// Criar e montar a aplicação
 createApp(App).use(router).mount('#app')
