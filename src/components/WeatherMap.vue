@@ -376,7 +376,7 @@ import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { APP_CONFIG } from '../config/app';
 import { getNeighborCities, getRegionalWeather } from '../services/apiService';
-import { getMunicipalityMesh } from '../services/ibgeService';
+import { getMultipleMunicipalityMeshes } from '../services/ibgeService';
 import { getCloudsDescription, getRainfallColor, getRainfallDescription, type WeatherData } from '../services/mockService';
 import DayCarousel from './DayCarousel.vue';
 import WeatherAlerts from './WeatherAlerts.vue';
@@ -772,8 +772,12 @@ const renderCityMeshes = async (
   geoJsonLayers.length = 0;
   layerColors.clear(); // Limpar cores guardadas
 
+  // Buscar todas as malhas em paralelo
+  const cityIds = cities.map(c => c.id);
+  const meshMap = await getMultipleMunicipalityMeshes(cityIds);
+
   for (const city of cities) {
-    const geometry = await getMunicipalityMesh(city.id);
+    const geometry = meshMap.get(city.id);
     const weather = weatherData.find(w => w.cityId === city.id);
     
     if (geometry && weather) {
