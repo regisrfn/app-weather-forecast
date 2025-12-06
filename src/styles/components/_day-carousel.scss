@@ -13,8 +13,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
+  background:
+    radial-gradient(circle at 18% 18%, rgba(139, 157, 225, 0.12), transparent 32%),
+    radial-gradient(circle at 82% 8%, rgba(157, 133, 199, 0.1), transparent 30%),
+    rgba(15, 23, 42, 0.32);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -33,13 +37,29 @@
 }
 
 .day-carousel-container {
-  background: white;
+  position: relative;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 255, 0.95) 45%, rgba(241, 243, 253, 0.96) 100%);
+  border: 1px solid rgba(139, 157, 225, 0.16);
   border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 20px 60px rgba(123, 143, 210, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   max-width: 90%;
   width: 600px;
   overflow: hidden;
   animation: slideDown 0.3s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(139, 157, 225, 0.14), transparent 34%),
+      radial-gradient(circle at 80% 0%, rgba(157, 133, 199, 0.12), transparent 32%);
+    pointer-events: none;
+  }
 }
 
 @keyframes slideDown {
@@ -88,7 +108,7 @@
 
 .carousel-wrapper {
   position: relative;
-  padding: 2.5rem 0 2rem 0;
+  padding: 2.75rem 0 2.25rem 0;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -126,8 +146,9 @@
   gap: 1rem;
   overflow-x: auto;
   scroll-behavior: smooth;
-  padding: 0 1rem;
+  padding: 0.5rem 1rem 0.75rem;
   flex: 1;
+  align-items: center;
   
   /* Hide scrollbar but keep functionality */
   scrollbar-width: none; /* Firefox */
@@ -174,13 +195,13 @@
   &:hover {
     background: #e8eaf6;
     border-color: $primary-gradient-start;
-    transform: translateY(-2px);
+    transform: translateY(-1px);
   }
   
   &.selected {
     background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
     border-color: $primary-gradient-start;
-    transform: translateY(-4px);
+    transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
     
     .day-label,
@@ -270,7 +291,7 @@
   }
 
   .day-carousel-container {
-    background: var(--home-surface-soft);
+    background: linear-gradient(160deg, rgba(20, 32, 55, 0.88) 0%, rgba(18, 30, 52, 0.9) 50%, rgba(15, 25, 45, 0.9) 100%);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     border: 1px solid var(--home-border-soft);
@@ -278,6 +299,12 @@
       0 20px 60px rgba(0, 0, 0, 0.5),
       0 0 0 1px var(--home-border-soft),
       0 0 24px var(--home-glow);
+
+    &::before {
+      background:
+        radial-gradient(circle at 18% 18%, rgba(94, 196, 255, 0.16), transparent 32%),
+        radial-gradient(circle at 82% 8%, rgba(139, 109, 217, 0.14), transparent 30%);
+    }
   }
 
   .carousel-header {
