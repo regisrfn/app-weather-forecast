@@ -384,7 +384,6 @@ import CitySearchModal from '../components/CitySearchModal.vue';
 import SunTimeline from '../components/SunTimeline.vue';
 import { 
   getWeatherIcon, 
-  formatTime, 
   getContrastColor,
   getPrecipitationIcon
 } from '../utils/weatherVisuals';
@@ -433,7 +432,6 @@ const isSearchActive = ref(false);
 const showHourlyModal = ref(false);
 const showWeatherModal = ref(false);
 const headerScrolled = ref(false);
-const pageContentRef = ref<HTMLElement | null>(null);
 
 // Computed para calcular quantas horas serão exibidas no gráfico
 const displayedHoursCount = computed(() => {
@@ -709,31 +707,56 @@ const getCurrentTime = (): string => {
  * Retorna emoji da fase da lua baseado no valor (0-1)
  * 0 = Lua Nova, 0.25 = Quarto Crescente, 0.5 = Lua Cheia, 0.75 = Quarto Minguante
  */
-const getMoonPhaseEmoji = (phase: number): string => {
-  if (phase < 0.0625) return '🌑'; // Lua Nova
-  if (phase < 0.1875) return '🌒'; // Lua Crescente Inicial
-  if (phase < 0.3125) return '🌓'; // Quarto Crescente
-  if (phase < 0.4375) return '🌔'; // Lua Crescente Gibosa
-  if (phase < 0.5625) return '🌕'; // Lua Cheia
-  if (phase < 0.6875) return '🌖'; // Lua Minguante Gibosa
-  if (phase < 0.8125) return '🌗'; // Quarto Minguante
-  if (phase < 0.9375) return '🌘'; // Lua Minguante Final
-  return '🌑'; // Lua Nova
+const getMoonPhaseEmoji = (phase: number | string): string => {
+  const normalized = typeof phase === 'string' ? parseFloat(phase) : phase;
+  const value = Number.isFinite(normalized) ? normalized : -1;
+
+  if (value >= 0) {
+    if (value < 0.0625) return '🌑'; // Lua Nova
+    if (value < 0.1875) return '🌒'; // Lua Crescente Inicial
+    if (value < 0.3125) return '🌓'; // Quarto Crescente
+    if (value < 0.4375) return '🌔'; // Lua Crescente Gibosa
+    if (value < 0.5625) return '🌕'; // Lua Cheia
+    if (value < 0.6875) return '🌖'; // Lua Minguante Gibosa
+    if (value < 0.8125) return '🌗'; // Quarto Minguante
+    if (value < 0.9375) return '🌘'; // Lua Minguante Final
+    return '🌑'; // Lua Nova
+  }
+
+  // Fallback para strings descritivas
+  const phaseText = typeof phase === 'string' ? phase.toLowerCase() : '';
+  if (phaseText.includes('nova')) return '🌑';
+  if (phaseText.includes('cresc')) return '🌓';
+  if (phaseText.includes('cheia')) return '🌕';
+  if (phaseText.includes('ming')) return '🌗';
+  return '🌙';
 };
 
 /**
  * Retorna nome da fase da lua
  */
-const getMoonPhaseName = (phase: number): string => {
-  if (phase < 0.0625) return 'Nova';
-  if (phase < 0.1875) return 'Crescente';
-  if (phase < 0.3125) return 'Q. Cresc.';
-  if (phase < 0.4375) return 'Gibosa C.';
-  if (phase < 0.5625) return 'Cheia';
-  if (phase < 0.6875) return 'Gibosa M.';
-  if (phase < 0.8125) return 'Q. Ming.';
-  if (phase < 0.9375) return 'Minguante';
-  return 'Nova';
+const getMoonPhaseName = (phase: number | string): string => {
+  const normalized = typeof phase === 'string' ? parseFloat(phase) : phase;
+  const value = Number.isFinite(normalized) ? normalized : -1;
+
+  if (value >= 0) {
+    if (value < 0.0625) return 'Nova';
+    if (value < 0.1875) return 'Crescente';
+    if (value < 0.3125) return 'Q. Cresc.';
+    if (value < 0.4375) return 'Gibosa C.';
+    if (value < 0.5625) return 'Cheia';
+    if (value < 0.6875) return 'Gibosa M.';
+    if (value < 0.8125) return 'Q. Ming.';
+    if (value < 0.9375) return 'Minguante';
+    return 'Nova';
+  }
+
+  const phaseText = typeof phase === 'string' ? phase.toLowerCase() : '';
+  if (phaseText.includes('nova')) return 'Nova';
+  if (phaseText.includes('cresc')) return 'Crescente';
+  if (phaseText.includes('cheia')) return 'Cheia';
+  if (phaseText.includes('ming')) return 'Minguante';
+  return 'Fase lunar';
 };
 
 /**
@@ -974,4 +997,3 @@ watch(() => route.params.cityId, (newCityId, oldCityId) => {
   }
 }
 </style>
-

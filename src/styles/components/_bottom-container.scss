@@ -19,6 +19,7 @@
   pointer-events: none;
   z-index: $z-legend;
   gap: $spacing-md;
+  isolation: isolate;
 
   @include md {
     padding: $spacing-sm;

@@ -17,6 +17,7 @@
   box-shadow: $shadow-3xl;
   z-index: $z-header;
   transition: $transition-slow;
+  isolation: isolate;
 
   &:hover {
     background: $bg-header-hover;
@@ -385,5 +386,113 @@
   @include md {
     width: 100%;
     height: 44px;
+  }
+}
+
+// ================================
+// MODO ESCURO - PALETA NEON SUAVE
+// ================================
+[data-theme="dark"] {
+  .floating-header {
+    background: var(--home-surface-strong);
+    border: 1px solid var(--home-border-strong);
+    box-shadow:
+      0 18px 60px rgba(0, 0, 0, 0.55),
+      0 0 0 1px var(--home-border-soft),
+      0 0 28px var(--home-glow);
+  }
+
+  .header-wrapper {
+    color: var(--home-text-strong);
+  }
+
+  .header-title {
+    h1 {
+      color: var(--home-text-strong);
+      text-shadow: 0 0 22px rgba(124, 242, 255, 0.28);
+    }
+  }
+
+  .subtitle {
+    color: var(--home-text-muted);
+  }
+
+  .city-search {
+    .search-toggle-btn {
+      background: var(--home-surface-soft);
+      border-color: var(--home-border-soft);
+      color: var(--home-text-strong);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+
+      &:hover {
+        background: rgba(124, 242, 255, 0.12);
+        border-color: var(--home-border-strong);
+        box-shadow: 0 0 0 1px var(--home-border-strong), 0 14px 32px rgba(0, 0, 0, 0.4);
+      }
+    }
+
+    .main-search-dropdown {
+      background: var(--home-surface-strong);
+      border: 1px solid var(--home-border-soft);
+      box-shadow:
+        0 16px 50px rgba(0, 0, 0, 0.55),
+        0 0 0 1px var(--home-border-soft),
+        0 0 20px rgba(124, 242, 255, 0.12);
+
+      .main-search-input {
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--home-text-strong);
+        border: 1px solid transparent;
+        box-shadow: inset 0 0 0 1px var(--home-border-soft);
+
+        &::placeholder {
+          color: var(--home-text-muted);
+        }
+
+        &:focus {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: var(--home-border-strong);
+          box-shadow: 0 0 0 1px var(--home-border-strong), 0 0 24px rgba(124, 242, 255, 0.18);
+        }
+      }
+
+      .main-search-result-item {
+        color: var(--home-text-strong);
+
+        &:hover {
+          background: rgba(124, 242, 255, 0.12);
+          border-left: 2px solid var(--home-border-strong);
+          box-shadow: 0 0 0 1px var(--home-border-soft);
+        }
+
+        &:not(:last-child) {
+          border-bottom-color: var(--home-border-soft);
+        }
+      }
+    }
+  }
+
+  .control-item {
+    border-left: 2px solid var(--home-border-soft);
+
+    label {
+      color: var(--home-text-strong);
+      text-shadow: 0 0 18px rgba(124, 242, 255, 0.15);
+    }
+  }
+
+  .theme-toggle-btn {
+    background: linear-gradient(135deg, rgba(124, 242, 255, 0.14), rgba(159, 122, 234, 0.12));
+    border-color: var(--home-border-strong);
+    color: var(--home-text-strong);
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.45),
+      0 0 0 1px var(--home-border-soft),
+      0 0 18px rgba(124, 242, 255, 0.25);
+
+    &:hover {
+      background: linear-gradient(135deg, rgba(124, 242, 255, 0.18), rgba(159, 122, 234, 0.16));
+      border-color: var(--home-border-strong);
+    }
   }
 }

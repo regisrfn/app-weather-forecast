@@ -260,6 +260,154 @@
   }
 }
 
+[data-theme="dark"] {
+  .day-carousel-overlay {
+    background: radial-gradient(circle at 20% 20%, rgba(124, 242, 255, 0.08), transparent 25%),
+                radial-gradient(circle at 80% 10%, rgba(159, 122, 234, 0.1), transparent 28%),
+                rgba(0, 4, 12, 0.72);
+    backdrop-filter: blur(14px);
+  }
+
+  .day-carousel-container {
+    background: var(--home-surface-strong);
+    border: 1px solid var(--home-border-strong);
+    box-shadow:
+      0 24px 70px rgba(0, 0, 0, 0.65),
+      0 0 0 1px var(--home-border-soft),
+      0 0 28px var(--home-glow);
+  }
+
+  .carousel-header {
+    border-bottom: 1px solid var(--home-border-soft);
+
+    h3 {
+      color: var(--home-text-strong);
+      text-shadow: 0 0 18px rgba(124, 242, 255, 0.2);
+    }
+
+    .close-btn {
+      color: var(--home-text-muted);
+
+      &:hover {
+        background: rgba(124, 242, 255, 0.12);
+        color: var(--home-text-strong);
+      }
+    }
+  }
+
+  .carousel-nav {
+    background: var(--home-surface);
+    border-color: var(--home-border-soft);
+    color: var(--home-text-strong);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--home-border-soft);
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, var(--home-accent), var(--home-accent-2));
+      border-color: var(--home-border-strong);
+      color: var(--home-text-strong);
+      box-shadow:
+        0 0 0 1px var(--home-border-strong),
+        0 14px 30px rgba(0, 0, 0, 0.55),
+        0 0 18px rgba(124, 242, 255, 0.25);
+    }
+  }
+
+  .day-item {
+    background: var(--home-surface);
+    border-color: var(--home-border-soft);
+    color: var(--home-text-strong);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
+
+    .day-label,
+    .day-month {
+      color: var(--home-text-muted);
+    }
+
+    .day-date {
+      color: var(--home-text-strong);
+      text-shadow: 0 0 18px rgba(124, 242, 255, 0.16);
+    }
+
+    &:hover {
+      background: rgba(124, 242, 255, 0.08);
+      border-color: var(--home-border-strong);
+      transform: translateY(-2px);
+      box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.55),
+        0 0 0 1px var(--home-border-strong),
+        0 0 18px rgba(124, 242, 255, 0.2);
+    }
+
+    &.selected {
+      background: linear-gradient(135deg, var(--home-accent) 0%, var(--home-accent-2) 100%);
+      border-color: var(--home-border-strong);
+      box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.6),
+        0 0 0 1px var(--home-border-strong),
+        0 0 24px rgba(124, 242, 255, 0.28);
+
+      .day-label,
+      .day-date,
+      .day-month {
+        color: var(--home-text-strong);
+      }
+    }
+  }
+
+  .time-selector {
+    border-top: 1px solid var(--home-border-soft);
+    border-bottom: 1px solid var(--home-border-soft);
+
+    label {
+      color: var(--home-text-strong);
+    }
+
+    input[type="time"] {
+      background: var(--home-surface);
+      border-color: var(--home-border-soft);
+      color: var(--home-text-strong);
+      box-shadow: 0 0 0 1px var(--home-border-soft), 0 10px 24px rgba(0, 0, 0, 0.5);
+
+      &:focus {
+        border-color: var(--home-border-strong);
+        box-shadow: 0 0 0 1px var(--home-border-strong), 0 0 20px rgba(124, 242, 255, 0.2);
+      }
+    }
+  }
+
+  .carousel-footer {
+    button {
+      &.btn-secondary {
+        background: var(--home-surface);
+        color: var(--home-text-muted);
+        border: 1px solid var(--home-border-soft);
+
+        &:hover {
+          background: rgba(124, 242, 255, 0.08);
+          color: var(--home-text-strong);
+        }
+      }
+
+      &.btn-primary {
+        background: linear-gradient(135deg, var(--home-accent), var(--home-accent-2));
+        color: var(--home-text-strong);
+        box-shadow:
+          0 12px 28px rgba(0, 0, 0, 0.55),
+          0 0 0 1px var(--home-border-strong),
+          0 0 20px var(--home-glow);
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow:
+            0 14px 32px rgba(0, 0, 0, 0.6),
+            0 0 0 1px var(--home-border-strong),
+            0 0 24px rgba(124, 242, 255, 0.24);
+        }
+      }
+    }
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .day-carousel-overlay {

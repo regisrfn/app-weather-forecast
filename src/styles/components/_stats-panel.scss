@@ -72,3 +72,33 @@
     height: 20px;
   }
 }
+
+// ================================
+// MODO ESCURO - PALETA NEON SUAVE
+// ================================
+[data-theme="dark"] {
+  .stats-panel {
+    background: var(--home-surface);
+    border: 1px solid var(--home-border-soft);
+    box-shadow:
+      0 14px 40px rgba(0, 0, 0, 0.55),
+      0 0 0 1px var(--home-border-soft),
+      0 0 20px var(--home-glow);
+  }
+
+  .stat-label {
+    color: var(--home-text-muted);
+  }
+
+  .stat-value {
+    background-image: linear-gradient(135deg, var(--home-accent), var(--home-accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 22px rgba(124, 242, 255, 0.28);
+  }
+
+  .stat-divider {
+    background: linear-gradient(to bottom, transparent, var(--home-border-soft), transparent);
+  }
+}
