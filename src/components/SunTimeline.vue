@@ -136,6 +136,9 @@ const statusText = computed(() => {
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .timeline-container {
