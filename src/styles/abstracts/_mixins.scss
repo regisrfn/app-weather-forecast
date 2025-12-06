@@ -140,3 +140,12 @@
   -webkit-user-select: none;
   -moz-user-select: none;
 }
+
+// Dark Mode
+// Apply dark theme styles when [data-theme="dark"] is set on root element
+// Usage: @include dark-mode { color: white; }
+@mixin dark-mode {
+  [data-theme="dark"] & {
+    @content;
+  }
+}

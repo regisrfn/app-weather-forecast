@@ -332,3 +332,76 @@
     opacity: 1;
   }
 }
+
+// Dark mode support
+[data-theme="dark"] {
+  .alert-detail-card {
+    @include glass-effect(rgba(30, 41, 59, 0.98), 20px, 0.2);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  }
+
+  .severity-badge {
+    &.severity-danger {
+      background: rgba(220, 38, 38, 0.2);
+      color: #fca5a5;
+    }
+    &.severity-alert {
+      background: rgba(234, 88, 12, 0.2);
+      color: #fdba74;
+    }
+    &.severity-warning {
+      background: rgba(217, 119, 6, 0.2);
+      color: #fcd34d;
+    }
+    &.severity-info {
+      background: rgba(2, 132, 199, 0.2);
+      color: #7dd3fc;
+    }
+  }
+
+  .close-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 1);
+    }
+  }
+
+  .alert-detail-description h2 {
+    color: var(--weather-text-primary);
+  }
+
+  .alert-type,
+  .alert-detail-time {
+    background: rgba(71, 85, 105, 0.3);
+    color: var(--weather-text-secondary);
+    
+    &.clickable:hover {
+      background: rgba(103, 126, 234, 0.3);
+      color: var(--weather-primary);
+    }
+  }
+
+  .technical-details {
+    background: rgba(15, 23, 42, 0.3);
+    border-color: rgba(71, 85, 105, 0.3);
+    
+    h3 {
+      color: var(--weather-text-primary);
+    }
+  }
+
+  .detail-item {
+    background: rgba(51, 65, 85, 0.4);
+  }
+
+  .detail-label {
+    color: var(--weather-text-muted);
+  }
+
+  .detail-value {
+    color: var(--weather-text-primary);
+  }
+}

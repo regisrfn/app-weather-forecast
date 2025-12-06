@@ -38,13 +38,14 @@ export function getWeatherIcon(description: string): string {
 
 /**
  * Retorna cor baseada no índice UV
+ * Cores suavizadas para melhor conforto visual
  */
 export function getUVColor(uvIndex: number): string {
-  if (uvIndex < 3) return '#22c55e'; // Verde - Baixo
-  if (uvIndex < 6) return '#eab308'; // Amarelo - Moderado
-  if (uvIndex < 8) return '#f97316'; // Laranja - Alto
-  if (uvIndex < 11) return '#ef4444'; // Vermelho - Muito Alto
-  return '#a855f7'; // Roxo - Extremo
+  if (uvIndex < 3) return '#4ade80'; // Verde - Baixo (mais claro)
+  if (uvIndex < 6) return '#fbbf24'; // Amarelo - Moderado (mais suave)
+  if (uvIndex < 8) return '#fb923c'; // Laranja - Alto (mais suave)
+  if (uvIndex < 11) return '#f87171'; // Vermelho - Muito Alto (mais claro)
+  return '#c084fc'; // Roxo - Extremo (mais claro)
 }
 
 /**

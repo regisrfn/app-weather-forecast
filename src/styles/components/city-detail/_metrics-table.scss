@@ -89,19 +89,19 @@
   justify-content: space-between;
   gap: $spacing-md;
   padding: $spacing-lg;
-  background: rgba(255, 255, 255, 0.75);
+  background: var(--weather-surface-blur);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-radius: $radius-lg;
-  border: 2px solid rgba(139, 157, 225, 0.15);
-  box-shadow: 0 2px 8px rgba(139, 157, 225, 0.08);
+  border: 2px solid var(--weather-border);
+  box-shadow: 0 2px 8px var(--weather-shadow);
   transition: all $transition-normal;
   
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(139, 157, 225, 0.15);
-    border-color: rgba(139, 157, 225, 0.25);
-    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 4px 16px var(--weather-shadow-md);
+    border-color: var(--weather-border-light);
+    background: var(--weather-surface);
   }
   
   @include md {
@@ -115,7 +115,7 @@
   align-items: center;
   gap: $spacing-sm;
   font-weight: $font-semibold;
-  color: rgba(59, 130, 246, 0.9);
+  color: var(--weather-text-secondary);
   font-size: $font-base;
   
   @include md {
@@ -126,7 +126,7 @@
 
 .metric-value {
   font-weight: $font-bold;
-  color: $weather-text-primary;
+  color: var(--weather-text-primary);
   font-size: $font-lg;
   white-space: nowrap;
   
@@ -142,6 +142,15 @@
   
   @include md {
     font-size: 18px;
+  }
+}
+
+// Sun Timeline Item - Now fits as regular metric item
+.sun-timeline-item {
+  // Removed full-width spanning - now uses default grid behavior
+  
+  @include md {
+    // Mobile: single column layout inherited from grid
   }
 }
 

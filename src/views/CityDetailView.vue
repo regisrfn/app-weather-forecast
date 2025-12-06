@@ -1,7 +1,7 @@
 <template>
   <div class="city-detail-page">
     <!-- Header -->
-    <header class="page-header">
+    <header class="page-header" :class="{ scrolled: headerScrolled }">
       <div class="header-content">
         <button @click="goBack" class="back-button" aria-label="Voltar">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -64,6 +64,17 @@
             Nenhuma cidade encontrada
           </div>
         </div>
+        
+        <!-- Theme Toggle Button -->
+        <button @click="toggleTheme" class="theme-toggle-button" :aria-label="isDark() ? 'Modo claro' : 'Modo escuro'">
+          <svg v-if="!isDark()" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 1v2m0 18v2M23 12h-2M3 12H1m17.657-7.657l-1.414 1.414M8.757 17.243l-1.414 1.414m12.9 0l-1.414-1.414M8.757 6.757L7.343 5.343" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
       </div>
     </header>
 
@@ -181,19 +192,24 @@
               </div>
               <div class="metric-value">{{ detailedWeather.currentWeather.clouds.toFixed(0) }}%</div>
             </div>
-            <div class="metric-item">
+            
+            <!-- Daylight Duration -->
+            <div v-if="detailedWeather.dailyForecasts[0]" class="metric-item">
               <div class="metric-label">
-                <span class="metric-icon">🌅</span>
-                <span>Nascer do Sol</span>
+                <span class="metric-icon">☀️</span>
+                <span>Duração do Dia</span>
               </div>
-              <div class="metric-value">{{ formatTime(detailedWeather.dailyForecasts[0]?.sunrise || '') }}</div>
+              <div class="metric-value">{{ calculateDaylightDuration(detailedWeather.dailyForecasts[0].sunrise, detailedWeather.dailyForecasts[0].sunset) }}</div>
             </div>
-            <div class="metric-item">
-              <div class="metric-label">
-                <span class="metric-icon">🌇</span>
-                <span>Pôr do Sol</span>
-              </div>
-              <div class="metric-value">{{ formatTime(detailedWeather.dailyForecasts[0]?.sunset || '') }}</div>
+            
+            <!-- Sun Timeline -->
+            <div v-if="detailedWeather.dailyForecasts[0]" class="metric-item sun-timeline-item">
+              <SunTimeline
+                :sunrise="detailedWeather.dailyForecasts[0].sunrise"
+                :sunset="detailedWeather.dailyForecasts[0].sunset"
+                :current-time="getCurrentTime()"
+                :is-current-day="isToday(detailedWeather.dailyForecasts[0].date)"
+              />
             </div>
           </div>
         </div>
@@ -271,6 +287,7 @@
             v-for="forecast in detailedWeather.dailyForecasts" 
             :key="forecast.date"
             class="forecast-card"
+            :class="{ 'has-rain': forecast.rainfallIntensity > 0 }"
           >
             <div class="forecast-date">{{ formatForecastDate(forecast.date) }}</div>
             
@@ -292,6 +309,18 @@
             <div class="forecast-detail">
               <span class="detail-icon">☔</span>
               <span class="detail-value">{{ forecast.rainProbability.toFixed(0) }}%</span>
+            </div>
+            
+            <!-- Moon Phase -->
+            <div v-if="forecast.moonPhase !== undefined" class="forecast-detail moon-phase">
+              <span class="detail-icon">{{ getMoonPhaseEmoji(forecast.moonPhase) }}</span>
+              <span class="detail-value">{{ getMoonPhaseName(forecast.moonPhase) }}</span>
+            </div>
+            
+            <!-- Precipitation Hours -->
+            <div v-if="forecast.precipitationHours !== undefined" class="forecast-detail">
+              <span class="detail-icon">⏱️</span>
+              <span class="detail-value">{{ forecast.precipitationHours.toFixed(0) }}h chuva</span>
             </div>
 
             <div class="forecast-uv" :style="{ backgroundColor: forecast.uvRiskColor, color: getContrastColor(forecast.uvRiskColor) }">
@@ -352,6 +381,7 @@ import WeatherAlerts from '../components/WeatherAlerts.vue';
 import AlertDetailPanel from '../components/AlertDetailPanel.vue';
 import WindCompass from '../components/WindCompass.vue';
 import CitySearchModal from '../components/CitySearchModal.vue';
+import SunTimeline from '../components/SunTimeline.vue';
 import { 
   getWeatherIcon, 
   formatTime, 
@@ -360,8 +390,10 @@ import {
 } from '../utils/weatherVisuals';
 import { componentLogger } from '../utils/logger';
 import { weatherCache } from '../services/cacheService';
+import { useTheme } from '../composables/useTheme';
 
 const logger = componentLogger('CityDetailView');
+const { toggleTheme, isDark } = useTheme();
 
 interface Municipality {
   id: string;
@@ -400,6 +432,8 @@ const isSearchActive = ref(false);
 // Modal states
 const showHourlyModal = ref(false);
 const showWeatherModal = ref(false);
+const headerScrolled = ref(false);
+const pageContentRef = ref<HTMLElement | null>(null);
 
 // Computed para calcular quantas horas serão exibidas no gráfico
 const displayedHoursCount = computed(() => {
@@ -413,6 +447,25 @@ const displayedHoursCount = computed(() => {
   if (width < 1025) return Math.min(36, detailedWeather.value.hourlyForecasts.length); // Tablet grande: 36h
   return Math.min(48, detailedWeather.value.hourlyForecasts.length); // Desktop: 48h
 });
+
+/**
+ * Calcula a duração do dia em horas e minutos
+ */
+const calculateDaylightDuration = (sunrise: string, sunset: string): string => {
+  const timeToMinutes = (timeStr: string): number => {
+    const [hours = 0, minutes = 0] = timeStr.split(':').map(Number);
+    return hours * 60 + minutes;
+  };
+  
+  const sunriseMin = timeToMinutes(sunrise);
+  const sunsetMin = timeToMinutes(sunset);
+  const totalMinutes = sunsetMin - sunriseMin;
+  
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  
+  return `${hours}h ${minutes}min`;
+};
 
 /**
  * Carrega lista de municípios
@@ -630,6 +683,60 @@ const formatForecastDateLabel = (isoString: string): string => {
 };
 
 /**
+ * Verifica se uma data é hoje
+ */
+const isToday = (dateStr: string): boolean => {
+  const date = new Date(dateStr + 'T00:00:00');
+  const today = new Date();
+  return date.toDateString() === today.toDateString();
+};
+
+/**
+ * Retorna o horário atual no formato HH:MM:SS
+ */
+const getCurrentTime = (): string => {
+  const now = new Date();
+  return now.toLocaleTimeString('pt-BR', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    timeZone: 'America/Sao_Paulo'
+  });
+};
+
+/**
+ * Retorna emoji da fase da lua baseado no valor (0-1)
+ * 0 = Lua Nova, 0.25 = Quarto Crescente, 0.5 = Lua Cheia, 0.75 = Quarto Minguante
+ */
+const getMoonPhaseEmoji = (phase: number): string => {
+  if (phase < 0.0625) return '🌑'; // Lua Nova
+  if (phase < 0.1875) return '🌒'; // Lua Crescente Inicial
+  if (phase < 0.3125) return '🌓'; // Quarto Crescente
+  if (phase < 0.4375) return '🌔'; // Lua Crescente Gibosa
+  if (phase < 0.5625) return '🌕'; // Lua Cheia
+  if (phase < 0.6875) return '🌖'; // Lua Minguante Gibosa
+  if (phase < 0.8125) return '🌗'; // Quarto Minguante
+  if (phase < 0.9375) return '🌘'; // Lua Minguante Final
+  return '🌑'; // Lua Nova
+};
+
+/**
+ * Retorna nome da fase da lua
+ */
+const getMoonPhaseName = (phase: number): string => {
+  if (phase < 0.0625) return 'Nova';
+  if (phase < 0.1875) return 'Crescente';
+  if (phase < 0.3125) return 'Q. Cresc.';
+  if (phase < 0.4375) return 'Gibosa C.';
+  if (phase < 0.5625) return 'Cheia';
+  if (phase < 0.6875) return 'Gibosa M.';
+  if (phase < 0.8125) return 'Q. Ming.';
+  if (phase < 0.9375) return 'Minguante';
+  return 'Nova';
+};
+
+/**
  * Rolar carrossel de previsão para a esquerda
  */
 const scrollForecastPrev = () => {
@@ -749,6 +856,20 @@ onMounted(() => {
   if (forecastScrollRef.value) {
     updateForecastScrollButtons();
   }
+  
+  // Scroll handler for header glassmorphism effect
+  const handleScroll = (e: Event) => {
+    const target = e.target as HTMLElement;
+    headerScrolled.value = target.scrollTop > 20;
+  };
+  
+  // Find scrollable container and add listener
+  setTimeout(() => {
+    const scrollContainer = document.querySelector('.page-content');
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', handleScroll);
+    }
+  }, 100);
 });
 
 // Watch para mudanças na rota (quando navega para outra cidade)
@@ -792,6 +913,26 @@ watch(() => route.params.cityId, (newCityId, oldCityId) => {
     );
   }
   
+  [data-theme="dark"] & {
+    background: linear-gradient(135deg, 
+      rgba(71, 85, 105, 0.4) 0%,
+      rgba(51, 65, 85, 0.4) 100%
+    );
+    border-color: rgba(71, 85, 105, 0.5);
+    
+    &:active {
+      background: linear-gradient(135deg, 
+        rgba(71, 85, 105, 0.6) 0%,
+        rgba(51, 65, 85, 0.6) 100%
+      );
+    }
+    
+    .trigger-text,
+    .trigger-arrow {
+      color: var(--weather-primary);
+    }
+  }
+  
   .trigger-icon {
     font-size: 24px;
     margin-right: $spacing-sm;
@@ -818,6 +959,18 @@ watch(() => route.params.cityId, (newCityId, oldCityId) => {
   
   @include min-sm {
     display: block !important; // Mostrar em telas >= 480px (desktop)
+  }
+}
+
+// Sun Timeline Wrapper
+.sun-timeline-wrapper {
+  margin-top: $spacing-xl;
+  animation: fadeIn 0.6s ease-out 0.2s both;
+  max-width: 500px;
+  
+  @include md {
+    margin-top: $spacing-lg;
+    max-width: 100%;
   }
 }
 </style>

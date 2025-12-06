@@ -18,19 +18,16 @@
 
 // Main Temperature Card
 .hero-temp-card {
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.90) 0%,
-    rgba(248, 250, 255, 0.92) 100%
-  );
+  background: var(--weather-surface-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   padding: $spacing-2xl;
   border-radius: $radius-2xl;
-  box-shadow: 0 4px 24px rgba(139, 157, 225, 0.12);
+  box-shadow: 0 4px 24px var(--weather-shadow);
   display: flex;
   align-items: center;
   gap: $spacing-xl;
-  border: 2px solid rgba(139, 157, 225, 0.15);
+  border: 2px solid var(--weather-border);
   transition: all $transition-normal;
   animation: slideDown 0.6s ease-out;
   position: relative;
@@ -38,8 +35,8 @@
   
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(139, 157, 225, 0.2);
-    border-color: rgba(139, 157, 225, 0.3);
+    box-shadow: 0 12px 40px var(--weather-shadow-md);
+    border-color: var(--weather-border-light);
     
     .hero-icon {
       transform: scale(1.15) rotate(5deg);
@@ -194,16 +191,13 @@
 
 // Wind Card
 .hero-wind-card {
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.90) 0%,
-    rgba(248, 250, 255, 0.92) 100%
-  );
+  background: var(--weather-surface-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   padding: $spacing-xl;
   border-radius: $radius-2xl;
-  box-shadow: 0 4px 24px rgba(139, 157, 225, 0.12);
-  border: 2px solid rgba(139, 157, 225, 0.15);
+  box-shadow: 0 4px 24px var(--weather-shadow);
+  border: 2px solid var(--weather-border);
   transition: all $transition-normal;
   animation: slideDown 0.6s ease-out 0.1s both;
   display: flex;
@@ -214,8 +208,8 @@
   
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(139, 157, 225, 0.18);
-    border-color: rgba(139, 157, 225, 0.25);
+    box-shadow: 0 8px 32px var(--weather-shadow-md);
+    border-color: var(--weather-border-light);
   }
   
   @include md {
@@ -227,7 +221,7 @@
   margin: 0;
   font-size: $font-lg;
   font-weight: $font-bold;
-  color: rgba(59, 130, 246, 0.85);
+  color: var(--weather-text-secondary);
   text-align: center;
   
   @include md {

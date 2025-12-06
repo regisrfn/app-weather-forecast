@@ -85,14 +85,42 @@ $opacity-hover: 0.30;
 }
 
 // =================================
-// CSS CUSTOM PROPERTIES (Variables)
+// CSS CUSTOM PROPERTIES (Theme Variables)
 // =================================
 :root {
   // Primary Colors
   --color-primary-start: #{$primary-gradient-start};
   --color-primary-end: #{$primary-gradient-end};
   
-  // Background Colors
+  // Weather City Detail - Light Theme
+  --weather-primary: #{$weather-primary};
+  --weather-secondary: #{$weather-secondary};
+  --weather-accent: #{$weather-accent};
+  --weather-text-primary: #{$weather-text-primary};
+  --weather-text-secondary: #{$weather-text-secondary};
+  --weather-text-muted: #{$weather-text-muted};
+  --weather-surface: rgba(255, 255, 255, 0.85);
+  --weather-surface-blur: rgba(255, 255, 255, 0.75);
+  --weather-surface-card: rgba(255, 255, 255, 0.90);
+  --weather-border: rgba(139, 157, 225, 0.2);
+  --weather-border-light: rgba(139, 157, 225, 0.12);
+  --weather-shadow: rgba(139, 157, 225, 0.08);
+  --weather-shadow-md: rgba(139, 157, 225, 0.15);
+  --weather-shadow-lg: rgba(139, 157, 225, 0.25);
+  
+  // Header
+  --header-bg: rgba(139, 157, 225, 0.75);
+  --header-bg-scrolled: rgba(139, 157, 225, 0.90);
+  --header-border: rgba(255, 255, 255, 0.2);
+  --header-text: #{$text-white};
+  
+  // Background
+  --bg-gradient-start: rgba(139, 157, 225, 0.08);
+  --bg-gradient-mid: rgba(157, 133, 199, 0.05);
+  --bg-gradient-end: rgba(165, 180, 232, 0.03);
+  --bg-base: #f8f9fc;
+  
+  // Legacy compatibility
   --bg-primary: #{$bg-dark-primary};
   --bg-secondary: #{$bg-dark-secondary};
   --bg-tertiary: #{$bg-dark-tertiary};
@@ -146,3 +174,38 @@ $opacity-hover: 0.30;
   --alpha-90: 0.9;
   --alpha-95: 0.95;
 }
+
+// Dark Theme
+[data-theme="dark"] {
+  // Weather City Detail - Dark Theme
+  --weather-primary: #5a6fa8;
+  --weather-secondary: #4a5d8c;
+  --weather-accent: #6d5b88;
+  --weather-text-primary: #e5e7eb;
+  --weather-text-secondary: #d1d5db;
+  --weather-text-muted: #9ca3af;
+  --weather-surface: rgba(30, 41, 59, 0.85);
+  --weather-surface-blur: rgba(30, 41, 59, 0.75);
+  --weather-surface-card: rgba(30, 41, 59, 0.90);
+  --weather-border: rgba(90, 111, 168, 0.3);
+  --weather-border-light: rgba(90, 111, 168, 0.15);
+  --weather-shadow: rgba(0, 0, 0, 0.3);
+  --weather-shadow-md: rgba(0, 0, 0, 0.4);
+  --weather-shadow-lg: rgba(0, 0, 0, 0.5);
+  
+  // Header
+  --header-bg: rgba(30, 41, 59, 0.75);
+  --header-bg-scrolled: rgba(30, 41, 59, 0.90);
+  --header-border: rgba(90, 111, 168, 0.2);
+  --header-text: #e5e7eb;
+  
+  // Background
+  --bg-gradient-start: rgba(30, 41, 59, 0.3);
+  --bg-gradient-mid: rgba(51, 65, 85, 0.2);
+  --bg-gradient-end: rgba(15, 23, 42, 0.1);
+  --bg-base: #0f172a;
+  
+  // Text adjustments for dark mode
+  --text-dark: #e5e7eb;
+}
+

@@ -9,6 +9,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { useTheme } from '../composables/useTheme';
 import {
   Chart,
   LineController,
@@ -47,8 +48,11 @@ interface Props {
 
 const props = defineProps<Props>();
 
+const { theme } = useTheme();
 const chartCanvas = ref<HTMLCanvasElement | null>(null);
 let chartInstance: Chart | null = null;
+
+const isDark = computed(() => theme.value === 'dark');
 
 const chartAriaLabel = computed(() => 
   `Gráfico mostrando previsão de ${props.dailyForecasts.length} dias com temperatura e precipitação`
@@ -113,6 +117,7 @@ const createChart = () => {
           tension: 0.4,
           yAxisID: 'y',
           fill: true,
+          order: 2, // Behind rain bars
         },
         {
           type: 'line',
@@ -135,6 +140,7 @@ const createChart = () => {
           tension: 0.4,
           yAxisID: 'y',
           fill: true,
+          order: 2, // Behind rain bars
         },
         {
           type: 'bar',
@@ -168,6 +174,7 @@ const createChart = () => {
           borderRadius: 4,
           yAxisID: 'y1',
           barPercentage: 0.6,
+          order: 1, // In front of temperature lines
         },
       ],
     },
@@ -189,7 +196,7 @@ const createChart = () => {
               size: 12,
               weight: 'bold',
             },
-            color: '#1e293b',
+            color: isDark.value ? '#e2e8f0' : '#1e293b',
           },
         },
         tooltip: {
@@ -234,11 +241,11 @@ const createChart = () => {
         x: {
           grid: {
             display: true,
-            color: 'rgba(148, 163, 184, 0.1)',
+            color: isDark.value ? 'rgba(71, 85, 105, 0.3)' : 'rgba(148, 163, 184, 0.1)',
             lineWidth: 1,
           },
           ticks: {
-            color: '#475569',
+            color: isDark.value ? '#94a3b8' : '#475569',
             font: {
               size: 12,
               weight: 'bold',
@@ -252,17 +259,17 @@ const createChart = () => {
           title: {
             display: true,
             text: 'Temperatura (°C)',
-            color: '#475569',
+            color: isDark.value ? '#94a3b8' : '#475569',
             font: {
               size: 12,
               weight: 'bold',
             },
           },
           grid: {
-            color: 'rgba(148, 163, 184, 0.15)',
+            color: isDark.value ? 'rgba(71, 85, 105, 0.25)' : 'rgba(148, 163, 184, 0.15)',
           },
           ticks: {
-            color: '#475569',
+            color: isDark.value ? '#94a3b8' : '#475569',
             font: {
               size: 11,
             },
@@ -276,7 +283,7 @@ const createChart = () => {
           title: {
             display: true,
             text: 'Precipitação (mm)',
-            color: '#475569',
+            color: isDark.value ? '#94a3b8' : '#475569',
             font: {
               size: 12,
               weight: 'bold',
@@ -286,7 +293,7 @@ const createChart = () => {
             drawOnChartArea: false,
           },
           ticks: {
-            color: '#475569',
+            color: isDark.value ? '#94a3b8' : '#475569',
             font: {
               size: 11,
             },
@@ -312,9 +319,9 @@ const destroyChart = () => {
 };
 
 /**
- * Atualiza gráfico quando dados mudam
+ * Atualiza gráfico quando dados ou tema mudam
  */
-watch(() => props.dailyForecasts, () => {
+watch(() => [props.dailyForecasts, theme.value], () => {
   destroyChart();
   createChart();
 }, { deep: true });
@@ -347,9 +354,23 @@ onUnmounted(() => {
   border: 2px solid rgba(139, 157, 225, 0.2);
   transition: all $transition-normal;
   
+  [data-theme="dark"] & {
+    background: linear-gradient(135deg, 
+      rgba(30, 41, 59, 0.95) 0%,
+      rgba(51, 65, 85, 0.95) 100%
+    );
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border-color: rgba(71, 85, 105, 0.4);
+  }
+  
   &:hover {
     box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
     border-color: rgba(102, 126, 234, 0.3);
+    
+    [data-theme="dark"] & {
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      border-color: rgba(71, 85, 105, 0.6);
+    }
   }
   
   @include md {
@@ -367,6 +388,13 @@ onUnmounted(() => {
   background-clip: text;
   margin: 0 0 $spacing-xl 0;
   text-align: center;
+  
+  [data-theme="dark"] & {
+    background: linear-gradient(135deg, rgba(139, 157, 225, 0.9) 0%, rgba(167, 139, 250, 0.9) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
   
   @include md {
     font-size: $font-lg;

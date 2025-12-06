@@ -379,7 +379,7 @@
   }
 
   &:not(.is-current):hover {
-    background: rgba(255, 255, 255, 1);
+    background: var(--weather-surface);
     border-color: $primary-gradient-start;
     transform: translateY(-2px);
     box-shadow: $shadow-lg;

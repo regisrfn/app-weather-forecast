@@ -5,7 +5,7 @@
 
 // Hourly Forecast Section
 .hourly-forecast-section {
-  margin-bottom: $spacing-2xl;
+  margin-bottom: 3rem;
   animation: fadeIn 0.6s ease-out 0.35s both;
   padding: $spacing-xl;
   background: linear-gradient(135deg, 
@@ -20,6 +20,7 @@
   
   @include md {
     padding: $spacing-lg;
+    margin-bottom: $spacing-2xl;
   }
 }
 
@@ -176,7 +177,7 @@
 
 // Forecast Section
 .forecast-section {
-  margin-bottom: $spacing-2xl;
+  margin-bottom: 3rem;
   animation: fadeIn 0.6s ease-out 0.4s both;
   padding: $spacing-xl;
   background: linear-gradient(135deg, 
@@ -191,6 +192,7 @@
   
   @include md {
     padding: $spacing-lg;
+    margin-bottom: $spacing-2xl;
   }
 }
 
@@ -226,20 +228,28 @@
   width: 40px;
   height: 40px;
   border-radius: $radius-md;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--weather-surface-blur);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 2px solid rgba(59, 130, 246, 0.2);
+  border: 2px solid var(--weather-border);
   color: rgba(59, 130, 246, 0.8);
   transition: all $transition-normal;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 2px 8px var(--weather-shadow);
+  
+  [data-theme="dark"] & {
+    color: rgba(139, 157, 225, 1);
+  }
   
   &:not(:disabled):hover {
-    background: rgba(59, 130, 246, 0.1);
-    border-color: rgba(59, 130, 246, 0.4);
+    background: var(--weather-surface);
+    border-color: var(--weather-border-light);
     color: rgba(59, 130, 246, 1);
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    box-shadow: 0 4px 12px var(--weather-shadow-md);
+    
+    [data-theme="dark"] & {
+      color: rgba(139, 157, 225, 1);
+    }
   }
   
   &:not(:disabled):active {
@@ -314,16 +324,13 @@
   max-width: 220px;
   flex-shrink: 0;
   scroll-snap-align: start;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.90) 0%,
-    rgba(248, 250, 255, 0.92) 100%
-  );
+  background: var(--weather-surface-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   padding: $spacing-xl;
   border-radius: $radius-xl;
-  box-shadow: 0 4px 16px rgba(139, 157, 225, 0.12);
-  border: 2px solid rgba(139, 157, 225, 0.15);
+  box-shadow: 0 4px 16px var(--weather-shadow);
+  border: 2px solid var(--weather-border);
   transition: all $transition-normal;
   display: flex;
   flex-direction: column;
@@ -331,8 +338,25 @@
   
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(139, 157, 225, 0.2);
-    border-color: rgba(139, 157, 225, 0.3);
+    box-shadow: 0 8px 24px var(--weather-shadow-md);
+    border-color: var(--weather-border-light);
+  }
+  
+  // Cards com chuva em destaque
+  &.has-rain {
+    background: linear-gradient(135deg, 
+      rgba(96, 165, 250, 0.15) 0%,
+      rgba(59, 130, 246, 0.12) 100%
+    );
+    border-color: rgba(59, 130, 246, 0.3);
+    
+    [data-theme="dark"] & {
+      background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.2) 0%,
+        rgba(37, 99, 235, 0.15) 100%
+      );
+      border-color: rgba(59, 130, 246, 0.4);
+    }
   }
   
   @include md {
@@ -346,11 +370,15 @@
 .forecast-date {
   font-size: $font-base;
   font-weight: $font-bold;
-  color: rgba(59, 130, 246, 0.9);
+  color: var(--weather-text-secondary);
   text-align: center;
   text-transform: capitalize;
   padding-bottom: $spacing-sm;
   border-bottom: 2px solid rgba(139, 157, 225, 0.15);
+  
+  [data-theme="dark"] & {
+    border-bottom-color: rgba(71, 85, 105, 0.4);
+  }
   
   @include md {
     font-size: $font-sm;
@@ -394,6 +422,10 @@
 .temp-separator {
   color: rgba(102, 126, 234, 0.3);
   font-weight: $font-regular;
+  
+  [data-theme="dark"] & {
+    color: rgba(139, 157, 225, 0.5);
+  }
 }
 
 .forecast-detail {
@@ -404,6 +436,28 @@
   background: rgba(139, 157, 225, 0.08);
   border-radius: $radius-md;
   font-size: $font-sm;
+  
+  [data-theme="dark"] & {
+    background: rgba(71, 85, 105, 0.3);
+  }
+  
+  &.moon-phase {
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(79, 70, 229, 0.1) 100%);
+    border: 1px solid rgba(147, 51, 234, 0.2);
+    
+    .detail-icon {
+      font-size: 20px;
+    }
+    
+    .detail-value {
+      color: #7c3aed;
+      font-weight: $font-bold;
+      
+      [data-theme="dark"] & {
+        color: #a78bfa;
+      }
+    }
+  }
   
   @include md {
     padding: $spacing-xs $spacing-sm;
@@ -421,7 +475,7 @@
 
 .detail-value {
   font-weight: $font-semibold;
-  color: $weather-text-primary;
+  color: var(--weather-text-primary);
 }
 
 .wind-dir-label {
@@ -440,6 +494,12 @@
   font-size: $font-sm;
   font-weight: $font-bold;
   margin-top: $spacing-xs;
+  border: 1px solid transparent;
+  
+  [data-theme="dark"] & {
+    border-color: rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
   
   @include md {
     padding: $spacing-xs $spacing-sm;

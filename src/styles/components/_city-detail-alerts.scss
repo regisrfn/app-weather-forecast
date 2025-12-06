@@ -73,7 +73,7 @@
     gap: $spacing-lg;
     padding: $spacing-lg;
     border-radius: $radius-lg;
-    background: $weather-surface;
+    background: rgba(255, 255, 255, 0.90);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-left: 4px solid;
@@ -202,9 +202,9 @@
     }
   }
 
-  // Estilos por severidade com cores mantidas
-  .alert-item.severity-danger {
-    border-left-color: #dc2626;
+  // Estilos por severidade com cores mantidas - aumentar especificidade
+  .alerts-list .alert-item.severity-danger {
+    border-left-color: #dc2626 !important;
 
     .alert-icon {
       color: #dc2626;
@@ -216,8 +216,8 @@
     }
   }
 
-  .alert-item.severity-alert {
-    border-left-color: #ea580c;
+  .alerts-list .alert-item.severity-alert {
+    border-left-color: #ea580c !important;
 
     .alert-icon {
       color: #ea580c;
@@ -229,8 +229,8 @@
     }
   }
 
-  .alert-item.severity-warning {
-    border-left-color: #d97706;
+  .alerts-list .alert-item.severity-warning {
+    border-left-color: #d97706 !important;
 
     .alert-icon {
       color: #d97706;
@@ -242,8 +242,8 @@
     }
   }
 
-  .alert-item.severity-info {
-    border-left-color: #0284c7;
+  .alerts-list .alert-item.severity-info {
+    border-left-color: #0284c7 !important;
 
     .alert-icon {
       color: #0284c7;
@@ -252,6 +252,106 @@
     .alert-code {
       background: rgba(2, 132, 199, 0.1);
       color: #0284c7;
+    }
+  }
+
+}
+
+// Dark mode overrides - moved outside .city-detail-page for proper cascade
+// Using higher specificity to override global .alert-item styles from _weather-alerts.scss
+[data-theme="dark"] {
+  .city-detail-page {
+    .weather-alerts {
+      background: linear-gradient(135deg, 
+        rgba(30, 58, 138, 0.25) 0%, 
+        rgba(30, 64, 175, 0.20) 100%
+      ) !important;
+      border-left-color: var(--weather-primary) !important;
+      border-color: var(--weather-border) !important;
+      box-shadow: 0 4px 16px var(--weather-shadow) !important;
+    }
+
+    .alerts-header h3 {
+      color: var(--weather-text-primary) !important;
+    }
+
+    .alerts-list .alert-item {
+      background: rgba(30, 41, 59, 0.90) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+
+      &:hover {
+        background: rgba(51, 65, 85, 0.95) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+      }
+
+      &:focus-visible {
+        outline-color: var(--weather-primary) !important;
+      }
+    }
+
+    .alert-description {
+      color: var(--weather-text-primary) !important;
+    }
+
+    .alert-meta {
+      color: var(--weather-text-secondary) !important;
+    }
+
+    .alert-time {
+      color: var(--weather-text-muted) !important;
+    }
+  }
+
+  // Severity colors for dark mode with maximum specificity
+  .city-detail-page .alerts-section .alerts-list .alert-item.severity-danger {
+    border-left-color: #f87171 !important;
+
+    .alert-icon {
+      color: #f87171 !important;
+    }
+    
+    .alert-code {
+      background: rgba(248, 113, 113, 0.15) !important;
+      color: #fca5a5 !important;
+    }
+  }
+
+  .city-detail-page .alerts-section .alerts-list .alert-item.severity-alert {
+    border-left-color: #fb923c !important;
+
+    .alert-icon {
+      color: #fb923c !important;
+    }
+    
+    .alert-code {
+      background: rgba(251, 146, 60, 0.15) !important;
+      color: #fdba74 !important;
+    }
+  }
+
+  .city-detail-page .alerts-section .alerts-list .alert-item.severity-warning {
+    border-left-color: #fbbf24 !important;
+
+    .alert-icon {
+      color: #fbbf24 !important;
+    }
+    
+    .alert-code {
+      background: rgba(251, 191, 36, 0.15) !important;
+      color: #fcd34d !important;
+    }
+  }
+
+  .city-detail-page .alerts-section .alerts-list .alert-item.severity-info {
+    border-left-color: #38bdf8 !important;
+
+    .alert-icon {
+      color: #38bdf8 !important;
+    }
+    
+    .alert-code {
+      background: rgba(56, 189, 248, 0.15) !important;
+      color: #7dd3fc !important;
     }
   }
 }

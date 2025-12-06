@@ -1,5 +1,6 @@
 // =================================
 // WEATHER ALERTS COMPONENT
+// Estilos para página principal (WeatherMap)
 // =================================
 
 @use '../abstracts/colors' as *;
@@ -48,6 +49,11 @@
   transition: transform 0.2s, box-shadow 0.2s;
   cursor: pointer;
   user-select: none;
+
+  // Only apply base styles to main page, not city detail
+  .info-panel & {
+    background: white !important;
+  }
 
   &:hover {
     transform: translateX(4px);
@@ -185,5 +191,48 @@
   .alert-meta {
     font-size: 11px;
     gap: 8px;
+  }
+}
+
+// Dark mode support for main weather map
+[data-theme="dark"] {
+  .weather-alerts {
+    background: linear-gradient(135deg, 
+      rgba(30, 58, 138, 0.25) 0%, 
+      rgba(30, 64, 175, 0.20) 100%
+    );
+    border-left-color: var(--weather-primary);
+  }
+
+  .alerts-header {
+    color: var(--weather-text-primary);
+    
+    h3 {
+      color: var(--weather-text-primary);
+    }
+  }
+
+  .alert-item {
+    background: rgba(30, 41, 59, 0.90) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    
+    &:hover {
+      background: rgba(51, 65, 85, 0.95) !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  .alert-description {
+    color: var(--weather-text-primary);
+  }
+
+  .alert-meta,
+  .alert-time {
+    color: var(--weather-text-muted);
+  }
+
+  .alert-code {
+    background: rgba(71, 85, 105, 0.3);
+    color: var(--weather-text-secondary);
   }
 }

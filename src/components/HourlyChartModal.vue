@@ -231,4 +231,35 @@ watch(() => props.isOpen, (isOpen) => {
 .modal-leave-to .modal-container {
   transform: translateY(100%);
 }
+
+// Dark mode support
+[data-theme="dark"] {
+  .modal-container {
+    background: linear-gradient(135deg, 
+      rgba(30, 41, 59, 0.98) 0%,
+      rgba(51, 65, 85, 0.98) 100%
+    );
+  }
+
+  .modal-header {
+    background: rgba(30, 41, 59, 0.95);
+    border-bottom-color: rgba(71, 85, 105, 0.4);
+  }
+
+  .modal-title {
+    color: var(--weather-primary);
+  }
+
+  .close-button {
+    background: rgba(71, 85, 105, 0.3);
+    
+    span {
+      color: var(--weather-primary);
+    }
+    
+    &:hover {
+      background: rgba(71, 85, 105, 0.5);
+    }
+  }
+}
 </style>

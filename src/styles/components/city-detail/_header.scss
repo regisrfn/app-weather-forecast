@@ -5,25 +5,33 @@
 
 // Header Styles
 .page-header {
-  background: linear-gradient(135deg, 
-    rgba(139, 157, 225, 0.95) 0%,
-    rgba(102, 126, 234, 0.92) 100%
-  );
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--header-bg);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
   padding: 0.3rem;
-  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.25);
+  box-shadow: 0 4px 24px var(--weather-shadow-lg);
   position: sticky;
   top: 0;
   z-index: 100;
   flex-shrink: 0;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid var(--header-border);
   margin: $spacing-md $spacing-xl $spacing-xl $spacing-xl;
   border-radius: $radius-xl;
+  transition: background-color 0.3s ease, 
+              backdrop-filter 0.3s ease,
+              box-shadow 0.3s ease;
   
   @include md {
     margin: $spacing-sm $spacing-md $spacing-lg $spacing-md;
     border-radius: $radius-lg;
+  }
+  
+  // Enhanced glassmorphism when scrolled
+  &.scrolled {
+    background: var(--header-bg-scrolled);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    box-shadow: 0 8px 32px var(--weather-shadow-lg);
   }
 }
 
@@ -84,7 +92,6 @@
 .city-search-container {
   position: relative;
   flex: 1;
-  max-width: 600px;
 }
 
 .city-search-button {
@@ -375,4 +382,48 @@
   z-index: 1000;
   animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid rgba(139, 157, 225, 0.2);
+}
+
+// Theme Toggle Button
+.theme-toggle-button {
+  @include reset-button;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  color: white;
+  border-radius: $radius-lg;
+  transition: all $transition-normal;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+  
+  &:active {
+    transform: scale(1.02);
+  }
+  
+  svg {
+    width: 20px;
+    height: 20px;
+    transition: transform $transition-normal;
+  }
+  
+  @include md {
+    width: 40px;
+    height: 40px;
+    
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
 }

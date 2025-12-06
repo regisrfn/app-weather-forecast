@@ -9,6 +9,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { useTheme } from '../composables/useTheme';
 import {
   Chart,
   LineController,
@@ -50,8 +51,11 @@ const props = withDefaults(defineProps<Props>(), {
   maxHours: 48
 });
 
+const { theme } = useTheme();
 const chartCanvas = ref<HTMLCanvasElement | null>(null);
 let chartInstance: Chart | null = null;
+
+const isDark = computed(() => theme.value === 'dark');
 
 /**
  * Ajusta quantidade de horas baseado no tamanho da tela
@@ -154,7 +158,7 @@ const createChart = () => {
           borderWidth: 1,
           borderRadius: 4,
           yAxisID: 'y-precip',
-          order: 2
+          order: 1 // In front of temperature line
         },
         // Linha de temperatura
         {
@@ -178,7 +182,7 @@ const createChart = () => {
           fill: true,
           tension: 0.4,
           yAxisID: 'y-temp',
-          order: 1
+          order: 2 // Behind rain bars
         }
       ]
     },
@@ -194,7 +198,7 @@ const createChart = () => {
           display: true,
           position: 'top',
           labels: {
-            color: '#374151',
+            color: isDark.value ? '#e2e8f0' : '#374151',
             font: {
               size: 12,
               weight: 600
@@ -205,10 +209,10 @@ const createChart = () => {
           }
         },
         tooltip: {
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          titleColor: '#1f2937',
-          bodyColor: '#374151',
-          borderColor: 'rgba(139, 92, 246, 0.2)',
+          backgroundColor: isDark.value ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+          titleColor: isDark.value ? '#e2e8f0' : '#1f2937',
+          bodyColor: isDark.value ? '#cbd5e1' : '#374151',
+          borderColor: isDark.value ? 'rgba(71, 85, 105, 0.5)' : 'rgba(139, 92, 246, 0.2)',
           borderWidth: 1,
           padding: () => {
             return window.innerWidth < 640 ? 8 : 12;
@@ -273,7 +277,7 @@ const createChart = () => {
             display: false
           },
           ticks: {
-            color: '#6b7280',
+            color: isDark.value ? '#94a3b8' : '#6b7280',
             font: {
               size: 11
             },
@@ -295,7 +299,7 @@ const createChart = () => {
             }
           },
           grid: {
-            color: 'rgba(251, 146, 60, 0.1)'
+            color: isDark.value ? 'rgba(251, 146, 60, 0.15)' : 'rgba(251, 146, 60, 0.1)'
           },
           ticks: {
             color: '#fb923c',
@@ -356,6 +360,17 @@ onMounted(() => {
 });
 
 /**
+ * Watch: recriar gráfico quando dados ou tema mudam
+ */
+watch(() => [props.hourlyForecasts, theme.value], () => {
+  if (chartInstance) {
+    chartInstance.destroy();
+    chartInstance = null;
+  }
+  createChart();
+}, { deep: true });
+
+/**
  * Lifecycle: limpar gráfico
  */
 onUnmounted(() => {
@@ -391,6 +406,10 @@ watch(() => props.hourlyForecasts, () => {
   margin-bottom: $spacing-lg;
   text-align: center;
   
+  [data-theme="dark"] & {
+    color: rgba(226, 232, 240, 0.95);
+  }
+  
   @include md {
     font-size: $font-base;
     margin-bottom: $spacing-md;
@@ -414,6 +433,15 @@ watch(() => props.hourlyForecasts, () => {
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
+  
+  [data-theme="dark"] & {
+    background: linear-gradient(135deg, 
+      rgba(30, 41, 59, 0.9) 0%,
+      rgba(51, 65, 85, 0.88) 100%
+    );
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    border-color: rgba(71, 85, 105, 0.4);
+  }
   
   @include md {
     height: 300px;
