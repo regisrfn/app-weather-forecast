@@ -199,15 +199,23 @@
     }
 
     .date-nav-btn {
-      background: var(--home-surface-soft);
-      border-color: var(--home-border-soft);
+      background: linear-gradient(135deg, rgba(94, 196, 255, 0.18), rgba(139, 109, 217, 0.16));
+      border-color: var(--home-border-strong);
       color: var(--home-text-strong);
-      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--home-border-soft);
+      box-shadow:
+        0 10px 26px rgba(0, 0, 0, 0.5),
+        0 0 0 1px var(--home-border-soft);
 
       &:hover:not(:disabled) {
-        background: rgba(124, 242, 255, 0.14);
+        background: linear-gradient(135deg, rgba(94, 196, 255, 0.28), rgba(139, 109, 217, 0.22));
         border-color: var(--home-border-strong);
-        box-shadow: 0 0 0 1px var(--home-border-strong), 0 12px 28px rgba(0, 0, 0, 0.55);
+        box-shadow:
+          0 0 0 1px var(--home-border-strong),
+          0 12px 28px rgba(0, 0, 0, 0.55);
+      }
+      
+      &:disabled {
+        color: var(--home-text-muted);
       }
     }
 

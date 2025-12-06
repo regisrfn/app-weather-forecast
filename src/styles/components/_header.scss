@@ -31,10 +31,13 @@
   }
 
   @include md {
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    border-radius: $radius-md;
+    top: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    box-shadow: none;
   }
 }
 
@@ -424,15 +427,19 @@
 
   .city-search {
     .search-toggle-btn {
-      background: var(--home-surface-soft);
-      border-color: var(--home-border-soft);
+      background: linear-gradient(135deg, rgba(94, 196, 255, 0.2), rgba(139, 109, 217, 0.18));
+      border-color: var(--home-border-strong);
       color: var(--home-text-strong);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.35),
+        0 0 0 1px var(--home-border-soft);
 
       &:hover {
-        background: rgba(124, 242, 255, 0.12);
+        background: linear-gradient(135deg, rgba(94, 196, 255, 0.28), rgba(139, 109, 217, 0.24));
         border-color: var(--home-border-strong);
-        box-shadow: 0 0 0 1px var(--home-border-strong), 0 14px 32px rgba(0, 0, 0, 0.4);
+        box-shadow:
+          0 0 0 1px var(--home-border-strong),
+          0 14px 32px rgba(0, 0, 0, 0.45);
       }
     }
 
@@ -483,6 +490,17 @@
     label {
       color: var(--home-text-strong);
       text-shadow: 0 0 18px rgba(124, 242, 255, 0.15);
+    }
+
+    @include md {
+      border-left: none;
+      padding-left: 0;
+      border-bottom: 1px solid var(--home-border-soft);
+
+      &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
     }
   }
 
