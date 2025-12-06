@@ -10,17 +10,29 @@
       <!-- Progress bar -->
       <div class="progress-bar-container">
         <div class="progress-bar">
+          <!-- Background gradient - always visible -->
+          <div class="gradient-base"></div>
+          
+          <!-- Dark overlay that covers progressively -->
           <div 
-            class="progress-fill" 
-            :style="{ width: `${sunProgress * 100}%` }"
+            v-if="isCurrentDay"
+            class="dark-cover" 
+            :style="{ clipPath: `inset(0 ${100 - sunProgress * 100}% 0 0)` }"
           ></div>
+          
+          <!-- Sun indicator -->
           <div 
             v-if="isCurrentDay" 
-            class="current-indicator"
+            class="sun-indicator"
             :style="{ left: `${sunProgress * 100}%` }"
           >
-            <div class="indicator-dot"></div>
+            <div class="sun-dot"></div>
           </div>
+        </div>
+        
+        <!-- Status text -->
+        <div v-if="isCurrentDay" class="status-text">
+          {{ statusText }}
         </div>
       </div>
       
@@ -37,10 +49,10 @@
 import { computed } from 'vue';
 
 interface Props {
-  sunrise: string; // HH:MM:SS format
-  sunset: string;  // HH:MM:SS format
-  currentTime?: string; // HH:MM:SS format, optional
-  isCurrentDay?: boolean; // Se true, mostra animação e posição atual
+  sunrise: string;
+  sunset: string;
+  currentTime?: string;
+  isCurrentDay?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -48,47 +60,70 @@ const props = withDefaults(defineProps<Props>(), {
   isCurrentDay: false,
 });
 
-/**
- * Converte string HH:MM:SS para minutos desde meia-noite
- */
 const timeToMinutes = (timeStr: string): number => {
   const [hours = 0, minutes = 0] = timeStr.split(':').map(Number);
   return hours * 60 + minutes;
 };
 
-/**
- * Formata HH:MM:SS para HH:MM
- */
 const formatTime = (timeStr: string): string => {
   const [hours, minutes] = timeStr.split(':');
   return `${hours}:${minutes}`;
 };
 
-/**
- * Calcula o progresso do sol (0 a 1)
- * 0 = nascer do sol, 1 = pôr do sol
- */
 const sunProgress = computed(() => {
   if (!props.isCurrentDay || !props.currentTime) {
-    return 0.5; // Meio-dia por padrão se não for o dia atual
+    return 0.5;
   }
   
   const sunriseMin = timeToMinutes(props.sunrise);
   const sunsetMin = timeToMinutes(props.sunset);
   const currentMin = timeToMinutes(props.currentTime);
   
-  // Se antes do nascer ou após o pôr, retornar extremos
-  if (currentMin < sunriseMin) return 0;
-  if (currentMin > sunsetMin) return 1;
+  // Debug
+  console.log('SunTimeline Debug:', {
+    sunrise: props.sunrise,
+    sunset: props.sunset,
+    currentTime: props.currentTime,
+    sunriseMin,
+    sunsetMin,
+    currentMin,
+    isCurrentDay: props.isCurrentDay
+  });
   
-  // Calcular progresso entre nascer e pôr
+  // Antes do nascer ou depois do pôr = noite (100% escuro)
+  if (currentMin < sunriseMin || currentMin >= sunsetMin) {
+    console.log('É noite - progress: 1');
+    return 1;
+  }
+  
+  // Durante o dia - calcular progresso
   const elapsed = currentMin - sunriseMin;
   const total = sunsetMin - sunriseMin;
   
-  return elapsed / total;
+  const progress = elapsed / total;
+  console.log('É dia - progress:', progress);
+  
+  return progress;
 });
 
-
+const statusText = computed(() => {
+  if (!props.isCurrentDay || !props.currentTime) return '';
+  
+  const sunriseMin = timeToMinutes(props.sunrise);
+  const sunsetMin = timeToMinutes(props.sunset);
+  const currentMin = timeToMinutes(props.currentTime);
+  
+  // Antes do nascer do sol (madrugada) ou depois do pôr do sol = Noite
+  if (currentMin < sunriseMin || currentMin >= sunsetMin) {
+    return 'Noite';
+  }
+  
+  // Durante o dia - calcular horas restantes até o pôr do sol
+  const remainingMin = sunsetMin - currentMin;
+  const remainingHours = Math.round(remainingMin / 60);
+  
+  return remainingHours > 0 ? `${remainingHours}h de luz restante` : 'Noite';
+});
 </script>
 
 <style scoped lang="scss">
@@ -151,7 +186,9 @@ const sunProgress = computed(() => {
 .progress-bar-container {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 4px;
   min-width: 60px;
   padding: 0 $spacing-xs;
 }
@@ -160,13 +197,11 @@ const sunProgress = computed(() => {
   position: relative;
   width: 100%;
   height: 16px;
-  background: rgba(226, 232, 240, 0.4);
   border-radius: 8px;
-  overflow: visible;
+  overflow: hidden;
   border: 1px solid rgba(148, 163, 184, 0.3);
   
   @include dark-mode {
-    background: rgba(51, 65, 85, 0.4);
     border-color: rgba(71, 85, 105, 0.5);
   }
   
@@ -176,40 +211,61 @@ const sunProgress = computed(() => {
   }
 }
 
-.progress-fill {
+.gradient-base {
   position: absolute;
   left: 0;
   top: 0;
+  width: 100%;
   height: 100%;
   background: linear-gradient(
     to right,
-    #fbbf24 0%,
-    #fcd34d 25%,
-    #fb923c 50%,
-    #f97316 70%,
-    #ea580c 85%,
-    #c026d3 92%,
-    #7c3aed 96%,
-    #1e3a8a 100%
+    #fde047 0%,
+    #fbbf24 10%,
+    #fcd34d 20%,
+    #fb923c 30%,
+    #f97316 45%,
+    #ea580c 60%,
+    #c026d3 73%,
+    #7c3aed 84%,
+    #4c1d95 92%,
+    #1e3a8a 97%,
+    #0f172a 100%
   );
-  border-radius: 7px;
-  transition: width 0.6s ease;
-  box-shadow: 0 3px 12px rgba(251, 146, 60, 0.4), 0 1px 4px rgba(124, 58, 237, 0.3);
+}
+
+.dark-cover {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: #0f172a;
+  transition: clip-path 0.6s ease;
+}
+
+.status-text {
+  font-size: 0.65rem;
+  font-weight: $font-semibold;
+  color: var(--weather-text-muted);
+  text-align: center;
+  opacity: 0.8;
+  letter-spacing: 0.2px;
   
-  @include dark-mode {
-    box-shadow: 0 3px 12px rgba(251, 146, 60, 0.3), 0 1px 4px rgba(124, 58, 237, 0.25);
+  @include md {
+    font-size: 0.6rem;
   }
 }
 
-.current-indicator {
+.sun-indicator {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
   pointer-events: none;
+  transition: left 0.6s ease;
 }
 
-.indicator-dot {
+.sun-dot {
   width: 20px;
   height: 20px;
   background: radial-gradient(circle, #fde047 0%, #fbbf24 70%);
