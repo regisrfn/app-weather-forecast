@@ -6,9 +6,9 @@ const THEME_STORAGE_KEY = 'app-weather-theme';
 
 // Get initial theme from localStorage or default to dark
 const getInitialTheme = (): Theme => {
-  if (typeof window === 'undefined') return 'dark';
+  if (typeof window === 'undefined') return 'light';
   const stored = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
-  return stored || 'dark';
+  return stored || 'light';
 };
 
 const currentTheme = ref<Theme>(getInitialTheme());
