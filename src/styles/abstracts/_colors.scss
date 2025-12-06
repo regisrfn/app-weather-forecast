@@ -221,21 +221,21 @@ $opacity-hover: 0.30;
   --bg-gradient-end: rgba(15, 23, 42, 0.1);
   --bg-base: #0f172a;
 
-  // Home (Weather Map) - Neon glass dark palette
-  --home-ambient-1: #040813;
-  --home-ambient-2: #09122a;
-  --home-surface: rgba(9, 15, 32, 0.82);
-  --home-surface-strong: rgba(9, 16, 36, 0.9);
-  --home-surface-soft: rgba(12, 20, 42, 0.64);
-  --home-border-soft: rgba(124, 242, 255, 0.2);
-  --home-border-strong: rgba(124, 242, 255, 0.35);
-  --home-border-glow: rgba(159, 122, 234, 0.32);
-  --home-accent: #7cf2ff;
-  --home-accent-2: #9f7aea;
-  --home-glow: rgba(124, 242, 255, 0.28);
-  --home-gridline: rgba(124, 242, 255, 0.07);
+  // Home (Weather Map) - Neon glass dark palette (suavizado)
+  --home-ambient-1: #0a1628;
+  --home-ambient-2: #0f1d35;
+  --home-surface: rgba(15, 25, 45, 0.75);
+  --home-surface-strong: rgba(18, 30, 52, 0.85);
+  --home-surface-soft: rgba(20, 32, 55, 0.60);
+  --home-border-soft: rgba(124, 242, 255, 0.18);
+  --home-border-strong: rgba(124, 242, 255, 0.32);
+  --home-border-glow: rgba(159, 122, 234, 0.28);
+  --home-accent: #5ec4ff;
+  --home-accent-2: #8b6dd9;
+  --home-glow: rgba(94, 196, 255, 0.22);
+  --home-gridline: rgba(124, 242, 255, 0.06);
   --home-text-strong: #e5f1ff;
-  --home-text-muted: #9fb5d1;
+  --home-text-muted: #a8bdd6;
   
   // Text adjustments for dark mode
   --text-dark: #e5e7eb;

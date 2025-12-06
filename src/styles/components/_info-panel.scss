@@ -598,13 +598,15 @@
 // ================================
 [data-theme="dark"] {
   .info-toggle-btn {
-    background: var(--home-surface);
-    border-color: var(--home-border-strong);
+    background: var(--home-surface-soft);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-color: var(--home-border-soft);
     color: var(--home-text-strong);
     box-shadow:
-      0 14px 42px rgba(0, 0, 0, 0.55),
+      0 10px 34px rgba(0, 0, 0, 0.4),
       0 0 0 1px var(--home-border-soft),
-      0 0 20px var(--home-glow);
+      0 0 16px var(--home-glow);
 
     &:hover {
       background: var(--home-surface-strong);
