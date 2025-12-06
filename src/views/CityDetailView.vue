@@ -302,25 +302,52 @@
             </div>
 
             <div class="forecast-detail">
-              <span class="detail-icon">💧</span>
+              <div class="detail-left">
+                <span class="detail-icon">💧</span>
+                <span class="detail-label">Prec.</span>
+              </div>
               <span class="detail-value">{{ forecast.precipitationMm.toFixed(1) }} mm</span>
             </div>
 
             <div class="forecast-detail">
-              <span class="detail-icon">☔</span>
+              <div class="detail-left">
+                <span class="detail-icon">☔</span>
+                <span class="detail-label">Prob. chuva</span>
+              </div>
               <span class="detail-value">{{ forecast.rainProbability.toFixed(0) }}%</span>
             </div>
             
             <!-- Moon Phase -->
             <div v-if="forecast.moonPhase !== undefined" class="forecast-detail moon-phase">
-              <span class="detail-icon">{{ getMoonPhaseEmoji(forecast.moonPhase) }}</span>
+              <div class="detail-left">
+                <span class="detail-icon">{{ getMoonPhaseEmoji(forecast.moonPhase) }}</span>
+                <span class="detail-label">Fase da Lua</span>
+              </div>
               <span class="detail-value">{{ getMoonPhaseName(forecast.moonPhase) }}</span>
             </div>
             
             <!-- Precipitation Hours -->
             <div v-if="forecast.precipitationHours !== undefined" class="forecast-detail">
-              <span class="detail-icon">⏱️</span>
-              <span class="detail-value">{{ forecast.precipitationHours.toFixed(0) }}h chuva</span>
+              <div class="detail-left">
+                <span class="detail-icon">⏱️</span>
+                <span class="detail-label">Horas chuva</span>
+              </div>
+              <span class="detail-value">{{ forecast.precipitationHours.toFixed(0) }}h</span>
+            </div>
+
+            <!-- Wind -->
+            <div
+              v-if="forecast.windDirection !== undefined"
+              class="forecast-detail wind-detail"
+            >
+              <div class="detail-left">
+                <span class="detail-icon">🧭</span>
+                <span class="detail-label">Vento</span>
+              </div>
+              <div class="detail-value wind-value">
+                <span class="wind-arrow">{{ forecast.windDirectionArrow || getWindArrow(forecast.windDirection) }}</span>
+                <span class="wind-speed">{{ (forecast.windSpeed ?? forecast.windSpeedMax).toFixed(0) }} km/h</span>
+              </div>
             </div>
 
             <div class="forecast-uv" :style="{ backgroundColor: forecast.uvRiskColor, color: getContrastColor(forecast.uvRiskColor) }">
@@ -701,6 +728,16 @@ const getCurrentTime = (): string => {
     hour12: false,
     timeZone: 'America/Sao_Paulo'
   });
+};
+
+/**
+ * Retorna seta simples apontando para onde o vento sopra
+ */
+const getWindArrow = (windDirection: number): string => {
+  const arrows = ['↑', '↗', '→', '↘', '↓', '↙', '←', '↖'];
+  const blowingTo = ((windDirection ?? 0) + 180) % 360;
+  const index = Math.round(blowingTo / 45) % 8;
+  return arrows[index] || '→';
 };
 
 /**

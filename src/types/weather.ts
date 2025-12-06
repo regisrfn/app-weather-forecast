@@ -72,7 +72,9 @@ export interface DailyForecast {
   rainProbability: number;
   rainfallIntensity: number; // 0-100 (0 = sem chuva, 100 = chuva intensa)
   windSpeedMax: number;
+  windSpeed?: number;
   windDirection: number;
+  windDirectionArrow?: string;
   uvIndex: number;
   uvRiskLevel: string;
   uvRiskColor: string;
