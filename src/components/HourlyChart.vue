@@ -56,26 +56,6 @@ const chartCanvas = ref<HTMLCanvasElement | null>(null);
 let chartInstance: Chart | null = null;
 
 const isDark = computed(() => theme.value === 'dark');
-const PRECIP_PROBABILITY_THRESHOLD = 10;
-const MIN_DISPLAYED_PRECIP = 0.1;
-const PRECIP_BAR_RGB = '37, 99, 235'; // Azul base para as barras
-
-const shouldShowPrecipBar = (value: number, probability: number) => {
-  return value > 0 || probability > PRECIP_PROBABILITY_THRESHOLD;
-};
-
-const normalizePrecipValue = (value: number, probability: number) => {
-  if (probability > PRECIP_PROBABILITY_THRESHOLD && value <= 0) {
-    return MIN_DISPLAYED_PRECIP;
-  }
-  return value;
-};
-
-const getProbabilityColor = (probability: number, extraAlpha = 0) => {
-  const clamped = Math.min(Math.max(probability, 0), 100);
-  const alpha = 0.2 + (clamped / 100) * 0.6 + extraAlpha; // 100% deixa a barra mais escura
-  return `rgba(${PRECIP_BAR_RGB}, ${Math.min(alpha, 0.95)})`;
-};
 
 /**
  * Ajusta quantidade de horas baseado no tamanho da tela
@@ -136,10 +116,8 @@ const createChart = () => {
 
   const labels = displayedForecasts.value.map((f, i) => formatHourLabel(f.timestamp, i));
   const tempData = displayedForecasts.value.map(f => f.temperature);
+  const precipData = displayedForecasts.value.map(f => f.precipitation);
   const precipProbData = displayedForecasts.value.map(f => f.precipitationProbability);
-  const precipData = displayedForecasts.value.map((f, index) => 
-    normalizePrecipValue(f.precipitation, precipProbData[index] ?? 0)
-  );
   const rainfallIntensityData = displayedForecasts.value.map(f => f.rainfallIntensity || 0);
 
   const config: ChartConfiguration = {
@@ -147,25 +125,35 @@ const createChart = () => {
     data: {
       labels,
       datasets: [
-        // Barras de precipitação (exibidas/estilizadas pela probabilidade)
+        // Barras de precipitação (baseadas em rainfallIntensity)
         {
           type: 'bar',
           label: 'Precipitação (mm)',
           data: precipData,
           backgroundColor: (context: any) => {
-            const probability = precipProbData[context.dataIndex] ?? 0;
-            const value = precipData[context.dataIndex] ?? 0;
-
-            if (!shouldShowPrecipBar(value, probability)) {
+            const intensity = rainfallIntensityData[context.dataIndex] ?? 0;
+            
+            // Não exibir barra se intensidade é 0
+            if (intensity === 0) {
               return 'transparent';
             }
-
-            return getProbabilityColor(probability);
+            
+            // Cor baseada na intensidade da chuva (rainfall_intensity)
+            // 0-25: muito fraca, 25-50: fraca, 50-75: moderada, 75-100: forte
+            if (intensity >= 75) {
+              return 'rgba(59, 130, 246, 0.8)'; // Azul muito forte
+            } else if (intensity >= 50) {
+              return 'rgba(59, 130, 246, 0.6)'; // Azul forte
+            } else if (intensity >= 25) {
+              return 'rgba(59, 130, 246, 0.4)'; // Azul médio
+            } else if (intensity >= 10) {
+              return 'rgba(59, 130, 246, 0.25)'; // Azul claro
+            }
+            return 'rgba(59, 130, 246, 0.1)'; // Azul muito claro
           },
           borderColor: (context: any) => {
-            const probability = precipProbData[context.dataIndex] ?? 0;
-            const value = precipData[context.dataIndex] ?? 0;
-            return shouldShowPrecipBar(value, probability) ? getProbabilityColor(probability, 0.1) : 'transparent';
+            const intensity = rainfallIntensityData[context.dataIndex] ?? 0;
+            return intensity === 0 ? 'transparent' : 'rgba(59, 130, 246, 0.8)';
           },
           borderWidth: 1,
           borderRadius: 4,
