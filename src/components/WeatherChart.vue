@@ -26,6 +26,15 @@ import {
   type ChartConfiguration,
 } from 'chart.js';
 import type { DailyForecast } from '../types/weather';
+import {
+  formatDateShort,
+  getPrecipitationColorByProbability,
+  getPrecipitationBorderColor,
+  getProbabilityDescription,
+  createTemperatureGradient,
+  chartColors,
+  getResponsiveConfig,
+} from '../utils/chartHelpers';
 
 // Registrar componentes do Chart.js (tree-shaking)
 Chart.register(
@@ -59,16 +68,6 @@ const chartAriaLabel = computed(() =>
 );
 
 /**
- * Formata data para exibição no eixo X (formato curto)
- */
-const formatDate = (dateStr: string): string => {
-  const date = new Date(dateStr + 'T00:00:00');
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  return `${day}/${month}`;
-};
-
-/**
  * Cria e configura o gráfico Chart.js
  */
 const createChart = () => {
@@ -84,12 +83,13 @@ const createChart = () => {
 
   console.log('[WeatherChart] Creating chart with', props.dailyForecasts.length, 'days');
 
-  const labels = props.dailyForecasts.map(f => formatDate(f.date));
+  const labels = props.dailyForecasts.map(f => formatDateShort(f.date));
   const tempMaxData = props.dailyForecasts.map(f => f.tempMax);
   const tempMinData = props.dailyForecasts.map(f => f.tempMin);
   const precipData = props.dailyForecasts.map(f => f.precipitationMm);
   const rainProbData = props.dailyForecasts.map(f => f.rainProbability);
   const rainfallIntensityData = props.dailyForecasts.map(f => f.rainfallIntensity || 0);
+  const responsiveConfig = getResponsiveConfig();
 
   const config: ChartConfiguration = {
     type: 'bar',
@@ -100,18 +100,14 @@ const createChart = () => {
           type: 'line',
           label: 'Temp. Máx (°C)',
           data: tempMaxData,
-          borderColor: '#fb923c',
+          borderColor: chartColors.tempMax,
           backgroundColor: (context: any) => {
-            const ctx = context.chart.ctx;
-            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(251, 146, 60, 0.25)');
-            gradient.addColorStop(1, 'rgba(251, 146, 60, 0.0)');
-            return gradient;
+            return createTemperatureGradient(context.chart.ctx, chartColors.tempMaxRGB);
           },
           borderWidth: 3,
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          pointBackgroundColor: '#fb923c',
+          pointRadius: responsiveConfig.pointRadius,
+          pointHoverRadius: responsiveConfig.pointHoverRadius,
+          pointBackgroundColor: chartColors.tempMax,
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           tension: 0.4,
@@ -123,18 +119,14 @@ const createChart = () => {
           type: 'line',
           label: 'Temp. Mín (°C)',
           data: tempMinData,
-          borderColor: '#60a5fa',
+          borderColor: chartColors.tempMin,
           backgroundColor: (context: any) => {
-            const ctx = context.chart.ctx;
-            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(96, 165, 250, 0.25)');
-            gradient.addColorStop(1, 'rgba(96, 165, 250, 0.0)');
-            return gradient;
+            return createTemperatureGradient(context.chart.ctx, chartColors.tempMinRGB);
           },
           borderWidth: 3,
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          pointBackgroundColor: '#60a5fa',
+          pointRadius: responsiveConfig.pointRadius,
+          pointHoverRadius: responsiveConfig.pointHoverRadius,
+          pointBackgroundColor: chartColors.tempMin,
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           tension: 0.4,
@@ -147,28 +139,14 @@ const createChart = () => {
           label: 'Precipitação (mm)',
           data: precipData,
           backgroundColor: (context: any) => {
-            const intensity = rainfallIntensityData[context.dataIndex] ?? 0;
-            
-            // Não exibir barra se intensidade é 0
-            if (intensity === 0) {
-              return 'transparent';
-            }
-            
-            // Cor baseada na intensidade de chuva (rainfallIntensity)
-            if (intensity >= 75) {
-              return 'rgba(59, 130, 246, 0.8)'; // Intensidade muito forte
-            } else if (intensity >= 50) {
-              return 'rgba(59, 130, 246, 0.6)'; // Intensidade forte
-            } else if (intensity >= 25) {
-              return 'rgba(59, 130, 246, 0.4)'; // Intensidade média
-            } else if (intensity >= 10) {
-              return 'rgba(59, 130, 246, 0.25)'; // Intensidade leve
-            }
-            return 'rgba(59, 130, 246, 0.1)'; // Intensidade muito leve
+            const probability = rainProbData[context.dataIndex] ?? 0;
+            const intensity = rainfallIntensityData[context.dataIndex];
+            return getPrecipitationColorByProbability(probability, intensity);
           },
           borderColor: (context: any) => {
-            const intensity = rainfallIntensityData[context.dataIndex] ?? 0;
-            return intensity === 0 ? 'transparent' : 'rgba(59, 130, 246, 0.8)';
+            const probability = rainProbData[context.dataIndex] ?? 0;
+            const intensity = rainfallIntensityData[context.dataIndex];
+            return getPrecipitationBorderColor(probability, intensity);
           },
           borderWidth: 1,
           borderRadius: 4,
@@ -205,20 +183,14 @@ const createChart = () => {
           bodyColor: '#e2e8f0',
           borderColor: '#64748b',
           borderWidth: 1,
-          padding: () => {
-            return window.innerWidth < 640 ? 10 : 14;
-          },
+          padding: responsiveConfig.tooltipPadding,
           cornerRadius: 8,
           titleFont: {
-            size: () => {
-              return window.innerWidth < 640 ? 11 : 13;
-            },
+            size: responsiveConfig.tooltipTitleSize,
             weight: 'bold',
           },
           bodyFont: {
-            size: () => {
-              return window.innerWidth < 640 ? 10 : 12;
-            },
+            size: responsiveConfig.tooltipBodySize,
           },
           boxWidth: 8,
           boxHeight: 8,
@@ -228,9 +200,9 @@ const createChart = () => {
               const value = context.parsed.y;
               if (value === null || value === undefined) return label;
               if (label.includes('Precipitação')) {
-                const prob = rainProbData[context.dataIndex];
-                const intensity = rainfallIntensityData[context.dataIndex] ?? 0;
-                return `${label}: ${value.toFixed(1)} mm (${prob}%, intensidade: ${intensity.toFixed(1)})`;
+                const prob = rainProbData[context.dataIndex] ?? 0;
+                const probDesc = getProbabilityDescription(prob);
+                return `${label}: ${value.toFixed(1)} mm (${prob}% - ${probDesc})`;
               }
               return `${label}: ${value.toFixed(1)}°C`;
             },

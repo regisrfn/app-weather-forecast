@@ -26,6 +26,15 @@ import {
   type ChartConfiguration,
 } from 'chart.js';
 import type { HourlyForecast } from '../types/weather';
+import {
+  formatHourLabel,
+  getPrecipitationColorByProbability,
+  getPrecipitationBorderColor,
+  getProbabilityDescription,
+  createTemperatureGradient,
+  chartColors,
+  getResponsiveConfig,
+} from '../utils/chartHelpers';
 
 // Registrar componentes do Chart.js
 Chart.register(
@@ -81,24 +90,6 @@ const displayedForecasts = computed(() => {
 });
 
 /**
- * Formata timestamp para exibição no eixo X
- * Mostra hora + dia apenas quando muda de dia
- */
-const formatHourLabel = (timestamp: string, index: number): string => {
-  const date = new Date(timestamp);
-  const hour = date.getHours();
-  const day = date.getDate();
-  
-  // Se é a primeira hora OU mudou de dia, mostrar dia também
-  const previousForecast = displayedForecasts.value[index - 1];
-  if (index === 0 || (index > 0 && previousForecast && new Date(previousForecast.timestamp).getDate() !== day)) {
-    return `${hour}h\n${day}/${date.getMonth() + 1}`;
-  }
-  
-  return `${hour}h`;
-};
-
-/**
  * Cria e configura o gráfico Chart.js
  */
 const createChart = () => {
@@ -114,46 +105,34 @@ const createChart = () => {
 
   console.log('[HourlyChart] Creating chart with', displayedForecasts.value.length, 'hours');
 
-  const labels = displayedForecasts.value.map((f, i) => formatHourLabel(f.timestamp, i));
+  const labels = displayedForecasts.value.map((f, i) => 
+    formatHourLabel(f.timestamp, i, displayedForecasts.value[i - 1]?.timestamp)
+  );
   const tempData = displayedForecasts.value.map(f => f.temperature);
   const precipData = displayedForecasts.value.map(f => f.precipitation);
   const precipProbData = displayedForecasts.value.map(f => f.precipitationProbability);
   const rainfallIntensityData = displayedForecasts.value.map(f => f.rainfallIntensity || 0);
+  const responsiveConfig = getResponsiveConfig();
 
   const config: ChartConfiguration = {
     type: 'bar',
     data: {
       labels,
       datasets: [
-        // Barras de precipitação (baseadas em rainfallIntensity)
+        // Barras de precipitação (baseadas em probabilidade)
         {
           type: 'bar',
           label: 'Precipitação (mm)',
           data: precipData,
           backgroundColor: (context: any) => {
-            const intensity = rainfallIntensityData[context.dataIndex] ?? 0;
-            
-            // Não exibir barra se intensidade é 0
-            if (intensity === 0) {
-              return 'transparent';
-            }
-            
-            // Cor baseada na intensidade da chuva (rainfall_intensity)
-            // 0-25: muito fraca, 25-50: fraca, 50-75: moderada, 75-100: forte
-            if (intensity >= 75) {
-              return 'rgba(59, 130, 246, 0.8)'; // Azul muito forte
-            } else if (intensity >= 50) {
-              return 'rgba(59, 130, 246, 0.6)'; // Azul forte
-            } else if (intensity >= 25) {
-              return 'rgba(59, 130, 246, 0.4)'; // Azul médio
-            } else if (intensity >= 10) {
-              return 'rgba(59, 130, 246, 0.25)'; // Azul claro
-            }
-            return 'rgba(59, 130, 246, 0.1)'; // Azul muito claro
+            const probability = precipProbData[context.dataIndex] ?? 0;
+            const intensity = rainfallIntensityData[context.dataIndex];
+            return getPrecipitationColorByProbability(probability, intensity);
           },
           borderColor: (context: any) => {
-            const intensity = rainfallIntensityData[context.dataIndex] ?? 0;
-            return intensity === 0 ? 'transparent' : 'rgba(59, 130, 246, 0.8)';
+            const probability = precipProbData[context.dataIndex] ?? 0;
+            const intensity = rainfallIntensityData[context.dataIndex];
+            return getPrecipitationBorderColor(probability, intensity);
           },
           borderWidth: 1,
           borderRadius: 4,
@@ -165,18 +144,14 @@ const createChart = () => {
           type: 'line',
           label: 'Temperatura (°C)',
           data: tempData,
-          borderColor: '#fb923c',
+          borderColor: chartColors.temp,
           backgroundColor: (context: any) => {
-            const ctx = context.chart.ctx;
-            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-            gradient.addColorStop(0, 'rgba(251, 146, 60, 0.3)');
-            gradient.addColorStop(1, 'rgba(251, 146, 60, 0.05)');
-            return gradient;
+            return createTemperatureGradient(context.chart.ctx, chartColors.tempRGB, 300);
           },
           borderWidth: 3,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          pointBackgroundColor: '#fb923c',
+          pointRadius: responsiveConfig.pointRadius,
+          pointHoverRadius: responsiveConfig.pointHoverRadius,
+          pointBackgroundColor: chartColors.temp,
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           fill: true,
@@ -214,20 +189,14 @@ const createChart = () => {
           bodyColor: isDark.value ? '#cbd5e1' : '#374151',
           borderColor: isDark.value ? 'rgba(71, 85, 105, 0.5)' : 'rgba(139, 92, 246, 0.2)',
           borderWidth: 1,
-          padding: () => {
-            return window.innerWidth < 640 ? 8 : 12;
-          },
+          padding: responsiveConfig.tooltipPadding,
           displayColors: true,
           titleFont: {
-            size: () => {
-              return window.innerWidth < 640 ? 11 : 13;
-            },
+            size: responsiveConfig.tooltipTitleSize,
             weight: 'bold'
           },
           bodyFont: {
-            size: () => {
-              return window.innerWidth < 640 ? 10 : 12;
-            }
+            size: responsiveConfig.tooltipBodySize
           },
           boxWidth: 8,
           boxHeight: 8,
@@ -249,9 +218,9 @@ const createChart = () => {
               const value = context.parsed.y;
               
               if (context.dataset.yAxisID === 'y-precip') {
-                const prob = precipProbData[context.dataIndex];
-                const intensity = rainfallIntensityData[context.dataIndex] ?? 0;
-                return `${label}: ${value.toFixed(1)}mm (${prob}%, intensidade: ${intensity.toFixed(0)})`;
+                const prob = precipProbData[context.dataIndex] ?? 0;
+                const probDesc = getProbabilityDescription(prob);
+                return `${label}: ${value.toFixed(1)}mm (${prob}% - ${probDesc})`;
               }
               
               return `${label}: ${value.toFixed(1)}°`;
