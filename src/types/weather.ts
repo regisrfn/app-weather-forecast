@@ -15,7 +15,7 @@ export interface WeatherAlert {
   severity: AlertSeverity;
   description: string;
   timestamp: string;
-  details?: Record<string, any>; // Detalhes técnicos opcionais (rain_mm_h, wind_speed_kmh, temperature_c, etc.)
+  details?: Record<string, any>; // Detalhes técnicos opcionais (rainMmH, windSpeedKmh, temperatureC, etc.)
 }
 
 export interface RainfallData {

@@ -22,6 +22,7 @@ const alertCodeLabels: Record<string, string> = {
   LIGHT_RAIN: 'Chuva Fraca',
   MODERATE_RAIN: 'Chuva Moderada',
   HEAVY_RAIN: 'Chuva Forte',
+  HEAVY_RAIN_DAY: 'Chuva Forte (dia)',
   RAIN_EXPECTED: 'Chuva Esperada',
   STORM: 'Tempestade com Raios',
   STORM_RAIN: 'Tempestade com Chuva',
@@ -128,25 +129,39 @@ const formatDetails = computed(() => {
   if (!props.alert?.details) return [];
 
   const details = props.alert.details as Record<string, any>;
+  const getDetail = (camelKey: string, legacyKey?: string) =>
+    details[camelKey] ?? (legacyKey ? details[legacyKey] : undefined);
+  const isHeavyRainDay = props.alert?.code === 'HEAVY_RAIN_DAY';
   const formatted: Array<{ label: string; value: string }> = [];
 
-  if (details.rain_mm_h !== undefined) {
+  const rainMmH = getDetail('rainMmH', 'rain_mm_h');
+  if (!isHeavyRainDay && typeof rainMmH === 'number') {
     formatted.push({
       label: 'Intensidade da Chuva',
-      value: `${details.rain_mm_h.toFixed(1)} mm/h`,
+      value: `${rainMmH.toFixed(1)} mm/h`,
     });
   }
 
-  if (details.rain_mm !== undefined) {
+  const rainMm = getDetail('precipitationMm') ?? getDetail('rainMm', 'rain_mm');
+  if (typeof rainMm === 'number') {
     formatted.push({
       label: 'Volume de Chuva',
-      value: `${details.rain_mm.toFixed(1)} mm`,
+      value: `${rainMm.toFixed(1)} mm`,
     });
   }
 
-  if (details.rain_ends_at !== undefined) {
+  const rainfallIntensity = getDetail('rainfallIntensity', 'intensity');
+  if (!isHeavyRainDay && typeof rainfallIntensity === 'number') {
+    formatted.push({
+      label: 'Intensidade Composta',
+      value: `${rainfallIntensity.toFixed(1)} (0-100)`,
+    });
+  }
+
+  const rainEndsAt = getDetail('rainEndsAt', 'rain_ends_at');
+  if (rainEndsAt !== undefined) {
     try {
-      const endDate = new Date(details.rain_ends_at);
+      const endDate = new Date(rainEndsAt);
       formatted.push({
         label: 'Fim Previsto da Chuva',
         value: endDate.toLocaleString('pt-BR', {
@@ -162,78 +177,90 @@ const formatDetails = computed(() => {
     }
   }
 
-  if (details.visibility_m !== undefined) {
+  const visibilityMeters = getDetail('visibilityMeters', 'visibility_m');
+  if (typeof visibilityMeters === 'number') {
     formatted.push({
       label: 'Visibilidade',
-      value: details.visibility_m < 1000 
-        ? `${details.visibility_m} m` 
-        : `${(details.visibility_m / 1000).toFixed(1)} km`,
+      value: visibilityMeters < 1000 
+        ? `${visibilityMeters} m` 
+        : `${(visibilityMeters / 1000).toFixed(1)} km`,
     });
   }
 
-  if (details.wind_speed_kmh !== undefined) {
+  const windSpeedKmh = getDetail('windSpeedKmh', 'wind_speed_kmh');
+  if (typeof windSpeedKmh === 'number') {
     formatted.push({
       label: 'Velocidade do Vento',
-      value: `${details.wind_speed_kmh.toFixed(1)} km/h`,
+      value: `${windSpeedKmh.toFixed(1)} km/h`,
     });
   }
 
-  if (details.temperature_c !== undefined) {
+  const temperatureC = getDetail('temperatureC', 'temperature_c');
+  if (typeof temperatureC === 'number') {
     formatted.push({
       label: 'Temperatura',
-      value: `${details.temperature_c.toFixed(1)}°C`,
+      value: `${temperatureC.toFixed(1)}°C`,
     });
   }
 
-  if (details.variation_c !== undefined) {
+  const variationC = getDetail('variationC', 'variation_c');
+  if (typeof variationC === 'number') {
     formatted.push({
       label: 'Variação de Temperatura',
-      value: `${details.variation_c > 0 ? '+' : ''}${details.variation_c.toFixed(1)}°C`,
+      value: `${variationC > 0 ? '+' : ''}${variationC.toFixed(1)}°C`,
     });
   }
 
-  if (details.days_between !== undefined) {
+  const daysBetween = getDetail('daysBetween', 'days_between');
+  if (typeof daysBetween === 'number') {
     formatted.push({
       label: 'Período',
-      value: `${details.days_between} ${details.days_between === 1 ? 'dia' : 'dias'}`,
+      value: `${daysBetween} ${daysBetween === 1 ? 'dia' : 'dias'}`,
     });
   }
 
-  if (details.probability_percent !== undefined) {
+  const probabilityPercent = getDetail('probabilityPercent', 'probability_percent') 
+    ?? getDetail('rainProbability');
+  if (typeof probabilityPercent === 'number') {
     formatted.push({
       label: 'Probabilidade',
-      value: `${details.probability_percent.toFixed(0)}%`,
+      value: `${probabilityPercent.toFixed(0)}%`,
     });
   }
 
-  if (details.weather_code !== undefined) {
+  const weatherCode = getDetail('weatherCode', 'weather_code');
+  if (weatherCode !== undefined) {
     formatted.push({
       label: 'Código Meteorológico',
-      value: details.weather_code.toString(),
+      value: weatherCode.toString(),
     });
   }
 
-  if (details.day_1_date && details.day_2_date) {
+  const day1Date = getDetail('day1Date', 'day_1_date');
+  const day2Date = getDetail('day2Date', 'day_2_date');
+  if (day1Date && day2Date) {
     // Adicionar 'T00:00:00' para forçar interpretação como data local, não UTC
-    const date1 = new Date(details.day_1_date + 'T00:00:00');
-    const date2 = new Date(details.day_2_date + 'T00:00:00');
+    const date1 = new Date(day1Date + 'T00:00:00');
+    const date2 = new Date(day2Date + 'T00:00:00');
     formatted.push({
       label: 'Período da Variação',
       value: `${date1.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })} → ${date2.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })}`,
     });
   }
 
-  if (details.day_1_max_c !== undefined) {
+  const day1MaxC = getDetail('day1MaxC', 'day_1_max_c');
+  if (typeof day1MaxC === 'number') {
     formatted.push({
       label: 'Temperatura Inicial',
-      value: `${details.day_1_max_c.toFixed(1)}°C`,
+      value: `${day1MaxC.toFixed(1)}°C`,
     });
   }
 
-  if (details.day_2_max_c !== undefined) {
+  const day2MaxC = getDetail('day2MaxC', 'day_2_max_c');
+  if (typeof day2MaxC === 'number') {
     formatted.push({
       label: 'Temperatura Final',
-      value: `${details.day_2_max_c.toFixed(1)}°C`,
+      value: `${day2MaxC.toFixed(1)}°C`,
     });
   }
 

@@ -68,6 +68,7 @@ const sortedAlerts = computed(() => {
     
     // Chuvas (prioridade 2)
     'HEAVY_RAIN': 2,
+    'HEAVY_RAIN_DAY': 2,
     'MODERATE_RAIN': 2,
     'LIGHT_RAIN': 2,
     'DRIZZLE': 2,
@@ -195,6 +196,11 @@ const ALERT_CONFIG: Record<string, { label: string; description: string; icon: s
     description: 'Chuva intensa esperada',
     icon: '⛈️'
   },
+  HEAVY_RAIN_DAY: {
+    label: 'Chuva Forte (dia)',
+    description: 'Acumulado alto previsto para o dia',
+    icon: '🌧️'
+  },
   RAIN_EXPECTED: { 
     label: 'Chuva Prevista', 
     description: 'Alta probabilidade de chuva',
@@ -279,4 +285,3 @@ const formatAlertTime = (timestamp: string): string => {
   });
 };
 </script>
-
