@@ -223,14 +223,12 @@ const statusText = computed(() => {
   background: linear-gradient(
     to right,
     #fde047 0%,
-    #fbbf24 10%,
-    #fcd34d 20%,
-    #fb923c 30%,
-    #f97316 45%,
-    #ea580c 60%,
-    #c026d3 73%,
-    #7c3aed 84%,
-    #4c1d95 92%,
+    #fbbf24 20%,
+    #fcd34d 40%,
+    #fb923c 60%,
+    #f97316 75%,
+    #ea580c 85%,
+    #4c1d95 95%,
     #1e3a8a 97%,
     #0f172a 100%
   );
