@@ -56,7 +56,19 @@ const emit = defineEmits<{
   alertClicked: [alert: WeatherAlert];
 }>();
 
-// Ordenar alertas por categoria/tipo, depois por timestamp e severidade
+const getDayStart = (timestamp: string): number => {
+  const date = new Date(timestamp);
+  const time = date.getTime();
+  if (Number.isNaN(time)) return Number.MAX_SAFE_INTEGER;
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+};
+
+const getTimestampValue = (timestamp: string): number => {
+  const time = new Date(timestamp).getTime();
+  return Number.isNaN(time) ? Number.MAX_SAFE_INTEGER : time;
+};
+
+// Ordenar alertas por dia, mantendo prioridade por categoria/tipo, timestamp e severidade
 const sortedAlerts = computed(() => {
   if (!props.alerts || props.alerts.length === 0) return [];
   
@@ -103,6 +115,13 @@ const sortedAlerts = computed(() => {
   };
   
   return [...props.alerts].sort((a, b) => {
+    // Primeira ordenação: dia (garante cronologia dia 1, dia 2, etc.)
+    const dayA = getDayStart(a.timestamp);
+    const dayB = getDayStart(b.timestamp);
+    if (dayA !== dayB) {
+      return dayA - dayB;
+    }
+
     // Primeiro: ordenar por categoria
     const catA = alertCategory[a.code] || 99;
     const catB = alertCategory[b.code] || 99;
@@ -110,9 +129,9 @@ const sortedAlerts = computed(() => {
       return catA - catB;
     }
     
-    // Segundo: ordenar por timestamp (mais próximos primeiro)
-    const dateA = new Date(a.timestamp).getTime();
-    const dateB = new Date(b.timestamp).getTime();
+    // Segundo: ordenar por timestamp (mais próximos primeiro) dentro do mesmo dia/categoria
+    const dateA = getTimestampValue(a.timestamp);
+    const dateB = getTimestampValue(b.timestamp);
     if (dateA !== dateB) {
       return dateA - dateB;
     }
