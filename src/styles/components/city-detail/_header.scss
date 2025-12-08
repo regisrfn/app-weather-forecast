@@ -250,6 +250,74 @@
   }
 }
 
+[data-theme="dark"] {
+  .inline-search-box {
+    background: var(--weather-surface);
+    border-color: var(--weather-border);
+    box-shadow: 0 8px 24px var(--weather-shadow-md);
+  }
+
+  .inline-search-input {
+    color: var(--weather-text-primary);
+
+    &::placeholder {
+      color: var(--weather-text-muted);
+    }
+  }
+
+  .inline-clear-btn {
+    color: var(--weather-text-secondary);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--weather-text-primary);
+    }
+  }
+
+  .search-dropdown {
+    background: var(--weather-surface-card);
+    border-color: var(--weather-border);
+    box-shadow: 0 12px 40px var(--weather-shadow-lg);
+  }
+
+  .dropdown-item {
+    border-bottom: 1px solid var(--weather-border-light);
+
+    svg {
+      color: var(--weather-text-muted);
+    }
+
+    &:hover {
+      background: linear-gradient(135deg,
+        rgba(90, 111, 168, 0.14) 0%,
+        rgba(67, 56, 202, 0.12) 100%
+      );
+
+      svg {
+        color: var(--weather-primary);
+      }
+
+      .dropdown-city-name {
+        color: var(--weather-primary);
+      }
+    }
+  }
+
+  .dropdown-city-name {
+    color: var(--weather-text-primary);
+  }
+
+  .dropdown-city-state {
+    color: var(--weather-text-muted);
+  }
+
+  .search-dropdown-empty {
+    background: var(--weather-surface-card);
+    border-color: var(--weather-border);
+    color: var(--weather-text-muted);
+  }
+}
+
 .search-dropdown {
   position: absolute;
   top: calc(100% + $spacing-sm);
