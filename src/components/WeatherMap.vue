@@ -653,7 +653,7 @@ const selectCity = (city: {id: string, name: string, state: string, latitude: nu
   updateMapCenter();
   updateRadiusCircle();
   selectedLayer = null;
-  loadRegionalData();
+  loadRegionalData({ preferredCityId: centerCityId.value });
 };
 
 const selectFirstCity = () => {
@@ -755,9 +755,10 @@ const updateRadiusCircle = () => {
   }).addTo(map);
 };
 
-const loadRegionalData = async () => {
+const loadRegionalData = async (options: { preferredCityId?: string } = {}) => {
   // Ativar loading imediatamente (delay visual é feito via CSS)
   isLoading.value = true;
+  const desiredCityId = options.preferredCityId ?? selectedCity.value?.cityId;
   
   try {
     // 1. Buscar cidades vizinhas do backend (ou mock)
@@ -776,10 +777,16 @@ const loadRegionalData = async () => {
     // 3. Renderizar malhas no mapa
     await renderCityMeshes(allCities, weatherData);
     
-    // 4. Selecionar cidade central por padrão
-    const centerData = weatherData.find((d: WeatherData) => d.cityId === centerCityId.value);
-    if (centerData) {
-      selectedCity.value = centerData;
+    // 4. Preservar cidade selecionada quando possível
+    const preferredData = desiredCityId 
+      ? weatherData.find((d: WeatherData) => d.cityId === desiredCityId) 
+      : null;
+    const centerData = weatherData.find((d: WeatherData) => d.cityId === centerCityId.value) || null;
+    const fallbackData = weatherData[0] || null;
+
+    selectedCity.value = preferredData || centerData || fallbackData || null;
+
+    if (selectedCity.value) {
       await updateForecastSlots();
     }
   } catch (error) {
