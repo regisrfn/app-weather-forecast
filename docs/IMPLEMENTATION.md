@@ -82,7 +82,7 @@ src/
 │   ├── apiService.ts        # API cliente
 │   ├── cacheService.ts      # Cache
 │   ├── ibgeService.ts       # Municípios
-│   └── mockService.ts       # Dados mock
+│   └── mockService.ts       # Respostas estáticas para desenvolvimento local
 ├── types/
 │   └── weather.ts           # Tipos TypeScript
 ├── utils/

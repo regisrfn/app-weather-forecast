@@ -36,8 +36,8 @@
       <div class="content-grid two">
         <article class="content-card">
           <h3>Fontes</h3>
-          <p>Usamos dados públicos e camadas abertas (OpenStreetMap e IBGE para malhas municipais). Na versão de demonstração os dados são simulados.</p>
-          <p>Quando conectados a um backend real, exibimos a origem e horário de coleta para garantir transparência.</p>
+          <p>Usamos dados meteorológicos reais fornecidos além de camadas abertas (OpenStreetMap e IBGE para malhas municipais).</p>
+          <p>Indicamos a origem e o horário de coleta para manter transparência e rastreabilidade.</p>
         </article>
         <article class="content-card">
           <h3>Limitações</h3>

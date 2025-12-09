@@ -29,7 +29,7 @@
 
     <section class="content-section">
       <h2>3. Conteúdo e precisão</h2>
-      <p>As previsões podem conter imprecisões. Na versão de demonstração, os dados são simulados. Em produção, as fontes serão informadas. Não garantimos adequação para atividades críticas (aviação, operações médicas, emergências).</p>
+      <p>As previsões podem conter imprecisões. Exibimos dados reais com indicação de horário/fonte. Não garantimos adequação para atividades críticas (aviação, operações médicas, emergências).</p>
     </section>
 
     <section class="content-section">

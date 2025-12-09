@@ -34,7 +34,7 @@ O Weather Forecast App é uma aplicação web moderna que exibe previsões meteo
 - 🧭 **Bússola de Vento**: Direção e velocidade do vento em tempo real
 - 🎨 **UI Moderna**: Interface responsiva com design glassmorphism
 - ⚡ **Performance**: Cache inteligente e otimizações
-- 🌐 **100% Frontend**: Funciona com dados mock (backend opcional)
+- 🌐 **100% Frontend**: SPA em Vue consumindo backend meteorológico
 
 ## ✨ Funcionalidades
 
@@ -65,8 +65,6 @@ O Weather Forecast App é uma aplicação web moderna que exibe previsões meteo
 ## 🚀 Demo
 
 **URL de Produção:** [https://vemchuvabrasil.com](https://vemchuvabrasil.com)
-
-> 💡 **Nota**: Aplicação configurada com dados mock para demonstração. Para conectar a um backend real, configure a variável `VITE_API_BASE_URL`.
 
 ### Funcionalidades Online
 
@@ -133,7 +131,7 @@ cp .env.production.example .env.development.local
 
 Edite o arquivo `.env.development.local`:
 ```env
-# Modo de desenvolvimento - usa dados mockados
+# Modo de desenvolvimento (opcional)
 VITE_USE_MOCK=true
 
 # URL da API backend (quando disponível)
@@ -216,7 +214,7 @@ app-weather-forecast/
 │   │   ├── apiService.ts    # Cliente da API
 │   │   ├── cacheService.ts  # Sistema de cache
 │   │   ├── ibgeService.ts   # Serviço de municípios
-│   │   └── mockService.ts   # Dados mock
+│   │   └── mockService.ts   # Respostas estáticas para desenvolvimento
 │   ├── styles/              # Estilos globais (Sass)
 │   │   ├── abstracts/       # Variáveis, mixins, funções
 │   │   ├── base/            # Reset, tipografia
@@ -252,7 +250,7 @@ npm run type-check   # Verifica erros de TypeScript
 
 | Variável | Descrição | Padrão | Obrigatória |
 |----------|-----------|--------|-------------|
-| `VITE_USE_MOCK` | Usa dados mockados | `true` | Não |
+| `VITE_USE_MOCK` | Ativa modo mock (apenas desenvolvimento local) | `true` | Não (defina `false` em produção) |
 | `VITE_API_BASE_URL` | URL base da API backend | - | Sim (se USE_MOCK=false) |
 
 ## 🤝 Contribuindo
@@ -277,4 +275,3 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 ---
 
 ⭐ Se este projeto foi útil, considere dar uma estrela!
-

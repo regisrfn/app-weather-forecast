@@ -79,16 +79,12 @@ Install Command: npm install
 
 **Não precisa alterar nada!** A configuração padrão já está correta.
 
-#### Passo 3: Configurar Variáveis de Ambiente (Opcional)
-
-Se estiver usando backend real:
+#### Passo 3: Configurar Variáveis de Ambiente
 
 1. Click em "Environment Variables"
 2. Adicione:
    - `VITE_USE_MOCK`: `false`
    - `VITE_API_BASE_URL`: URL da sua API
-
-Para modo mock (padrão), não precisa adicionar nada.
 
 #### Passo 4: Deploy
 
@@ -192,7 +188,7 @@ vercel env add VITE_USE_MOCK
 
 | Variável | Descrição | Padrão | Ambiente |
 |----------|-----------|--------|----------|
-| `VITE_USE_MOCK` | Usar dados mockados | `true` | Production |
+| `VITE_USE_MOCK` | Ativar modo mock (apenas desenvolvimento) | `true` (defina `false` em produção) | Production |
 | `VITE_API_BASE_URL` | URL da API backend | - | Production |
 
 ### Importante sobre Variáveis Vite

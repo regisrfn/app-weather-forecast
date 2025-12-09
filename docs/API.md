@@ -17,22 +17,19 @@ Documentação da integração com a API backend do Weather Forecast App.
 
 O frontend pode operar em dois modos:
 
-### Modo Mock (Padrão)
+### Produção (dados reais)
+```env
+VITE_USE_MOCK=false
+VITE_API_BASE_URL=https://api.exemplo.com
+```
+- Consome API REST real (dados meteorológicos em produção)
+- Requer backend implementado
+
+### Desenvolvimento (mock opcional)
 ```env
 VITE_USE_MOCK=true
 ```
-- Usa dados simulados do `mockService.ts`
-- Ideal para desenvolvimento e demos
-- Não requer backend
-
-### Modo Produção
-```env
-VITE_USE_MOCK=false
-VITE_API_BASE_URL=https://api.example.com
-```
-- Consome API REST real
-- Requer backend implementado
-- Dados reais de previsão do tempo
+- Gera respostas estáticas via `mockService.ts` para testes locais/offline
 
 ## 🔐 Autenticação
 

@@ -227,7 +227,7 @@ const maxTemp = Math.max(...temps);
 - **Descrição**: Texto explicativo do alerta
 - **Múltiplos**: Suporta vários alertas simultâneos
 
-> **Nota**: Alertas dependem de dados do backend. Em modo mock, não são exibidos.
+> **Nota**: Alertas dependem de dados fornecidos pelo backend; se o backend não retornar alertas, nada é exibido.
 
 ## 💾 Sistema de Cache
 

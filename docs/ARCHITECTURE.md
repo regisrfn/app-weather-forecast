@@ -78,7 +78,7 @@ O Weather Forecast App segue uma arquitetura em camadas, separando responsabilid
 - `apiService.ts`: Cliente HTTP para backend
 - `cacheService.ts`: Gerenciamento de cache
 - `ibgeService.ts`: Database de municípios
-- `mockService.ts`: Dados simulados
+- `mockService.ts`: Utilitário de respostas estáticas para desenvolvimento local
 
 **Características**:
 - Interfaces TypeScript bem definidas
@@ -92,8 +92,8 @@ O Weather Forecast App segue uma arquitetura em camadas, separando responsabilid
 
 **Fontes**:
 - **LocalForage**: Cache persistente (IndexedDB)
-- **Backend API**: Dados reais (quando disponível)
-- **Mock Data**: Dados simulados para desenvolvimento
+- **Backend API**: Dados reais (produção)
+- **Mock Data**: Respostas estáticas apenas para desenvolvimento
 - **IBGE JSON**: Database estático de municípios
 
 ## 🔄 Fluxo de Dados
@@ -335,13 +335,12 @@ interface IIBGEService {
 
 ### mockService.ts
 
-**Responsabilidade**: Geração de dados simulados
+**Responsabilidade**: Respostas estáticas para desenvolvimento local
 
 **Features**:
-- Dados realistas baseados em padrões
-- Variação temporal (dia/noite)
-- Condições climáticas variadas
-- Consistência entre requisições
+- Geração de payloads coerentes para testes
+- Variação temporal (dia/noite) e condições climáticas variadas
+- Consistência entre requisições para facilitar depuração
 
 ## 💾 Sistema de Cache
 
@@ -470,7 +469,7 @@ Razão: Aplicação relativamente simples, não necessita state management compl
 
 ### Pontos de Extensão
 
-1. **Backend API**: Trocar mock por API real
+1. **Backend/API**: Endurecer rate limiting, observabilidade e redundância
 2. **State Management**: Adicionar Pinia se necessário
 3. **Testes**: Vitest + Testing Library
 4. **CI/CD**: GitHub Actions
@@ -480,7 +479,7 @@ Razão: Aplicação relativamente simples, não necessita state management compl
 ### Limitações Atuais
 
 - Sem autenticação/autorização
-- Sem backend real
+- Dependência de API externa (precisa hardening)
 - Sem testes automatizados
 - Sem i18n (internacionalização)
 - Brasil apenas (limitação IBGE)
