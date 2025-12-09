@@ -840,7 +840,19 @@ const updateForecastScrollButtons = () => {
  * Volta para a página anterior
  */
 const goBack = () => {
-  router.back();
+  const historyState = router.options.history.state as { back?: string | null } | undefined;
+  const hasPreviousRoute = Boolean(historyState?.back);
+  const cityId = route.params.cityId as string | undefined;
+
+  if (hasPreviousRoute) {
+    router.back();
+  } else {
+    const homeQuery = cityId ? { city: cityId } : undefined;
+    router.push({ 
+      name: 'home',
+      ...(homeQuery ? { query: homeQuery } : {})
+    });
+  }
 };
 
 /**
