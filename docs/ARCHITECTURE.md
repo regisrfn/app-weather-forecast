@@ -78,7 +78,6 @@ O Weather Forecast App segue uma arquitetura em camadas, separando responsabilid
 - `apiService.ts`: Cliente HTTP para backend
 - `cacheService.ts`: Gerenciamento de cache
 - `ibgeService.ts`: Database de municípios
-- `mockService.ts`: Utilitário de respostas estáticas para desenvolvimento local
 
 **Características**:
 - Interfaces TypeScript bem definidas
@@ -93,7 +92,6 @@ O Weather Forecast App segue uma arquitetura em camadas, separando responsabilid
 **Fontes**:
 - **LocalForage**: Cache persistente (IndexedDB)
 - **Backend API**: Dados reais (produção)
-- **Mock Data**: Respostas estáticas apenas para desenvolvimento
 - **IBGE JSON**: Database estático de municípios
 
 ## 🔄 Fluxo de Dados
@@ -332,15 +330,6 @@ interface IIBGEService {
 - Carregamento único (singleton)
 - Busca indexada por ID
 - Cálculo de distância otimizado
-
-### mockService.ts
-
-**Responsabilidade**: Respostas estáticas para desenvolvimento local
-
-**Features**:
-- Geração de payloads coerentes para testes
-- Variação temporal (dia/noite) e condições climáticas variadas
-- Consistência entre requisições para facilitar depuração
 
 ## 💾 Sistema de Cache
 

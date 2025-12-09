@@ -83,7 +83,6 @@ REQUIRED_VARS=(
     "AWS_REGION"
     "S3_BUCKET"
     "CF_DISTRIBUTION_ID"
-    "VITE_USE_MOCK"
     "VITE_API_BASE_URL"
 )
 
@@ -125,7 +124,6 @@ echo "  - Ambiente: ${ENVIRONMENT}"
 echo "  - AWS Region: ${AWS_REGION}"
 echo "  - S3 Bucket: ${S3_BUCKET}"
 echo "  - CloudFront ID: ${CF_DISTRIBUTION_ID}"
-echo "  - API Mode: ${VITE_USE_MOCK}"
 echo "  - API URL: ${VITE_API_BASE_URL}"
 
 # ==============================================================================
@@ -186,7 +184,6 @@ log_success "Dependências instaladas"
 log_info "Executando build da aplicação..."
 
 # Exportar variáveis para o build
-export VITE_USE_MOCK
 export VITE_API_BASE_URL
 export VITE_DATADOG_APPLICATION_ID
 export VITE_DATADOG_CLIENT_TOKEN

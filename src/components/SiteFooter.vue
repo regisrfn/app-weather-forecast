@@ -37,7 +37,6 @@ const currentYear = new Date().getFullYear()
     <div class="footer-meta">
       <span>© {{ currentYear }} VemChuva Brasil</span>
       <span class="meta-separator">•</span>
-      <span>Dados meteorológicos simulados para demonstração. Consulte fontes oficiais em caso de emergência.</span>
     </div>
   </footer>
 </template>

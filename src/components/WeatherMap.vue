@@ -402,11 +402,11 @@ import { useRoute, useRouter } from 'vue-router';
 import { APP_CONFIG } from '../config/app';
 import { getNeighborCities, getRegionalWeather } from '../services/apiService';
 import { getMultipleMunicipalityMeshes } from '../services/ibgeService';
-import { getCloudsDescription, getRainfallColor, getRainfallDescription, type WeatherData } from '../services/mockService';
+import { getCloudsDescription, getRainfallColor, getRainfallDescription } from '../utils/weather';
 import DayCarousel from './DayCarousel.vue';
 import WeatherAlerts from './WeatherAlerts.vue';
 import AlertDetailPanel from './AlertDetailPanel.vue';
-import type { WeatherAlert } from '../types/weather';
+import type { WeatherAlert, WeatherData } from '../types/weather';
 import { componentLogger } from '../utils/logger';
 import { useTheme } from '../composables/useTheme';
 
@@ -761,14 +761,14 @@ const loadRegionalData = async (options: { preferredCityId?: string } = {}) => {
   const desiredCityId = options.preferredCityId ?? selectedCity.value?.cityId;
   
   try {
-    // 1. Buscar cidades vizinhas do backend (ou mock)
+    // 1. Buscar cidades vizinhas do backend
     const response = await getNeighborCities(centerCityId.value, searchRadius.value);
     
     // Incluir a cidade centro na lista
     const allCities = [response.centerCity, ...response.neighbors];
     const cityIds = allCities.map(c => c.id);
     
-    // 2. Buscar dados climáticos do backend (ou mock) com cache
+    // 2. Buscar dados climáticos do backend com cache
     // SEMPRE passa data e hora (inicializadas com horário Brasil correto)
     const weatherData = await getRegionalWeather(cityIds, forecastDate.value, forecastTime.value);
     

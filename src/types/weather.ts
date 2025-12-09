@@ -32,6 +32,18 @@ export interface RainfallData {
   tempMax?: number; // Temperatura máxima (°C)
 }
 
+// Dados meteorológicos agregados consumidos pelo mapa
+export interface WeatherData extends RainfallData {
+  timestamp: string; // Backend retorna ISO string
+  rainfallProbability?: number; // Probabilidade de chuva (0-100%)
+  rainVolumeHour?: number; // Volume de chuva em mm/h
+  dailyRainAccumulation?: number; // Acumulado de chuva do dia (mm)
+  feelsLike?: number;
+  pressure?: number;
+  visibility?: number;
+  description?: string;
+}
+
 // Tipos para resposta detalhada da API
 export interface CityInfo {
   cityId: string;
@@ -105,4 +117,24 @@ export interface DetailedWeatherResponse {
   currentWeather: CurrentWeather;
   dailyForecasts: DailyForecast[];
   hourlyForecasts: HourlyForecast[];
+}
+
+export interface NeighborCity {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  distance: number;
+}
+
+export interface CenterCityInfo {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+}
+
+export interface NeighborCitiesResponse {
+  centerCity: CenterCityInfo;
+  neighbors: NeighborCity[];
 }

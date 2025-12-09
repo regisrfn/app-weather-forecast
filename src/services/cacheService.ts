@@ -9,8 +9,7 @@
  */
 
 import localforage from 'localforage';
-import type { WeatherData } from './mockService';
-import type { DetailedWeatherResponse } from '../types/weather';
+import type { DetailedWeatherResponse, WeatherData } from '../types/weather';
 import { cacheLogger } from '../utils/logger';
 
 interface CacheEntry {
@@ -454,4 +453,3 @@ class WeatherCache {
 
 // Singleton: exportar uma única instância
 export const weatherCache = new WeatherCache();
-

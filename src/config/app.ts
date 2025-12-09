@@ -11,14 +11,8 @@ export const APP_CONFIG = {
 
   /**
    * URL base da API backend
-   * Usar mock enquanto backend não estiver implementado
    */
   API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
-
-  /**
-   * Modo de desenvolvimento - usa dados mockados
-   */
-  USE_MOCK: import.meta.env.VITE_USE_MOCK !== 'false',
 
   /**
    * Configurações do mapa

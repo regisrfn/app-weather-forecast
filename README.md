@@ -131,10 +131,7 @@ cp .env.production.example .env.development.local
 
 Edite o arquivo `.env.development.local`:
 ```env
-# Modo de desenvolvimento (opcional)
-VITE_USE_MOCK=true
-
-# URL da API backend (quando disponível)
+# URL da API backend (obrigatório para desenvolvimento local)
 VITE_API_BASE_URL=http://localhost:3000
 
 # Datadog RUM (opcional para desenvolvimento)
@@ -213,8 +210,7 @@ app-weather-forecast/
 │   ├── services/            # Camada de serviços
 │   │   ├── apiService.ts    # Cliente da API
 │   │   ├── cacheService.ts  # Sistema de cache
-│   │   ├── ibgeService.ts   # Serviço de municípios
-│   │   └── mockService.ts   # Respostas estáticas para desenvolvimento
+│   │   └── ibgeService.ts   # Serviço de municípios
 │   ├── styles/              # Estilos globais (Sass)
 │   │   ├── abstracts/       # Variáveis, mixins, funções
 │   │   ├── base/            # Reset, tipografia
@@ -222,7 +218,8 @@ app-weather-forecast/
 │   ├── types/
 │   │   └── weather.ts       # TypeScript interfaces
 │   ├── utils/
-│   │   └── array.ts         # Funções utilitárias
+│   │   ├── array.ts         # Funções utilitárias
+│   │   └── weather.ts       # Descrições e cores de clima
 │   ├── App.vue              # Componente raiz
 │   └── main.ts              # Entry point
 ├── docs/                    # Documentação
@@ -250,8 +247,10 @@ npm run type-check   # Verifica erros de TypeScript
 
 | Variável | Descrição | Padrão | Obrigatória |
 |----------|-----------|--------|-------------|
-| `VITE_USE_MOCK` | Ativa modo mock (apenas desenvolvimento local) | `true` | Não (defina `false` em produção) |
-| `VITE_API_BASE_URL` | URL base da API backend | - | Sim (se USE_MOCK=false) |
+| `VITE_API_BASE_URL` | URL base da API backend | - | Sim |
+| `VITE_DATADOG_APPLICATION_ID` | Application ID do Datadog RUM (opcional) | - | Não |
+| `VITE_DATADOG_CLIENT_TOKEN` | Client token do Datadog RUM (opcional) | - | Não |
+| `VITE_ENVIRONMENT` | Nome do ambiente usado em logs/RUM | `development` | Não |
 
 ## 🤝 Contribuindo
 

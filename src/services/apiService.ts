@@ -1,24 +1,10 @@
-/**
- * API Service - Comunicação com o backend
- * 
- * Este serviço centraliza todas as chamadas para o backend
- * Usa dados mockados quando USE_MOCK=true
- */
-
 import axios from 'axios';
 import { APP_CONFIG } from '../config/app';
-import {
-  getMockNeighborCities,
-  getMockWeatherData,
-  getMockRegionalWeather,
-  type NeighborCitiesResponse,
-  type WeatherData,
-} from './mockService';
 import { weatherCache } from './cacheService';
 import { chunkArray } from '../utils/array';
 import { apiLogger } from '../utils/logger';
 import { getSessionId } from '../utils/session';
-import type { DetailedWeatherResponse } from '../types/weather';
+import type { DetailedWeatherResponse, NeighborCitiesResponse, WeatherData } from '../types/weather';
 import localforage from 'localforage';
 
 const api = axios.create({
@@ -45,12 +31,6 @@ export async function getNeighborCities(
   centerCityId: string,
   radius: number = APP_CONFIG.RADIUS.DEFAULT
 ): Promise<NeighborCitiesResponse> {
-  if (APP_CONFIG.USE_MOCK) {
-    // Simular delay de rede
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    return getMockNeighborCities(centerCityId, radius);
-  }
-
   const response = await api.get<NeighborCitiesResponse>(
     `/api/cities/neighbors/${centerCityId}`,
     {
@@ -66,11 +46,6 @@ export async function getNeighborCities(
  * Backend: GET /api/weather/city/:cityId
  */
 export async function getCityWeather(cityId: string): Promise<WeatherData> {
-  if (APP_CONFIG.USE_MOCK) {
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    return getMockWeatherData(cityId);
-  }
-
   const response = await api.get<WeatherData>(`/api/weather/city/${cityId}`);
   return response.data;
 }
@@ -83,19 +58,14 @@ async function fetchWeatherChunk(
   date: string,
   time: string
 ): Promise<WeatherData[]> {
-  if (APP_CONFIG.USE_MOCK) {
-    await new Promise((resolve) => setTimeout(resolve, 400));
-    return getMockRegionalWeather(cityIds);
-  } else {
-    const response = await api.post<WeatherData[]>(
-      '/api/weather/regional',
-      { cityIds },
-      {
-        params: { date, time }
-      }
-    );
-    return response.data;
-  }
+  const response = await api.post<WeatherData[]>(
+    '/api/weather/regional',
+    { cityIds },
+    {
+      params: { date, time }
+    }
+  );
+  return response.data;
 }
 
 /**

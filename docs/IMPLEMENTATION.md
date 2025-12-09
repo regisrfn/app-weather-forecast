@@ -81,12 +81,12 @@ src/
 ├── services/
 │   ├── apiService.ts        # API cliente
 │   ├── cacheService.ts      # Cache
-│   ├── ibgeService.ts       # Municípios
-│   └── mockService.ts       # Respostas estáticas para desenvolvimento local
+│   └── ibgeService.ts       # Municípios
 ├── types/
 │   └── weather.ts           # Tipos TypeScript
 ├── utils/
-│   └── array.ts             # Utilitários
+│   ├── array.ts             # Utilitários
+│   └── weather.ts           # Cores e descrições climáticas
 ├── config/
 │   └── app.ts               # Configurações
 └── styles/

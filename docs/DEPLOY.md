@@ -83,8 +83,8 @@ Install Command: npm install
 
 1. Click em "Environment Variables"
 2. Adicione:
-   - `VITE_USE_MOCK`: `false`
-   - `VITE_API_BASE_URL`: URL da sua API
+   - `VITE_API_BASE_URL`: URL da sua API (obrigatório)
+   - `VITE_DATADOG_APPLICATION_ID` e `VITE_DATADOG_CLIENT_TOKEN`: apenas se usar Datadog RUM
 
 #### Passo 4: Deploy
 
@@ -177,10 +177,10 @@ O arquivo `vercel.json` já está configurado:
 ### Configuração via CLI
 
 ```bash
-vercel env add VITE_USE_MOCK
+vercel env add VITE_API_BASE_URL
 
 # Escolha o ambiente:
-# ? What's the value? false
+# ? What's the value? https://sua-api.com
 # ? Add to environment: Production
 ```
 
@@ -188,8 +188,10 @@ vercel env add VITE_USE_MOCK
 
 | Variável | Descrição | Padrão | Ambiente |
 |----------|-----------|--------|----------|
-| `VITE_USE_MOCK` | Ativar modo mock (apenas desenvolvimento) | `true` (defina `false` em produção) | Production |
 | `VITE_API_BASE_URL` | URL da API backend | - | Production |
+| `VITE_DATADOG_APPLICATION_ID` | Application ID do Datadog RUM (opcional) | - | Production / Preview |
+| `VITE_DATADOG_CLIENT_TOKEN` | Client token do Datadog RUM (opcional) | - | Production / Preview |
+| `VITE_ENVIRONMENT` | Nome do ambiente para logs/RUM | `production` | Production |
 
 ### Importante sobre Variáveis Vite
 

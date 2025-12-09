@@ -151,7 +151,6 @@ S3_BUCKET=  # Obter do Terraform output
 CF_DISTRIBUTION_ID=  # Obter do Terraform output
 
 # Application
-VITE_USE_MOCK=false
 VITE_API_BASE_URL=https://api.vemchuvabrasil.com
 
 # Datadog
@@ -284,7 +283,7 @@ https://d1234567890abc.cloudfront.net
 - [ ] Assets carregam (CSS, JS, images)
 - [ ] Arquivo `municipalities_db.json` carrega
 - [ ] Mapa Leaflet renderiza
-- [ ] API está funcionando (se `VITE_USE_MOCK=false`)
+- [ ] API está respondendo (endpoint backend disponível)
 - [ ] Console do navegador sem erros
 - [ ] Datadog RUM está rastreando (verifique no painel Datadog)
 
@@ -629,7 +628,6 @@ jobs:
         env:
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
           CF_DISTRIBUTION_ID: ${{ secrets.CF_DISTRIBUTION_ID }}
-          VITE_USE_MOCK: ${{ secrets.VITE_USE_MOCK }}
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
           VITE_DATADOG_APPLICATION_ID: ${{ secrets.VITE_DATADOG_APPLICATION_ID }}
           VITE_DATADOG_CLIENT_TOKEN: ${{ secrets.VITE_DATADOG_CLIENT_TOKEN }}
