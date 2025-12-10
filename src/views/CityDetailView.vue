@@ -402,7 +402,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick, watch, computed } from 'vue';
+import { ref, onMounted, nextTick, watch, computed, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { getCityWeatherDetailed } from '../services/apiService';
@@ -466,6 +466,10 @@ const isSearchActive = ref(false);
 const showHourlyModal = ref(false);
 const showWeatherModal = ref(false);
 const headerScrolled = ref(false);
+
+const updateHeaderScroll = () => {
+  headerScrolled.value = window.scrollY > 20;
+};
 
 // Computed para calcular quantas horas serão exibidas no gráfico
 const displayedHoursCount = computed(() => {
@@ -936,19 +940,12 @@ onMounted(() => {
     updateForecastScrollButtons();
   }
   
-  // Scroll handler for header glassmorphism effect
-  const handleScroll = (e: Event) => {
-    const target = e.target as HTMLElement;
-    headerScrolled.value = target.scrollTop > 20;
-  };
-  
-  // Find scrollable container and add listener
-  setTimeout(() => {
-    const scrollContainer = document.querySelector('.page-content');
-    if (scrollContainer) {
-      scrollContainer.addEventListener('scroll', handleScroll);
-    }
-  }, 100);
+  updateHeaderScroll();
+  window.addEventListener('scroll', updateHeaderScroll, { passive: true });
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', updateHeaderScroll);
 });
 
 // Watch para mudanças na rota (quando navega para outra cidade)

@@ -102,15 +102,15 @@
   }
 
   @include md {
-    position: fixed; // Fixo na tela para melhor controle
-    top: auto;
+    position: absolute; // Segue o fluxo da página no mobile, evitando conflito com o footer
     bottom: 0;
     left: 0;
     right: 0;
     width: 100%;
     max-width: 100%;
     max-height: 70vh; // Limite de 70% da altura da viewport
-    border-radius: 0 0 0 0; // sem arredondamentos
+    border-radius: $radius-lg $radius-lg 0 0;
+    padding-bottom: calc(env(safe-area-inset-bottom) + $spacing-sm);
     transform: translateY(100%);
 
     &.is-open {
