@@ -42,6 +42,15 @@ export async function getNeighborCities(
 }
 
 /**
+ * Buscar malha GeoJSON de um município (proxy IBGE)
+ * Backend: GET /api/geo/municipalities/:cityId
+ */
+export async function getMunicipalityMeshFromApi(cityId: string): Promise<GeoJSON.Feature> {
+  const response = await api.get<GeoJSON.Feature>(`/api/geo/municipalities/${cityId}`);
+  return response.data;
+}
+
+/**
  * Buscar dados climáticos de uma cidade
  * Backend: GET /api/weather/city/:cityId
  */
