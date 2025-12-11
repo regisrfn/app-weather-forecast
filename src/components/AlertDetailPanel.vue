@@ -279,61 +279,63 @@ const handleClose = () => {
 </script>
 
 <template>
-  <Transition name="alert-panel">
-    <div v-if="isOpen && alert" class="alert-detail-overlay" @click.self="handleClose">
-      <div class="alert-detail-card" :class="`severity-${alert.severity}`">
-        <!-- Header -->
-        <div class="alert-header">
-          <div class="severity-badge" :class="`severity-${alert.severity}`">
-            <div v-html="getSeverityIcon(alert.severity)"></div>
-            <span class="severity-label">
-              {{ alert.severity === 'danger' ? 'PERIGO' : 
-                 alert.severity === 'alert' ? 'ALERTA' : 
-                 alert.severity === 'warning' ? 'ATENÇÃO' : 'INFO' }}
-            </span>
-          </div>
-          <button class="close-button" @click="handleClose" aria-label="Fechar">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
-        </div>
-
-        <!-- Content -->
-        <div class="alert-detail-content">
-          <!-- Description -->
-          <div class="alert-detail-description">
-            <h2>{{ alert.description }}</h2>
-            <div class="alert-detail-meta">
-              <span class="alert-type">{{ alertLabel }}</span>
-              <button 
-                class="alert-detail-time clickable"
-                @click="handleTimestampClick"
-                title="Clique para buscar previsão neste horário"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 4px; vertical-align: middle;">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-                  <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                {{ formatTimestamp(alert.timestamp) }}
-              </button>
+  <Teleport to="body">
+    <Transition name="alert-panel">
+      <div v-if="isOpen && alert" class="alert-detail-overlay" @click.self="handleClose">
+        <div class="alert-detail-card" :class="`severity-${alert.severity}`">
+          <!-- Header -->
+          <div class="alert-header">
+            <div class="severity-badge" :class="`severity-${alert.severity}`">
+              <div v-html="getSeverityIcon(alert.severity)"></div>
+              <span class="severity-label">
+                {{ alert.severity === 'danger' ? 'PERIGO' : 
+                   alert.severity === 'alert' ? 'ALERTA' : 
+                   alert.severity === 'warning' ? 'ATENÇÃO' : 'INFO' }}
+              </span>
             </div>
+            <button class="close-button" @click="handleClose" aria-label="Fechar">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
           </div>
 
-          <!-- Technical Details -->
-          <div v-if="formatDetails.length > 0" class="technical-details">
-            <h3>Detalhes Técnicos</h3>
-            <div class="details-grid">
-              <div v-for="detail in formatDetails" :key="detail.label" class="detail-item">
-                <span class="detail-label">{{ detail.label }}</span>
-                <span class="detail-value">{{ detail.value }}</span>
+          <!-- Content -->
+          <div class="alert-detail-content">
+            <!-- Description -->
+            <div class="alert-detail-description">
+              <h2>{{ alert.description }}</h2>
+              <div class="alert-detail-meta">
+                <span class="alert-type">{{ alertLabel }}</span>
+                <button 
+                  class="alert-detail-time clickable"
+                  @click="handleTimestampClick"
+                  title="Clique para buscar previsão neste horário"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 4px; vertical-align: middle;">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                  {{ formatTimestamp(alert.timestamp) }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Technical Details -->
+            <div v-if="formatDetails.length > 0" class="technical-details">
+              <h3>Detalhes Técnicos</h3>
+              <div class="details-grid">
+                <div v-for="detail in formatDetails" :key="detail.label" class="detail-item">
+                  <span class="detail-label">{{ detail.label }}</span>
+                  <span class="detail-value">{{ detail.value }}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </Transition>
+    </Transition>
+  </Teleport>
 </template>
 
 <style scoped lang="scss">

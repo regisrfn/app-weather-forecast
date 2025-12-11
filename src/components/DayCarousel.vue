@@ -1,6 +1,7 @@
 <template>
-  <div class="day-carousel-overlay" @click.self="$emit('close')">
-    <div class="day-carousel-container">
+  <Teleport to="body">
+    <div class="day-carousel-overlay" @click.self="$emit('close')">
+      <div class="day-carousel-container">
       <div class="carousel-header">
         <h3>Selecione o dia</h3>
         <button class="close-btn" @click="$emit('close')" aria-label="Fechar">
@@ -67,7 +68,8 @@
         </button>
       </div>
     </div>
-  </div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">

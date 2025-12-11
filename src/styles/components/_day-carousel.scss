@@ -23,7 +23,7 @@
   align-items: flex-start;
   justify-content: center;
   padding-top: 80px;
-  z-index: 10000;
+  z-index: $z-modal;
   animation: fadeIn 0.2s ease;
 }
 

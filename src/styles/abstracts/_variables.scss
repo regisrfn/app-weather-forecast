@@ -72,6 +72,8 @@ $z-header: 1000;
 $z-info-panel: 1001;
 $z-dropdown: 1002;
 $z-loading: 1003;
+$z-modal: 2000; // Overlays e modais de página inteira (datepicker, buscas)
+$z-modal-strong: 2010; // Camadas que devem ficar acima de todos os modais (painéis de alerta)
 
 // Dimensões
 $header-padding: 0.875rem 1.25rem;
