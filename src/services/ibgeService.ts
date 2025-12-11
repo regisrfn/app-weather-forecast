@@ -248,7 +248,8 @@ export async function getMultipleMunicipalityMeshes(
 ): Promise<Map<string, GeoJSON.Feature>> {
   const meshMap = new Map<string, GeoJSON.Feature>();
 
-  const CONCURRENCY = 10; 
+  // Mantém batch pequeno para não estourar limite de concorrência do backend (quebra 500 do API Gateway)
+  const CONCURRENCY = 3;
   const queue = [...municipalityIds];
   const workers: Promise<void>[] = [];
 
