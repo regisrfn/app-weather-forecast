@@ -1,75 +1,98 @@
 <template>
-  <div class="weather-map-container">
-    <!-- Header Flutuante -->
-    <header class="floating-header" :class="{ 'menu-open': isMenuOpen }">
-      <div class="header-wrapper">
-        <div class="header-left">
-          <!-- Ícone SVG de nuvem com sol -->
-          <svg class="weather-icon" width="36" height="36" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Sol -->
-            <circle cx="38" cy="20" r="8" fill="#FDB813" opacity="0.9"/>
-            <line x1="38" y1="6" x2="38" y2="10" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/>
-            <line x1="52" y1="20" x2="48" y2="20" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/>
-            <line x1="46.5" y1="11.5" x2="43.5" y2="14.5" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/>
-            <line x1="46.5" y1="28.5" x2="43.5" y2="25.5" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/>
-            <!-- Nuvem -->
-            <path d="M18 32c-6 0-10 4-10 9s4 9 10 9h24c5.5 0 10-4.5 10-10 0-5-4-9-9-9-1 0-2 0-3 1-1-6-6-10-12-10-5 0-9 3-11 7-3 0-5 1-5 3z" fill="white" stroke="#E0E0E0" stroke-width="1.5"/>
-            <ellipse cx="28" cy="38" rx="10" ry="8" fill="#F5F5F5"/>
-          </svg>
-          <div class="header-title">
-            <h1>Previsão do Tempo</h1>
-            <span class="subtitle">{{ getCurrentCenterCityName() }}</span>
+  <div class="weather-shell">
+    <header class="weather-topbar">
+      <div class="topbar-left">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg width="26" height="26" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="38" cy="20" r="8" fill="currentColor" opacity="0.9" />
+              <path d="M18 32c-6 0-10 4-10 9s4 9 10 9h24c5.5 0 10-4.5 10-10 0-5-4-9-9-9-1 0-2 0-3 1-1-6-6-10-12-10-5 0-9 3-11 7-3 0-5 1-5 3z" fill="white" opacity="0.9" />
+            </svg>
           </div>
-          
-          <!-- Campo de Busca de Cidade -->
-          <div class="city-search">
-            <button class="search-toggle-btn" @click="toggleSearch" aria-label="Buscar cidade">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 21l-4.35-4.35M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-            <div v-if="isSearchOpen" class="main-search-dropdown">
-              <input
-                type="text"
-                v-model="searchQuery"
-                placeholder="Buscar cidade..."
-                @input="filterCities"
-                @keydown.enter="selectFirstCity"
-                ref="searchInput"
-                class="main-search-input"
-              />
-              <div v-if="filteredCities.length > 0" class="main-search-results">
-                <div
-                  v-for="city in filteredCities.slice(0, 10)"
-                  :key="city.id"
-                  class="main-search-result-item"
-                  @click="selectCity(city)"
-                >
-                  {{ city.name }}, {{ city.state }}
-                </div>
-              </div>
-            </div>
+          <div class="brand-text">
+            <div class="brand-title">Previsão do Tempo</div>
+            <div class="brand-subtitle">{{ getCurrentCenterCityName() }}</div>
           </div>
-          
-          <!-- Toggle Mobile -->
-          <button class="hamburger-btn" @click="toggleMenu" aria-label="Menu">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
         </div>
-        
-        <div class="header-controls">
-          <!-- Controle de Raio -->
-          <div class="control-item radius-control">
-            <label for="radius-slider">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-                <circle cx="12" cy="12" r="6" stroke="currentColor" stroke-width="2" stroke-dasharray="2 2"/>
-                <circle cx="12" cy="12" r="2" fill="currentColor"/>
-              </svg>
-              <strong>{{ searchRadius }} km</strong>
-            </label>
+        <div class="topbar-date">{{ headerDateLabel }}</div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="pill-group">
+          <button class="pill-btn is-disabled" type="button" aria-disabled="true">Radar</button>
+          <button class="pill-btn is-disabled" type="button" aria-disabled="true">Satélite</button>
+        </div>
+        <div class="layer-select">
+          <label for="layer-select">Camada</label>
+          <select id="layer-select" v-model="activeLayer">
+            <option value="rain">Chuva</option>
+            <option value="alerts">Alertas</option>
+            <option value="temperature">Temperatura</option>
+            <option value="wind">Vento</option>
+          </select>
+        </div>
+        <button
+          class="pill-btn ghost"
+          type="button"
+          @click="toggleTheme"
+          :aria-label="isDark() ? 'Ativar modo claro' : 'Ativar modo escuro'"
+        >
+          <svg v-if="!isDark()" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="currentColor" />
+          </svg>
+          <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="5" fill="currentColor" />
+            <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="weather-grid">
+      <aside class="sidebar-card">
+        <div class="sidebar-header">
+          <div class="sidebar-title">Previsão do tempo</div>
+          <div class="sidebar-subtitle">Escolha a cidade centro e personalize os dados.</div>
+        </div>
+
+        <div class="sidebar-section">
+          <label class="section-label" for="city-search">Buscar cidade</label>
+          <div class="search-field">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 21l-4.35-4.35M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <input
+              id="city-search"
+              type="text"
+              v-model="searchQuery"
+              placeholder="Buscar cidade..."
+              @input="filterCities"
+              @keydown.enter="selectFirstCity"
+            />
+          </div>
+          <div v-if="filteredCities.length > 0" class="search-dropdown">
+            <button
+              v-for="city in filteredCities.slice(0, 8)"
+              :key="city.id"
+              class="dropdown-item"
+              type="button"
+              @click="selectCity(city)"
+            >
+              <span>{{ city.name }}, {{ city.state }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="section-label">Raio de busca</div>
+          <div class="radius-row">
             <input
               id="radius-slider"
               type="range"
@@ -79,160 +102,227 @@
               step="10"
               @input="debouncedUpdateRegionalData"
             />
-          </div>
-          
-          <!-- Controle de Data/Hora -->
-          <div class="control-item datetime-control">
-            <button 
-              class="date-nav-btn prev" 
-              @click="navigatePrevDay"
-              :disabled="!canNavigatePrev()"
-              aria-label="Dia anterior"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-            
-            <button 
-              class="date-btn"
-              @click="showDayCarousel = true"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
-                <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-              {{ formatDateButton() }}
-            </button>
-            
-            <button 
-              class="date-nav-btn next" 
-              @click="navigateNextDay"
-              :disabled="!canNavigateNext()"
-              aria-label="Próximo dia"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-          </div>
-          
-          <!-- Controle de Tema -->
-          <div class="control-item theme-control">
-            <button 
-              class="theme-toggle-btn"
-              @click="toggleTheme"
-              :aria-label="isDark() ? 'Ativar modo claro' : 'Ativar modo escuro'"
-              :title="isDark() ? 'Modo Claro' : 'Modo Escuro'"
-            >
-              <svg v-if="!isDark()" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="currentColor"/>
-              </svg>
-              <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="5" fill="currentColor"/>
-                <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-            </button>
-          </div>
-          
-        </div>
-      </div>
-    </header>
-    
-    <!-- Indicador de Carregamento -->
-    <div v-if="isLoading" class="loading-overlay"></div>
-    <div v-if="isLoading" class="loading-indicator">
-      <!-- Ícone de clima animado -->
-      <div class="weather-icon-loading">
-        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- Sol -->
-          <circle cx="38" cy="20" r="8" fill="#FDB813" opacity="0.9"/>
-          <line x1="38" y1="6" x2="38" y2="10" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/>
-          <line x1="52" y1="20" x2="48" y2="20" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/>
-          <line x1="46.5" y1="11.5" x2="43.5" y2="14.5" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/>
-          <line x1="46.5" y1="28.5" x2="43.5" y2="25.5" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/>
-          <!-- Nuvem -->
-          <path d="M18 32c-6 0-10 4-10 9s4 9 10 9h24c5.5 0 10-4.5 10-10 0-5-4-9-9-9-1 0-2 0-3 1-1-6-6-10-12-10-5 0-9 3-11 7-3 0-5 1-5 3z" fill="white" stroke="#E0E0E0" stroke-width="1.5"/>
-          <ellipse cx="28" cy="38" rx="10" ry="8" fill="#F5F5F5"/>
-        </svg>
-      </div>
-
-      <!-- Container do Spinner -->
-      <div class="spinner-container">
-        <div class="spinner"></div>
-      </div>
-
-      <!-- Texto de Loading -->
-      <div class="loading-text">
-        <div class="main-text">Carregando Previsão</div>
-        <div class="sub-text">
-          Buscando dados meteorológicos
-          <div class="dots">
-            <span></span>
-            <span></span>
-            <span></span>
+            <span class="radius-value">{{ searchRadius }} km</span>
           </div>
         </div>
-      </div>
-    </div>
-    
-    <div id="map" ref="mapContainer"></div>
-    
-    <!-- Bottom Container -->
-    <div class="bottom-container">
-      <!-- Legenda Flutuante -->
-      <div class="legend-footer">
-        <div class="legend-scale">
+
+        <div class="sidebar-section">
+          <div class="section-label">Cidades próximas</div>
+          <div class="city-list">
+            <button
+              v-for="city in sidebarCities"
+              :key="city.id"
+              class="city-item"
+              type="button"
+              @click="selectCity(city)"
+              :aria-pressed="centerCityId === city.id"
+            >
+              <span class="city-dot" :class="{ active: centerCityId === city.id }"></span>
+              <div class="city-item-text">
+                <span class="city-name">{{ city.name }}</span>
+                <small>{{ city.state }}</small>
+              </div>
+              <span class="city-distance" v-if="city.distance">{{ city.distance.toFixed(0) }} km</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="section-label">Indicadores</div>
+          <div class="filter-list">
+            <label class="filter-item">
+              <input type="checkbox" v-model="metricsToggles.rain" />
+              Chuva
+            </label>
+            <label class="filter-item">
+              <input type="checkbox" v-model="metricsToggles.temperature" />
+              Temperatura
+            </label>
+            <label class="filter-item">
+              <input type="checkbox" v-model="metricsToggles.wind" />
+              Vento
+            </label>
+            <label class="filter-item">
+              <input type="checkbox" v-model="metricsToggles.alerts" />
+              Alertas
+            </label>
+          </div>
+        </div>
+      </aside>
+
+      <section class="map-area">
+        <div class="map-wrapper">
+          <div v-if="isLoading" class="loading-overlay"></div>
+          <div v-if="isLoading" class="loading-indicator">
+            <div class="weather-icon-loading">
+              <svg width="48" height="48" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="38" cy="20" r="8" fill="#FDB813" opacity="0.9" />
+                <path d="M18 32c-6 0-10 4-10 9s4 9 10 9h24c5.5 0 10-4.5 10-10 0-5-4-9-9-9-1 0-2 0-3 1-1-6-6-10-12-10-5 0-9 3-11 7-3 0-5 1-5 3z" fill="white" opacity="0.9" />
+              </svg>
+            </div>
+            <div class="spinner-container">
+              <div class="spinner"></div>
+            </div>
+            <div class="loading-text">
+              <div class="main-text">Carregando previsão</div>
+              <div class="sub-text">Buscando dados meteorológicos</div>
+            </div>
+          </div>
+          <div id="map" ref="mapContainer"></div>
+        </div>
+
+        <div class="legend-bar" v-if="legendItems.length">
           <div class="legend-item" v-for="item in legendItems" :key="item.label">
-            <div class="legend-color" :style="{ backgroundColor: item.color }"></div>
+            <span class="legend-color" :style="{ backgroundColor: item.color }"></span>
             <span>{{ item.label }}</span>
           </div>
         </div>
-      </div>
-      
-      <!-- Grupo Stats + Botão -->
-      <div class="stats-group">
-        <!-- Stats Panel -->
-        <div class="stats-panel">
-          <div class="stat-item">
-            <span class="stat-value">{{ regionalData.length }}</span>
-            <span class="stat-label">cidades</span>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <span class="stat-value">{{ searchRadius }} km</span>
-            <span class="stat-label">raio</span>
-          </div>
-        </div>
-        
-        <!-- Botão Flutuante -->
-        <button 
-          v-if="selectedCity" 
-          class="info-toggle-btn"
-          @click="togglePanel"
-          :class="{ 'is-open': isPanelOpen }"
+      </section>
+
+      <transition name="panel-fade">
+        <aside
+          v-if="selectedCity && isPanelOpen"
+          class="info-panel is-open"
         >
-          <div class="btn-content">
-            <svg v-if="!isPanelOpen" class="toggle-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/>
-            </svg>
-            <svg v-else class="toggle-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
-            </svg>
-            <span class="toggle-text">{{ selectedCity.cityName }}</span>
+          <div class="panel-header">
+            <div class="header-top">
+              <div
+                class="city-name-clickable"
+                role="heading"
+                aria-level="2"
+                @click="navigateToCityDetail"
+                tabindex="0"
+                @keydown.enter="navigateToCityDetail"
+              >
+                {{ selectedCity.cityName }}
+              </div>
+              <div class="header-right">
+                <span
+                  class="intensity-badge"
+                  :style="{ backgroundColor: activeBadge.color }"
+                >
+                  {{ activeBadge.label }}
+                </span>
+                <button class="close-panel-btn" @click="togglePanel" aria-label="Fechar">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="time-navigation">
+              <button
+                class="nav-btn nav-btn-day prev"
+                @click="navigatePrevDay"
+                :disabled="!canNavigatePrev()"
+                aria-label="Dia anterior"
+                title="Dia anterior"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11 5L4 12l7 7M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+
+              <button
+                class="datetime-display"
+                @click="showDayCarousel = true"
+                title="Clique para abrir o calendário"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" />
+                  <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <span class="datetime-text">{{ formatDateButton() }}</span>
+              </button>
+
+              <button
+                class="nav-btn nav-btn-day next"
+                @click="navigateNextDay"
+                :disabled="!canNavigateNext()"
+                aria-label="Próximo dia"
+                title="Próximo dia"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M13 5l7 7-7 7M20 12H4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+            </div>
           </div>
-        </button>
-      </div>
+
+          <div class="forecast-timeline">
+            <div
+              v-for="(forecast, index) in forecastTimeSlots"
+              :key="index"
+              class="forecast-card"
+              :class="{ 'is-current': index === 0, 'is-loading': forecast.loading }"
+              @click="jumpToTime(forecast.time, forecast.date)"
+            >
+              <div class="forecast-time">
+                {{ forecast.time }}
+                <span v-if="forecast.date !== forecastDate" class="forecast-date-label">
+                  {{ formatDateShort(forecast.date) }}
+                </span>
+              </div>
+              <div v-if="!forecast.loading && forecast.data" class="forecast-content">
+                <div class="forecast-temp">{{ forecast.data.temperature.toFixed(1) }}°C</div>
+                <div class="forecast-rain" v-if="forecast.data.rainfallProbability !== undefined">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" fill="currentColor" opacity="0.6" />
+                  </svg>
+                  <span>{{ forecast.data.rainfallProbability.toFixed(0) }}%</span>
+                </div>
+              </div>
+              <div v-else-if="forecast.loading" class="forecast-loading">
+                <div class="spinner-small"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="weather-grid">
+            <div class="weather-item" v-if="metricsToggles.rain && selectedCity.rainfallProbability !== undefined">
+              <span class="weather-label">Prob. Chuva</span>
+              <span class="weather-value">{{ selectedCity.rainfallProbability.toFixed(0) }}%</span>
+            </div>
+            <div class="weather-item" v-if="metricsToggles.rain && selectedCity.dailyRainAccumulation !== undefined && selectedCity.rainfallIntensity > 0">
+              <span class="weather-label">Acum. Dia</span>
+              <span class="weather-value">{{ selectedCity.dailyRainAccumulation.toFixed(1) }} mm</span>
+            </div>
+            <div class="weather-item" v-if="metricsToggles.temperature">
+              <span class="weather-label">Temp.</span>
+              <span class="weather-value">{{ selectedCity.temperature.toFixed(1) }}°C</span>
+            </div>
+            <div class="weather-item" v-if="metricsToggles.temperature && selectedCity.tempMin !== undefined && selectedCity.tempMax !== undefined">
+              <span class="weather-label">Mín/Máx</span>
+              <span class="weather-value">{{ selectedCity.tempMin.toFixed(1) }}° / {{ selectedCity.tempMax.toFixed(1) }}°</span>
+            </div>
+            <div class="weather-item">
+              <span class="weather-label">Umidade</span>
+              <span class="weather-value">{{ selectedCity.humidity.toFixed(0) }}%</span>
+            </div>
+            <div class="weather-item" v-if="metricsToggles.wind">
+              <span class="weather-label">Vento</span>
+              <span class="weather-value">{{ selectedCity.windSpeed.toFixed(1) }} km/h</span>
+            </div>
+            <div class="weather-item" v-if="selectedCity.clouds !== undefined && metricsToggles.rain">
+              <span class="weather-label">Tempo</span>
+              <span class="weather-value">{{ getCloudsDescription(selectedCity.clouds) }}</span>
+            </div>
+          </div>
+
+          <WeatherAlerts
+            v-if="metricsToggles.alerts"
+            :alerts="selectedCity.weatherAlert"
+            @alert-clicked="handleAlertClick"
+          />
+
+          <div class="update-time">
+            Previsão para: {{ formatTime(selectedCity.timestamp) }}
+          </div>
+        </aside>
+      </transition>
     </div>
-    
-    <!-- Carrossel de Dias -->
+
     <DayCarousel
       v-if="showDayCarousel"
       :initialDate="forecastDate"
@@ -242,162 +332,19 @@
       @select="handleDateTimeSelect"
     />
 
-    <!-- Painel de Detalhes de Alertas -->
     <AlertDetailPanel
       :alert="selectedAlert"
       :isOpen="isAlertPanelOpen"
       @close="closeAlertPanel"
       @jump-to-date="handleJumpToDate"
     />
-    
-    <!-- Painel de Informações (Expansível) -->
-    <div 
-      v-if="selectedCity" 
-      class="info-panel"
-      :class="{ 'is-open': isPanelOpen }"
-    >
-      <div class="panel-header">
-        <div class="header-top">
-          <div 
-            class="city-name-clickable" 
-            role="heading" 
-            aria-level="2"
-            @click="navigateToCityDetail" 
-            tabindex="0" 
-            @keydown.enter="navigateToCityDetail"
-          >
-            {{ selectedCity.cityName }}
-          </div>
-          <div class="header-right">
-            <span class="intensity-badge" :style="{ backgroundColor: getRainfallColor(selectedCity.rainfallIntensity) }">
-              {{ getRainfallDescription(selectedCity.rainfallIntensity) }}
-            </span>
-            <button class="close-panel-btn" @click="togglePanel" aria-label="Fechar">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-        
-        <!-- Controles de Navegação Temporal -->
-        <div class="time-navigation">
-          <!-- Botões de navegação Dia -->
-          <button 
-            class="nav-btn nav-btn-day prev" 
-            @click="navigatePrevDay" 
-            :disabled="!canNavigatePrev()"
-            aria-label="Dia anterior"
-            title="Dia anterior"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M11 5L4 12l7 7M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          
-          <!-- Display central com data e hora -->
-          <button 
-            class="datetime-display"
-            @click="showDayCarousel = true"
-            title="Clique para abrir o calendário"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
-              <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            <span class="datetime-text">{{ formatDateButton() }}</span>
-          </button>
-          
-          <!-- Botões de navegação Dia -->
-          <button 
-            class="nav-btn nav-btn-day next" 
-            @click="navigateNextDay"
-            :disabled="!canNavigateNext()"
-            aria-label="Próximo dia"
-            title="Próximo dia"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13 5l7 7-7 7M20 12H4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-      
-      <!-- Timeline de Previsões -->
-      <div class="forecast-timeline">
-        <div 
-          v-for="(forecast, index) in forecastTimeSlots" 
-          :key="index"
-          class="forecast-card"
-          :class="{ 'is-current': index === 0, 'is-loading': forecast.loading }"
-          @click="jumpToTime(forecast.time, forecast.date)"
-        >
-          <div class="forecast-time">
-            {{ forecast.time }}
-            <span v-if="forecast.date !== forecastDate" class="forecast-date-label">
-              {{ formatDateShort(forecast.date) }}
-            </span>
-          </div>
-          <div v-if="!forecast.loading && forecast.data" class="forecast-content">
-            <div class="forecast-temp">{{ forecast.data.temperature.toFixed(1) }}°C</div>
-            <div class="forecast-rain" v-if="forecast.data.rainfallProbability !== undefined">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" fill="currentColor" opacity="0.6"/>
-              </svg>
-              <span>{{ forecast.data.rainfallProbability.toFixed(0) }}%</span>
-            </div>
-          </div>
-          <div v-else-if="forecast.loading" class="forecast-loading">
-            <div class="spinner-small"></div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="weather-grid">
-        <div class="weather-item" v-if="selectedCity.rainfallProbability !== undefined">
-          <span class="weather-label">Prob. Chuva</span>
-          <span class="weather-value">{{ selectedCity.rainfallProbability.toFixed(0) }}%</span>
-        </div>
-        <div class="weather-item" v-if="selectedCity.dailyRainAccumulation !== undefined && selectedCity.rainfallIntensity > 0">
-          <span class="weather-label">Acum. Dia</span>
-          <span class="weather-value">{{ selectedCity.dailyRainAccumulation.toFixed(1) }} mm</span>
-        </div>
-        <div class="weather-item">
-          <span class="weather-label">Temp.</span>
-          <span class="weather-value">{{ selectedCity.temperature.toFixed(1) }}°C</span>
-        </div>
-        <div class="weather-item" v-if="selectedCity.tempMin !== undefined && selectedCity.tempMax !== undefined">
-          <span class="weather-label">Mín/Máx</span>
-          <span class="weather-value">{{ selectedCity.tempMin.toFixed(1) }}° / {{ selectedCity.tempMax.toFixed(1) }}°</span>
-        </div>
-        <div class="weather-item">
-          <span class="weather-label">Umidade</span>
-          <span class="weather-value">{{ selectedCity.humidity.toFixed(0) }}%</span>
-        </div>
-        <div class="weather-item">
-          <span class="weather-label">Vento</span>
-          <span class="weather-value">{{ selectedCity.windSpeed.toFixed(1) }} km/h</span>
-        </div>
-        <div class="weather-item" v-if="selectedCity.clouds !== undefined">
-          <span class="weather-label">Tempo</span>
-          <span class="weather-value">{{ getCloudsDescription(selectedCity.clouds) }}</span>
-        </div>
-      </div>
-      
-      <!-- Alertas Meteorológicos -->
-      <WeatherAlerts :alerts="selectedCity.weatherAlert" @alert-clicked="handleAlertClick" />
-      
-      <div class="update-time">
-        Previsão para: {{ formatTime(selectedCity.timestamp) }}
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { APP_CONFIG } from '../config/app';
 import { getNeighborCities, getRegionalWeather } from '../services/apiService';
@@ -438,11 +385,29 @@ let selectedLayer: L.Layer | null = null; // Camada atualmente selecionada
 const layerColors = new Map<L.Layer, string>(); // Guardar cores originais
 let centerMarker: L.Marker | null = null; // Marcador da cidade central
 
+type SidebarCity = {
+  id: string;
+  name: string;
+  state?: string;
+  latitude: number;
+  longitude: number;
+  distance?: number;
+};
+
 // Dados dos municípios
-const municipalities = ref<Array<{id: string, name: string, state: string, latitude: number, longitude: number}>>([]);
+const municipalities = ref<Array<{ id: string; name: string; state: string; latitude: number; longitude: number }>>([]);
 const searchQuery = ref<string>('');
-const filteredCities = ref<Array<{id: string, name: string, state: string, latitude: number, longitude: number}>>([]);
-const isSearchOpen = ref<boolean>(false);
+const filteredCities = ref<Array<{ id: string; name: string; state: string; latitude: number; longitude: number }>>([]);
+const sidebarCities = ref<SidebarCity[]>([]);
+const mapCities = ref<SidebarCity[]>([]);
+
+const activeLayer = ref<'rain' | 'alerts' | 'temperature' | 'wind'>('rain');
+const metricsToggles = ref({
+  rain: true,
+  temperature: true,
+  wind: true,
+  alerts: true,
+});
 
 // Cidade central (reativa)
 const centerCityId = ref<string>(APP_CONFIG.CENTER_CITY_ID);
@@ -459,9 +424,6 @@ const showDayCarousel = ref<boolean>(false); // Controla exibição do carrossel
 
 // Controle de abertura do painel
 const isPanelOpen = ref<boolean>(false);
-
-// Controle do menu hamburger (mobile)
-const isMenuOpen = ref<boolean>(false);
 
 // Controle do painel de detalhes de alertas
 const selectedAlert = ref<WeatherAlert | null>(null);
@@ -486,10 +448,6 @@ const forecastTimeSlots = ref<ForecastSlot[]>([
 
 const togglePanel = () => {
   isPanelOpen.value = !isPanelOpen.value;
-};
-
-const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value;
 };
 
 const handleAlertClick = (alert: WeatherAlert) => {
@@ -589,20 +547,6 @@ const updateForecastSlots = async () => {
   }
 };
 
-const toggleSearch = () => {
-  isSearchOpen.value = !isSearchOpen.value;
-  if (isSearchOpen.value) {
-    // Focar no input quando abrir
-    setTimeout(() => {
-      const input = document.querySelector('.search-input') as HTMLInputElement;
-      if (input) input.focus();
-    }, 100);
-  } else {
-    searchQuery.value = '';
-    filteredCities.value = [];
-  }
-};
-
 const loadMunicipalities = async () => {
   try {
     const response = await fetch('/data/municipalities_db.json');
@@ -641,13 +585,13 @@ const filterCities = () => {
   });
 };
 
-const selectCity = (city: {id: string, name: string, state: string, latitude: number, longitude: number}) => {
+const selectCity = (city: SidebarCity) => {
   centerCityId.value = city.id;
   centerLat.value = city.latitude;
   centerLng.value = city.longitude;
-  isSearchOpen.value = false;
   searchQuery.value = '';
   filteredCities.value = [];
+  isPanelOpen.value = false;
   
   // Atualizar mapa e dados
   updateMapCenter();
@@ -684,13 +628,123 @@ const getCurrentCenterCityName = (): string => {
   return city ? `${city.name}, ${city.state}` : 'Carregando...';
 };
 
-const legendItems = [
-  { color: 'rgba(200, 200, 200, 0.3)', label: '0 - Sem chuva' },
-  { color: 'rgba(173, 216, 230, 0.6)', label: '< 15 - Fraca' },
-  { color: 'rgba(100, 149, 237, 0.7)', label: '15-35 - Moderada' },
-  { color: 'rgba(30, 144, 255, 0.8)', label: '35-60 - Forte' },
-  { color: 'rgba(0, 0, 139, 0.9)', label: '> 60 - Intensa' },
-];
+const headerDateLabel = computed(() => {
+  if (!forecastDate.value) return '';
+  const [yearStr, monthStr, dayStr] = forecastDate.value.split('-');
+  const year = Number(yearStr);
+  const month = Number(monthStr);
+  const day = Number(dayStr);
+  if (!year || !month || !day) return forecastDate.value;
+
+  const date = new Date(year, month - 1, day);
+  const now = new Date();
+  const brasilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  brasilTime.setHours(0, 0, 0, 0);
+  date.setHours(0, 0, 0, 0);
+
+  const diffDays = Math.floor((date.getTime() - brasilTime.getTime()) / (1000 * 60 * 60 * 24));
+  const dayLabel = diffDays === 0 ? 'Hoje' : diffDays === 1 ? 'Amanhã' : date.toLocaleDateString('pt-BR', { weekday: 'short' });
+  const formattedDate = `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}`;
+  const timeLabel = forecastTime.value || '';
+  return `${dayLabel}, ${formattedDate}${timeLabel ? ` - ${timeLabel}` : ''}`;
+});
+
+const getTemperatureColor = (temperature: number) => {
+  if (temperature < 18) return 'rgba(99, 179, 237, 0.85)';
+  if (temperature < 24) return 'rgba(74, 222, 240, 0.9)';
+  if (temperature < 32) return 'rgba(255, 200, 124, 0.9)';
+  return 'rgba(248, 113, 113, 0.95)';
+};
+
+const getWindColor = (windSpeed: number) => {
+  if (windSpeed < 10) return 'rgba(125, 211, 252, 0.85)';
+  if (windSpeed < 20) return 'rgba(56, 189, 248, 0.9)';
+  if (windSpeed < 35) return 'rgba(59, 130, 246, 0.95)';
+  return 'rgba(239, 68, 68, 0.95)';
+};
+
+const getAlertColor = (alerts?: WeatherAlert[]) => {
+  if (!alerts || alerts.length === 0) return 'rgba(148, 163, 184, 0.6)';
+  const severities = alerts.map(a => a.severity);
+  if (severities.includes('danger')) return 'rgba(239, 68, 68, 0.9)';
+  if (severities.includes('alert')) return 'rgba(249, 115, 22, 0.9)';
+  if (severities.includes('warning')) return 'rgba(234, 179, 8, 0.9)';
+  return 'rgba(59, 130, 246, 0.9)';
+};
+
+const getLayerColor = (weather: WeatherData) => {
+  switch (activeLayer.value) {
+    case 'temperature':
+      return getTemperatureColor(weather.temperature);
+    case 'wind':
+      return getWindColor(weather.windSpeed);
+    case 'alerts':
+      return getAlertColor(weather.weatherAlert);
+    default:
+      return getRainfallColor(weather.rainfallIntensity);
+  }
+};
+
+const legendItems = computed(() => {
+  if (activeLayer.value === 'temperature') {
+    return [
+      { color: getTemperatureColor(15), label: '< 18°C' },
+      { color: getTemperatureColor(20), label: '18 - 24°C' },
+      { color: getTemperatureColor(28), label: '24 - 32°C' },
+      { color: getTemperatureColor(35), label: '> 32°C' },
+    ];
+  }
+
+  if (activeLayer.value === 'wind') {
+    return [
+      { color: getWindColor(5), label: '< 10 km/h' },
+      { color: getWindColor(15), label: '10 - 20 km/h' },
+      { color: getWindColor(25), label: '20 - 35 km/h' },
+      { color: getWindColor(40), label: '> 35 km/h' },
+    ];
+  }
+
+  if (activeLayer.value === 'alerts') {
+    return [
+      { color: 'rgba(148, 163, 184, 0.6)', label: 'Sem alertas' },
+      { color: 'rgba(234, 179, 8, 0.9)', label: 'Atenção' },
+      { color: 'rgba(249, 115, 22, 0.9)', label: 'Alerta' },
+      { color: 'rgba(239, 68, 68, 0.9)', label: 'Perigo' },
+    ];
+  }
+
+  return [
+    { color: 'rgba(42, 65, 96, 0.75)', label: '0 - Sem chuva' },
+    { color: 'rgba(76, 130, 196, 0.85)', label: '< 15 - Fraca' },
+    { color: 'rgba(55, 117, 195, 0.9)', label: '15-35 - Moderada' },
+    { color: 'rgba(37, 99, 235, 0.95)', label: '35-60 - Forte' },
+    { color: 'rgba(30, 64, 175, 0.95)', label: '> 60 - Intensa' },
+  ];
+});
+
+const activeBadge = computed(() => {
+  const city = selectedCity.value;
+  if (!city) return { label: '', color: 'transparent' };
+
+  if (activeLayer.value === 'temperature') {
+    return { label: `${city.temperature.toFixed(1)}°C`, color: getTemperatureColor(city.temperature) };
+  }
+
+  if (activeLayer.value === 'wind') {
+    return { label: `${city.windSpeed.toFixed(1)} km/h`, color: getWindColor(city.windSpeed) };
+  }
+
+  if (activeLayer.value === 'alerts') {
+    const hasAlerts = city.weatherAlert && city.weatherAlert.length > 0;
+    const color = getAlertColor(city.weatherAlert);
+    return { label: hasAlerts ? 'Alertas ativos' : 'Sem alertas', color };
+  }
+
+  return {
+    label: getRainfallDescription(city.rainfallIntensity),
+    color: getRainfallColor(city.rainfallIntensity),
+  };
+});
 
 const formatTime = (timestamp: string): string => {
   return new Date(timestamp).toLocaleString('pt-BR', {
@@ -708,6 +762,23 @@ const formatDateShort = (dateStr: string): string => {
   const day = date.getDate();
   const month = date.getMonth() + 1;
   return `${day}/${month}`;
+};
+
+const getTooltipContent = (cityName: string, weather: WeatherData): string => {
+  if (activeLayer.value === 'temperature') {
+    return `<b>${cityName}</b><br>Temperatura: ${weather.temperature.toFixed(1)}°C`;
+  }
+
+  if (activeLayer.value === 'wind') {
+    return `<b>${cityName}</b><br>Vento: ${weather.windSpeed.toFixed(1)} km/h`;
+  }
+
+  if (activeLayer.value === 'alerts') {
+    const alertCount = weather.weatherAlert?.length ?? 0;
+    return `<b>${cityName}</b><br>${alertCount > 0 ? `${alertCount} alerta(s)` : 'Sem alertas'}`;
+  }
+
+  return `<b>${cityName}</b><br>Intensidade: ${weather.rainfallIntensity.toFixed(0)} - ${getRainfallDescription(weather.rainfallIntensity)}`;
 };
 
 const initMap = () => {
@@ -746,12 +817,12 @@ const updateRadiusCircle = () => {
   
   // Adicionar novo círculo
   radiusCircle = L.circle([centerLat.value, centerLng.value], {
-    color: '#667eea',
-    fillColor: '#667eea',
-    fillOpacity: 0.1,
+    color: '#58b1ff',
+    fillColor: '#58b1ff',
+    fillOpacity: 0.12,
     radius: searchRadius.value * 1000, // Converter km para metros
     weight: 2,
-    dashArray: '5, 10',
+    dashArray: '6, 10',
   }).addTo(map);
 };
 
@@ -765,7 +836,16 @@ const loadRegionalData = async (options: { preferredCityId?: string } = {}) => {
     const response = await getNeighborCities(centerCityId.value, searchRadius.value);
     
     // Incluir a cidade centro na lista
-    const allCities = [response.centerCity, ...response.neighbors];
+    const normalizeCity = (city: SidebarCity): SidebarCity => {
+      const municipality = municipalities.value.find(m => m.id === city.id);
+      return {
+        ...city,
+        state: municipality?.state || city.state,
+      };
+    };
+    const allCities = [response.centerCity, ...response.neighbors].map(normalizeCity);
+    mapCities.value = allCities;
+    sidebarCities.value = allCities.slice(0, 6);
     const cityIds = allCities.map(c => c.id);
     
     // 2. Buscar dados climáticos do backend com cache
@@ -798,17 +878,18 @@ const loadRegionalData = async (options: { preferredCityId?: string } = {}) => {
 };
 
 const renderCityMeshes = async (
-  cities: Array<{ id: string; name: string; latitude: number; longitude: number }>,
-  weatherData: WeatherData[]
+  cities: SidebarCity[] = mapCities.value,
+  weatherData: WeatherData[] = regionalData.value
 ) => {
-  if (!map) return;
+  if (!map || cities.length === 0 || weatherData.length === 0) return;
 
-  // Limpar camadas anteriores
+  const currentSelectedId = selectedCity.value?.cityId ?? null;
+
   geoJsonLayers.forEach(layer => map?.removeLayer(layer));
   geoJsonLayers.length = 0;
-  layerColors.clear(); // Limpar cores guardadas
+  layerColors.clear();
+  selectedLayer = null;
 
-  // Buscar todas as malhas em paralelo
   const cityIds = cities.map(c => c.id);
   const meshMap = await getMultipleMunicipalityMeshes(cityIds);
 
@@ -817,79 +898,84 @@ const renderCityMeshes = async (
     const weather = weatherData.find(w => w.cityId === city.id);
     
     if (geometry && weather) {
-      const color = getRainfallColor(weather.rainfallIntensity);
+      const color = getLayerColor(weather);
       
       const geoJsonLayer = L.geoJSON(geometry, {
         style: {
           fillColor: color,
-          fillOpacity: 0.7,
-          color: '#2c3e50',
-          weight: 2,
+          fillOpacity: 0.65,
+          color: '#1f2a44',
+          weight: 1.5,
           dashArray: '',
         },
         onEachFeature: (_feature, layer) => {
-          // Guardar cor original da camada
           layerColors.set(layer, color);
           
           layer.on({
             click: () => {
-              // Resetar estilo da camada anteriormente selecionada
               if (selectedLayer && selectedLayer !== layer) {
                 const originalColor = layerColors.get(selectedLayer);
                 if (originalColor) {
                   (selectedLayer as any).setStyle({
                     fillColor: originalColor,
-                    fillOpacity: 0.7,
-                    weight: 2,
-                    color: '#2c3e50',
+                    fillOpacity: 0.65,
+                    weight: 1.5,
+                    color: '#1f2a44',
                     dashArray: '',
                   });
                 }
               }
               
-              // Destacar camada selecionada com verde suave
               (layer as any).setStyle({
-                fillColor: '#52c41a', // Verde suave no preenchimento
-                fillOpacity: 0.6,
-                weight: 3,
-                color: '#27ae60', // Verde mais escuro na borda
-                dashArray: '', // Remove dash array se houver
-                outline: 'none', // Remove outline
+                fillColor: '#58b1ff',
+                fillOpacity: 0.55,
+                weight: 2.2,
+                color: '#8bd3ff',
+                dashArray: '',
               });
               
               selectedLayer = layer;
               selectedCity.value = weather;
-              isPanelOpen.value = true; // Abrir painel ao clicar
-              updateForecastSlots(); // Atualizar previsões ao selecionar cidade
+              isPanelOpen.value = true;
+              updateForecastSlots();
             },
             mouseover: (e) => {
-              const layer = e.target;
-              // Não alterar se for a camada selecionada
-              if (selectedLayer !== layer) {
-                layer.setStyle({
-                  weight: 3,
-                  color: '#34495e',
+              const hoveredLayer = e.target;
+              if (selectedLayer !== hoveredLayer) {
+                hoveredLayer.setStyle({
+                  weight: 2,
+                  color: '#67b8ff',
                 });
               }
             },
             mouseout: (e) => {
-              const layer = e.target;
-              // Não alterar se for a camada selecionada
-              if (selectedLayer !== layer) {
-                layer.setStyle({
-                  weight: 2,
-                  color: '#2c3e50',
+              const hoveredLayer = e.target;
+              if (selectedLayer !== hoveredLayer) {
+                hoveredLayer.setStyle({
+                  weight: 1.5,
+                  color: '#1f2a44',
                 });
               }
             },
           });
           
           layer.bindTooltip(
-            `<b>${city.name}</b><br>Intensidade: ${weather.rainfallIntensity.toFixed(0)} - ${getRainfallDescription(weather.rainfallIntensity)}`,
-            { permanent: false, direction: 'top' }
+            getTooltipContent(city.name, weather),
+            { permanent: false, direction: 'top', opacity: 0.9 }
           );
         },
       });
+
+      if (currentSelectedId && weather.cityId === currentSelectedId && isPanelOpen.value) {
+        (geoJsonLayer as any).setStyle({
+          fillColor: '#58b1ff',
+          fillOpacity: 0.55,
+          weight: 2.2,
+          color: '#8bd3ff',
+          dashArray: '',
+        });
+        selectedLayer = geoJsonLayer;
+      }
       
       geoJsonLayer.addTo(map);
       geoJsonLayers.push(geoJsonLayer);
@@ -1172,6 +1258,11 @@ watch([centerCityId, searchRadius, forecastDate, forecastTime], () => {
   }
   updateURL();
 }, { deep: true });
+
+watch(activeLayer, () => {
+  selectedLayer = null;
+  renderCityMeshes().catch(error => logger.error('Erro ao redesenhar malhas para camada ativa:', error));
+});
 
 onUnmounted(() => {
   if (updateInterval) {

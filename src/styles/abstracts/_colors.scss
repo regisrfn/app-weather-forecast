@@ -3,18 +3,18 @@
 // =================================
 
 // Cores Primárias (Gradiente)
-$primary-gradient-start: #667eea;
-$primary-gradient-end: #764ba2;
+$primary-gradient-start: #133a63;
+$primary-gradient-end: #0d2b49;
 
 // Cores de Background
-$bg-dark-primary: rgba(30, 30, 30, 0.9);
-$bg-dark-secondary: rgba(40, 40, 40, 0.95);
-$bg-dark-tertiary: rgba(20, 20, 20, 0.5);
-$bg-dark-footer: rgba(15, 15, 15, 0.8);
+$bg-dark-primary: #0b1626;
+$bg-dark-secondary: #0c1d30;
+$bg-dark-tertiary: #091120;
+$bg-dark-footer: #070e1a;
 
 // Cores de Background com Blur
-$bg-header: rgba(100, 97, 97, 0.65);
-$bg-header-hover: rgba(124, 124, 124, 0.9);
+$bg-header: rgba(14, 31, 52, 0.82);
+$bg-header-hover: rgba(18, 41, 70, 0.92);
 
 // Cores de Texto
 $text-white: #ffffff;
@@ -41,26 +41,26 @@ $rainfall-strong: rgba(30, 144, 255, 0.8);
 $rainfall-intense: rgba(0, 0, 139, 0.9);
 
 // Cores de Mapa
-$map-border: #2c3e50;
-$map-border-hover: #34495e;
-$map-highlight-fill: #52c41a;
-$map-highlight-border: #27ae60;
+$map-border: #1f2a44;
+$map-border-hover: #243350;
+$map-highlight-fill: #58b1ff;
+$map-highlight-border: #8bd3ff;
 
 // Cores do Círculo de Raio
-$radius-circle-color: #667eea;
+$radius-circle-color: #58b1ff;
 
 // Cores Específicas para City Detail (Refatoração - Tons Suaves e Discretos)
-$weather-primary: #8b9de1;        // Azul suave lavanda
-$weather-secondary: #a5b4e8;      // Azul claro acinzentado
-$weather-accent: #9d85c7;         // Roxo suave
-$weather-text-primary: #2d3748;   // Cinza escuro suave
-$weather-text-secondary: #5a6b7d; // Cinza médio
-$weather-text-muted: #8394a8;     // Cinza claro
-$weather-surface: rgba(255, 255, 255, 0.85);
-$weather-surface-blur: rgba(255, 255, 255, 0.75);
-$weather-border: rgba(139, 157, 225, 0.2);
-$weather-border-light: rgba(139, 157, 225, 0.12);
-$weather-shadow: rgba(139, 157, 225, 0.08);
+$weather-primary: #5fa8ff;
+$weather-secondary: #7fc0ff;
+$weather-accent: #58b1ff;
+$weather-text-primary: #e8f2ff;
+$weather-text-secondary: #bfd4f2;
+$weather-text-muted: #8aa5c5;
+$weather-surface: rgba(13, 27, 48, 0.92);
+$weather-surface-blur: rgba(13, 27, 48, 0.82);
+$weather-border: rgba(88, 177, 255, 0.2);
+$weather-border-light: rgba(88, 177, 255, 0.12);
+$weather-shadow: rgba(0, 0, 0, 0.18);
 
 // Opacidades Semânticas
 $opacity-surface: 0.15;
@@ -109,32 +109,32 @@ $opacity-hover: 0.30;
   --weather-shadow-lg: rgba(139, 157, 225, 0.25);
   
   // Header
-  --header-bg: rgba(139, 157, 225, 0.75);
-  --header-bg-scrolled: rgba(139, 157, 225, 0.90);
-  --header-border: rgba(255, 255, 255, 0.2);
-  --header-text: #{$text-white};
+  --header-bg: rgba(14, 31, 52, 0.9);
+  --header-bg-scrolled: rgba(18, 41, 70, 0.95);
+  --header-border: rgba(88, 177, 255, 0.25);
+  --header-text: #e8f2ff;
   
   // Background
-  --bg-gradient-start: rgba(139, 157, 225, 0.08);
-  --bg-gradient-mid: rgba(157, 133, 199, 0.05);
-  --bg-gradient-end: rgba(165, 180, 232, 0.03);
-  --bg-base: #f8f9fc;
+  --bg-gradient-start: rgba(15, 31, 52, 0.25);
+  --bg-gradient-mid: rgba(10, 21, 33, 0.35);
+  --bg-gradient-end: rgba(8, 17, 29, 0.4);
+  --bg-base: #0b1626;
 
   // Home (Weather Map) - Base tokens (overridden on dark)
-  --home-ambient-1: #f6f8ff;
-  --home-ambient-2: #eef2ff;
-  --home-surface: rgba(255, 255, 255, 0.92);
-  --home-surface-strong: rgba(255, 255, 255, 0.96);
-  --home-surface-soft: rgba(255, 255, 255, 0.75);
-  --home-border-soft: rgba(118, 130, 183, 0.12);
-  --home-border-strong: rgba(118, 130, 183, 0.24);
-  --home-border-glow: rgba(118, 130, 183, 0.32);
-  --home-accent: #6ba4ff;
-  --home-accent-2: #a47aff;
-  --home-glow: rgba(106, 164, 255, 0.2);
-  --home-gridline: rgba(118, 130, 183, 0.08);
-  --home-text-strong: #0f172a;
-  --home-text-muted: #475569;
+  --home-ambient-1: #0b1626;
+  --home-ambient-2: #0f1f34;
+  --home-surface: rgba(13, 27, 48, 0.92);
+  --home-surface-strong: rgba(14, 31, 52, 0.96);
+  --home-surface-soft: rgba(14, 28, 48, 0.72);
+  --home-border-soft: rgba(88, 177, 255, 0.18);
+  --home-border-strong: rgba(88, 177, 255, 0.32);
+  --home-border-glow: rgba(88, 177, 255, 0.28);
+  --home-accent: #58b1ff;
+  --home-accent-2: #8bd3ff;
+  --home-glow: rgba(88, 177, 255, 0.18);
+  --home-gridline: rgba(88, 177, 255, 0.08);
+  --home-text-strong: #e8f2ff;
+  --home-text-muted: #a8b9d4;
   
   // Legacy compatibility
   --bg-primary: #{$bg-dark-primary};
@@ -194,48 +194,48 @@ $opacity-hover: 0.30;
 // Dark Theme
 [data-theme="dark"] {
   // Weather City Detail - Dark Theme
-  --weather-primary: #5a6fa8;
-  --weather-secondary: #4a5d8c;
-  --weather-accent: #6d5b88;
-  --weather-text-primary: #e5e7eb;
-  --weather-text-secondary: #d1d5db;
-  --weather-text-muted: #9ca3af;
-  --weather-surface: rgba(30, 41, 59, 0.85);
-  --weather-surface-blur: rgba(30, 41, 59, 0.75);
-  --weather-surface-card: rgba(30, 41, 59, 0.90);
-  --weather-border: rgba(90, 111, 168, 0.3);
-  --weather-border-light: rgba(90, 111, 168, 0.15);
-  --weather-shadow: rgba(0, 0, 0, 0.3);
-  --weather-shadow-md: rgba(0, 0, 0, 0.4);
-  --weather-shadow-lg: rgba(0, 0, 0, 0.5);
+  --weather-primary: #58b1ff;
+  --weather-secondary: #7fc0ff;
+  --weather-accent: #8bd3ff;
+  --weather-text-primary: #e8f2ff;
+  --weather-text-secondary: #c8dbf5;
+  --weather-text-muted: #9fb5d6;
+  --weather-surface: rgba(12, 22, 38, 0.95);
+  --weather-surface-blur: rgba(12, 22, 38, 0.88);
+  --weather-surface-card: rgba(12, 22, 38, 0.92);
+  --weather-border: rgba(88, 177, 255, 0.3);
+  --weather-border-light: rgba(88, 177, 255, 0.16);
+  --weather-shadow: rgba(0, 0, 0, 0.45);
+  --weather-shadow-md: rgba(0, 0, 0, 0.5);
+  --weather-shadow-lg: rgba(0, 0, 0, 0.6);
   
   // Header
-  --header-bg: rgba(30, 41, 59, 0.75);
-  --header-bg-scrolled: rgba(30, 41, 59, 0.90);
-  --header-border: rgba(90, 111, 168, 0.2);
-  --header-text: #e5e7eb;
+  --header-bg: rgba(12, 22, 38, 0.9);
+  --header-bg-scrolled: rgba(16, 32, 52, 0.95);
+  --header-border: rgba(88, 177, 255, 0.25);
+  --header-text: #e8f2ff;
   
   // Background
-  --bg-gradient-start: rgba(30, 41, 59, 0.3);
-  --bg-gradient-mid: rgba(51, 65, 85, 0.2);
-  --bg-gradient-end: rgba(15, 23, 42, 0.1);
-  --bg-base: #0f172a;
+  --bg-gradient-start: rgba(7, 15, 29, 0.4);
+  --bg-gradient-mid: rgba(9, 19, 35, 0.3);
+  --bg-gradient-end: rgba(5, 11, 22, 0.18);
+  --bg-base: #060f1d;
 
   // Home (Weather Map) - Neon glass dark palette (suavizado)
-  --home-ambient-1: #0a1628;
-  --home-ambient-2: #0f1d35;
-  --home-surface: rgba(15, 25, 45, 0.75);
-  --home-surface-strong: rgba(18, 30, 52, 0.85);
-  --home-surface-soft: rgba(20, 32, 55, 0.60);
-  --home-border-soft: rgba(124, 242, 255, 0.18);
-  --home-border-strong: rgba(124, 242, 255, 0.32);
-  --home-border-glow: rgba(159, 122, 234, 0.28);
-  --home-accent: #5ec4ff;
-  --home-accent-2: #8b6dd9;
-  --home-glow: rgba(94, 196, 255, 0.22);
-  --home-gridline: rgba(124, 242, 255, 0.06);
-  --home-text-strong: #e5f1ff;
-  --home-text-muted: #a8bdd6;
+  --home-ambient-1: #050d1a;
+  --home-ambient-2: #0a1627;
+  --home-surface: rgba(10, 20, 35, 0.85);
+  --home-surface-strong: rgba(12, 24, 41, 0.92);
+  --home-surface-soft: rgba(12, 24, 41, 0.7);
+  --home-border-soft: rgba(88, 177, 255, 0.18);
+  --home-border-strong: rgba(88, 177, 255, 0.32);
+  --home-border-glow: rgba(88, 177, 255, 0.24);
+  --home-accent: #58b1ff;
+  --home-accent-2: #8bd3ff;
+  --home-glow: rgba(88, 177, 255, 0.2);
+  --home-gridline: rgba(88, 177, 255, 0.06);
+  --home-text-strong: #e8f2ff;
+  --home-text-muted: #9db4d6;
   
   // Text adjustments for dark mode
   --text-dark: #e5e7eb;

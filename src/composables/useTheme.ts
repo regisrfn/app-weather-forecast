@@ -8,7 +8,7 @@ const THEME_STORAGE_KEY = 'app-weather-theme';
 const getInitialTheme = (): Theme => {
   if (typeof window === 'undefined') return 'light';
   const stored = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
-  return stored || 'light';
+  return stored || 'dark';
 };
 
 const currentTheme = ref<Theme>(getInitialTheme());
