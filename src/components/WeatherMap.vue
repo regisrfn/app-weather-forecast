@@ -669,7 +669,8 @@ const getAlertColor = (alerts?: WeatherAlert[]) => {
   if (severities.includes('danger')) return 'rgba(239, 68, 68, 0.9)';
   if (severities.includes('alert')) return 'rgba(249, 115, 22, 0.9)';
   if (severities.includes('warning')) return 'rgba(234, 179, 8, 0.9)';
-  return 'rgba(59, 130, 246, 0.9)';
+  if (severities.includes('info')) return 'rgba(59, 130, 246, 0.9)';
+  return 'rgba(148, 163, 184, 0.6)';
 };
 
 const getLayerColor = (weather: WeatherData) => {
@@ -707,6 +708,7 @@ const legendItems = computed(() => {
   if (activeLayer.value === 'alerts') {
     return [
       { color: 'rgba(148, 163, 184, 0.6)', label: 'Sem alertas' },
+      { color: 'rgba(59, 130, 246, 0.9)', label: 'Info' },
       { color: 'rgba(234, 179, 8, 0.9)', label: 'Atenção' },
       { color: 'rgba(249, 115, 22, 0.9)', label: 'Alerta' },
       { color: 'rgba(239, 68, 68, 0.9)', label: 'Perigo' },
