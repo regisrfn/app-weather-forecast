@@ -8,7 +8,6 @@
 
 import localforage from 'localforage';
 import { ibgeLogger } from '../utils/logger';
-import { getMunicipalityMeshFromApi } from './apiService';
 
 // Store dedicado para malhas do IBGE
 const ibgeMeshStore = localforage.createInstance({
@@ -28,8 +27,8 @@ interface CachedMesh {
   size: number;
 }
 
-// TTL para malhas do IBGE (back e front): 7 dias (em milissegundos)
-const IBGE_TTL = 7 * 24 * 60 * 60 * 1000;
+// TTL para malhas do IBGE: 24 horas (em milissegundos)
+const IBGE_TTL = 24 * 60 * 60 * 1000;
 
 interface IBGEMetadata {
   keys: string[];
@@ -125,7 +124,7 @@ async function evictLRU(requiredSpace: number): Promise<void> {
 
 /**
  * Buscar malha geométrica de um município (com cache persistente)
- * API backend: GET /api/geo/municipalities/{id} (proxy do IBGE com cache)
+ * API: https://servicodados.ibge.gov.br/api/v3/malhas/municipios/{id}
  * @param skipMetadataSave - Se true, não salva metadata (útil para batch operations)
  */
 export async function getMunicipalityMesh(
@@ -160,10 +159,18 @@ export async function getMunicipalityMesh(
       }
     }
     
-    ibgeLogger.debug(`MISS: ${municipalityId} - Buscando do backend (proxy IBGE)`);
+    ibgeLogger.debug(`MISS: ${municipalityId} - Buscando do IBGE`);
     
-    // Buscar da API do backend (proxy para o IBGE)
-    const mesh: GeoJSON.Feature = await getMunicipalityMeshFromApi(municipalityId);
+    // Buscar da API do IBGE
+    const response = await fetch(
+      `https://servicodados.ibge.gov.br/api/v3/malhas/municipios/${municipalityId}?formato=application/vnd.geo+json`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    
+    const mesh: GeoJSON.Feature = await response.json();
     const size = calculateSize(mesh);
     
     // Verificar se precisa fazer evicção
@@ -248,29 +255,15 @@ export async function getMultipleMunicipalityMeshes(
 ): Promise<Map<string, GeoJSON.Feature>> {
   const meshMap = new Map<string, GeoJSON.Feature>();
 
-  // Mantém batch pequeno para não estourar limite de concorrência do backend (quebra 500 do API Gateway)
-  const CONCURRENCY = 3;
-  const queue = [...municipalityIds];
-  const workers: Promise<void>[] = [];
-
-  const runWorker = async () => {
-    while (queue.length > 0) {
-      const id = queue.shift();
-      if (!id) continue;
-
-      const mesh = await getMunicipalityMesh(id, true); // true = skip metadata save
-      if (mesh) {
-        meshMap.set(id, mesh);
-      }
+  // Buscar todas as malhas em paralelo, pulando save individual de metadata
+  const promises = municipalityIds.map(async (id) => {
+    const mesh = await getMunicipalityMesh(id, true); // true = skip metadata save
+    if (mesh) {
+      meshMap.set(id, mesh);
     }
-  };
+  });
 
-  // Inicia trabalhadores limitados por CONCURRENCY
-  for (let i = 0; i < CONCURRENCY; i++) {
-    workers.push(runWorker());
-  }
-
-  await Promise.all(workers);
+  await Promise.all(promises);
 
   // Salvar metadata uma única vez ao final (batch update)
   await saveIBGEMetadata();
@@ -282,3 +275,4 @@ export async function getMultipleMunicipalityMeshes(
 
 // Inicializar metadata ao carregar o módulo
 initIBGEMetadata();
+
