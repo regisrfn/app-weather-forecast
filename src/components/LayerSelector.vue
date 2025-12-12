@@ -135,6 +135,7 @@ onUnmounted(() => {
 @use '../styles/abstracts/colors' as *;
 @use '../styles/abstracts/variables' as *;
 @use '../styles/abstracts/mixins' as *;
+@use '../styles/abstracts/breakpoints' as *;
 
 .layer-selector {
   position: relative;
@@ -183,7 +184,12 @@ onUnmounted(() => {
   justify-content: center;
   gap: $spacing-xs;
   flex: 1;
+
+  @include md {
+    margin-left: calc((40px + #{$spacing-sm}) / 2);
+  }
 }
+  
 
 .layer-icon {
   flex-shrink: 0;
