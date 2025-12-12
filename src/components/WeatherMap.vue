@@ -14,7 +14,14 @@
             <div class="brand-subtitle">{{ getCurrentCenterCityName() }}</div>
           </div>
         </div>
-        <div class="topbar-date">{{ headerDateLabel }}</div>
+        <button
+          class="topbar-date-btn"
+          type="button"
+          @click="openDateTimePicker"
+          aria-label="Selecionar data e hora"
+        >
+          {{ headerDateLabel }}
+        </button>
         <button
           class="hamburger-btn"
           type="button"
@@ -458,6 +465,9 @@ const searchRadius = ref<number>(APP_CONFIG.RADIUS.DEFAULT);
 const forecastDate = ref<string>(''); // YYYY-MM-DD
 const forecastTime = ref<string>(''); // HH:MM
 const showDayCarousel = ref<boolean>(false); // Controla exibição do carrossel
+const openDateTimePicker = () => {
+  showDayCarousel.value = true;
+};
 
 // Controle de abertura do painel
 const isPanelOpen = ref<boolean>(false);

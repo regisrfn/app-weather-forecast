@@ -109,8 +109,9 @@
 }
 
 .brand-title {
-  font-weight: $font-extrabold;
+  font-weight: $font-bold;
   letter-spacing: $letter-spacing-tight;
+  color: var(--home-text-muted);
 
   @include md {
     font-size: $font-md;
@@ -131,14 +132,38 @@
   }
 }
 
-.topbar-date {
+.topbar-date-btn {
+  @include reset-button;
   color: var(--home-text-muted);
   font-size: $font-base;
+  background: var(--home-control-strong);
+  border: 1px solid var(--home-border-soft);
+  border-radius: $radius-md;
+  padding: 0.45rem 0.75rem;
+  box-shadow: var(--home-shadow-soft);
+  transition: $transition-fast;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  &:hover {
+    color: var(--home-text-strong);
+    border-color: var(--home-border-strong);
+    background: var(--home-control-hover);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 
   @include md {
     color: var(--home-text-strong);
     font-size: $font-sm;
     font-weight: $font-semibold;
+    min-width: 160px;
+    justify-content: center;
   }
 }
 
@@ -220,8 +245,9 @@
   height: 40px;
   position: relative;
   border-radius: $radius-md;
-  background: var(--home-control-bg);
-  border: 1px solid var(--home-border-soft);
+  background: var(--home-control-strong);
+  border: 1px solid var(--home-border-strong);
+  box-shadow: var(--home-shadow-soft);
   cursor: pointer;
   transition: $transition-fast;
   flex-shrink: 0;
@@ -1031,7 +1057,7 @@
   @include md {
     padding: 0.45rem 0.6rem;
     gap: 0.35rem;
-    justify-content: center;
+    justify-content: space-between;
   }
 }
 
@@ -1044,11 +1070,14 @@
   font-size: $font-xs;
   font-weight: $font-semibold;
   white-space: nowrap;
-  padding: 0.1rem 0.15rem;
+  padding: 0 0.35rem;
+  min-height: 32px;
+  justify-content: center;
 
   @include md {
     font-size: 0.62rem;
     gap: 0.28rem;
+    min-height: 28px;
   }
 }
 
