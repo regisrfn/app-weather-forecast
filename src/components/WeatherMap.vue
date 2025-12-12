@@ -384,7 +384,7 @@ import DayCarousel from './DayCarousel.vue';
 import WeatherAlerts from './WeatherAlerts.vue';
 import AlertDetailPanel from './AlertDetailPanel.vue';
 import LayerSelector from './LayerSelector.vue';
-import type { WeatherAlert, WeatherData } from '../types/weather';
+import type { AlertSeverity, WeatherAlert, WeatherData } from '../types/weather';
 import { componentLogger } from '../utils/logger';
 import { useTheme } from '../composables/useTheme';
 
@@ -751,6 +751,13 @@ const getLayerColor = (weather: WeatherData) => {
 };
 
 const legendItems = computed(() => {
+  const alertColor = (severity?: AlertSeverity) =>
+    getAlertColor(
+      severity
+        ? [{ code: `legend-${severity}`, severity, description: 'Legenda', timestamp: new Date().toISOString() }]
+        : []
+    );
+
   if (activeLayer.value === 'temperature') {
     return [
       { color: getTemperatureColor(15), label: '< 18°C' },
@@ -771,20 +778,20 @@ const legendItems = computed(() => {
 
   if (activeLayer.value === 'alerts') {
     return [
-      { color: 'rgba(148, 163, 184, 0.6)', label: 'Sem alertas' },
-      { color: 'rgba(59, 130, 246, 0.9)', label: 'Info' },
-      { color: 'rgba(234, 179, 8, 0.9)', label: 'Atenção' },
-      { color: 'rgba(249, 115, 22, 0.9)', label: 'Alerta' },
-      { color: 'rgba(239, 68, 68, 0.9)', label: 'Perigo' },
+      { color: alertColor(), label: 'Sem alertas' },
+      { color: alertColor('info'), label: 'Info' },
+      { color: alertColor('warning'), label: 'Atenção' },
+      { color: alertColor('alert'), label: 'Alerta' },
+      { color: alertColor('danger'), label: 'Perigo' },
     ];
   }
 
   return [
-    { color: 'rgba(42, 65, 96, 0.75)', label: '0 - Sem chuva' },
-    { color: 'rgba(76, 130, 196, 0.85)', label: '< 15 - Fraca' },
-    { color: 'rgba(55, 117, 195, 0.9)', label: '15-35 - Moderada' },
-    { color: 'rgba(37, 99, 235, 0.95)', label: '35-60 - Forte' },
-    { color: 'rgba(30, 64, 175, 0.95)', label: '> 60 - Intensa' },
+    { color: getRainfallColor(0), label: '0 - Sem chuva' },
+    { color: getRainfallColor(7.5), label: '< 15 - Fraca' },
+    { color: getRainfallColor(25), label: '15-35 - Moderada' },
+    { color: getRainfallColor(45), label: '35-60 - Forte' },
+    { color: getRainfallColor(70), label: '> 60 - Intensa' },
   ];
 });
 
