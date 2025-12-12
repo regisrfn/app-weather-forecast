@@ -332,18 +332,18 @@
     width: 3rem;
     height: 3rem;
     border-radius: 50%;
-    background: linear-gradient(135deg, #6aa1fa 0%, #3b75f1 100%);
+    background: linear-gradient(135deg, var(--floating-btn-start) 0%, var(--floating-btn-end) 100%);
     border: none;
     color: white;
     cursor: pointer;
     z-index: $z-info-toggle;
-    box-shadow: 0 6px 24px rgba(59, 130, 246, 0.45), 0 2px 8px rgba(37, 99, 235, 0.3);
+    box-shadow: var(--floating-btn-shadow);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     
     &:hover {
       transform: scale(1.08) translateY(-2px);
-      box-shadow: 0 10px 32px rgba(59, 130, 246, 0.55), 0 4px 12px rgba(68, 123, 243, 0.4);
-      background: linear-gradient(135deg, #5f9afa 0%, #2c6af1 100%);
+      box-shadow: var(--floating-btn-shadow-strong);
+      background: linear-gradient(135deg, var(--floating-btn-hover-start) 0%, var(--floating-btn-hover-end) 100%);
     }
     
     &:active {
@@ -354,16 +354,16 @@
       filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
     }
   }
-  
-  // Dark mode
+
+  // Garantir variações por tema mesmo com cache do CSS
   @include dark-mode {
     @include md {
-      background: linear-gradient(135deg, #317edd 0%, #165ed3 100%);
-      box-shadow: 0 6px 24px rgba(96, 165, 250, 0.45), 0 2px 8px rgba(59, 130, 246, 0.3);
-      
+      background: linear-gradient(135deg, var(--floating-btn-start) 0%, var(--floating-btn-end) 100%);
+      box-shadow: var(--floating-btn-shadow);
+
       &:hover {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        box-shadow: 0 10px 32px rgba(96, 165, 250, 0.55), 0 4px 12px rgba(59, 130, 246, 0.4);
+        background: linear-gradient(135deg, var(--floating-btn-hover-start) 0%, var(--floating-btn-hover-end) 100%);
+        box-shadow: var(--floating-btn-shadow-strong);
       }
     }
   }

@@ -993,10 +993,10 @@ const renderCityMeshes = async (
               }
               
               (layer as any).setStyle({
-                fillColor: '#58b1ff',
-                fillOpacity: 0.55,
+                fillColor: '#34d399',
+                fillOpacity: 0.6,
                 weight: 2.2,
-                color: '#8bd3ff',
+                color: '#10b981',
                 dashArray: '',
               });
               
@@ -1034,10 +1034,10 @@ const renderCityMeshes = async (
 
       if (currentSelectedId && weather.cityId === currentSelectedId && isPanelOpen.value) {
         (geoJsonLayer as any).setStyle({
-          fillColor: '#58b1ff',
-          fillOpacity: 0.55,
+          fillColor: '#34d399',
+          fillOpacity: 0.6,
           weight: 2.2,
-          color: '#8bd3ff',
+          color: '#10b981',
           dashArray: '',
         });
         selectedLayer = geoJsonLayer;

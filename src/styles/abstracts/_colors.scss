@@ -168,6 +168,14 @@ $opacity-hover: 0.30;
   --overlay-medium: rgba(47, 107, 216, 0.08);
   --overlay-dark: rgba(0, 0, 0, 0.25);
   
+  // Floating sidebar button
+  --floating-btn-start: #6aa1fa;
+  --floating-btn-end: #3b75f1;
+  --floating-btn-hover-start: #5f9afa;
+  --floating-btn-hover-end: #2c6af1;
+  --floating-btn-shadow: 0 6px 24px rgba(59, 130, 246, 0.45), 0 2px 8px rgba(37, 99, 235, 0.3);
+  --floating-btn-shadow-strong: 0 10px 32px rgba(59, 130, 246, 0.55), 0 4px 12px rgba(68, 123, 243, 0.4);
+  
   // Weather-specific Colors
   --weather-temp-cold: #3b82f6;
   --weather-temp-cool: #06b6d4;
@@ -267,6 +275,14 @@ $opacity-hover: 0.30;
   --home-control-border: rgba(88, 177, 255, 0.26);
   --home-shadow-soft: 0 18px 46px rgba(0, 0, 0, 0.45);
   --home-shadow-strong: 0 24px 66px rgba(0, 0, 0, 0.65);
+  
+  // Floating sidebar button
+  --floating-btn-start: #22d3ee;
+  --floating-btn-end: #0ea5e9;
+  --floating-btn-hover-start: #22d3ee;
+  --floating-btn-hover-end: #0ea5e9;
+  --floating-btn-shadow: 0 6px 24px rgba(56, 189, 248, 0.45), 0 2px 8px rgba(14, 165, 233, 0.3);
+  --floating-btn-shadow-strong: 0 10px 32px rgba(56, 189, 248, 0.55), 0 4px 12px rgba(14, 165, 233, 0.4);
   
   // Text adjustments for dark mode
   --text-primary: #e8f2ff;
