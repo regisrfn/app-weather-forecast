@@ -116,6 +116,7 @@
     .hourly-chart {
       height: 100%;
       width: 100%;
+      min-height: 0;
     }
 
     .weather-chart__title,
@@ -151,9 +152,15 @@
     @include portrait {
       .weather-chart__container,
       .hourly-chart__container {
+        min-height: 0;
         canvas {
           max-height: calc(100vh - 60px);
         }
+      }
+
+      .weather-chart {
+        min-height: 0;
+        height: 100%;
       }
     }
   }
