@@ -526,7 +526,7 @@
   }
 }
 
-.weather-grid {
+.info-panel .weather-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: $font-2xl;
@@ -730,7 +730,7 @@
     border-top-color: var(--home-accent);
   }
 
-  .weather-grid {
+  .info-panel .weather-grid {
     background: linear-gradient(145deg, rgba(9, 16, 36, 0.9), rgba(9, 16, 36, 0.7));
     border-top: 1px solid var(--home-border-soft);
   }

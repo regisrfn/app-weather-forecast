@@ -63,7 +63,6 @@
         </div>
 
         <div class="sidebar-section">
-          <label class="section-label" for="city-search">Buscar cidade</label>
           <div class="search-field">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M21 21l-4.35-4.35M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
