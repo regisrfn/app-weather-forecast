@@ -7,7 +7,7 @@
             <img src="/weather-icon.svg" alt="Ícone de previsão do tempo" width="26" height="26" loading="lazy" />
           </div>
           <div class="brand-text">
-            <div class="brand-title">Previsão do Tempo</div>
+            <div class="brand-title">VemChuva Brasil</div>
             <div class="brand-subtitle">{{ getCurrentCenterCityName() }}</div>
           </div>
         </div>
