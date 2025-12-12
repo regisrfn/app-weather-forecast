@@ -1,0 +1,210 @@
+@use '../../abstracts/variables' as *;
+@use '../../abstracts/breakpoints' as *;
+
+.chart-modal {
+  &__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: $z-modal;
+    padding: 0;
+
+    @include min-md {
+      display: none !important;
+    }
+  }
+
+  &__container {
+    background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      rgba(248, 250, 255, 0.98) 100%
+    );
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    @include portrait {
+      transform: rotate(90deg);
+      transform-origin: center center;
+      width: calc(100vh - 40px);
+      height: calc(100vw - 40px);
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      margin-left: calc(-50vh + 20px);
+      margin-top: calc(-50vw + 20px);
+    }
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-sm $spacing-md;
+    border-bottom: 2px solid rgba(139, 157, 225, 0.2);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    flex-shrink: 0;
+    min-height: 56px;
+    gap: $spacing-sm;
+
+    @include landscape {
+      padding: $spacing-md $spacing-lg;
+      min-height: 64px;
+    }
+  }
+
+  &__title {
+    font-size: 14px;
+    font-weight: $font-bold;
+    color: #667eea;
+    margin: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    @include landscape {
+      font-size: $font-lg;
+    }
+  }
+
+  &__close {
+    background: rgba(139, 157, 225, 0.15);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    z-index: 10;
+
+    span {
+      font-size: 22px;
+      color: #667eea;
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    &:active {
+      transform: scale(0.95);
+      background: rgba(139, 157, 225, 0.25);
+    }
+  }
+
+  &__body {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: $spacing-xs;
+    -webkit-overflow-scrolling: touch;
+    min-height: 0;
+
+    .weather-chart,
+    .hourly-chart {
+      height: 100%;
+      width: 100%;
+    }
+
+    .weather-chart__title,
+    .hourly-chart__title {
+      display: none;
+    }
+
+    .weather-chart__container,
+    .hourly-chart__container {
+      height: 100%;
+      width: 100%;
+      min-width: unset;
+      margin: 0;
+      padding: $spacing-xs;
+      overflow-x: auto;
+      overflow-y: hidden;
+
+      canvas {
+        width: 100% !important;
+        height: 100% !important;
+      }
+    }
+
+    @include landscape {
+      padding: $spacing-sm;
+
+      .weather-chart__container,
+      .hourly-chart__container {
+        padding: $spacing-xs;
+      }
+    }
+
+    @include portrait {
+      .weather-chart__container,
+      .hourly-chart__container {
+        canvas {
+          max-height: calc(100vh - 60px);
+        }
+      }
+    }
+  }
+}
+
+.chart-modal-enter-active,
+.chart-modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.chart-modal-enter-from,
+.chart-modal-leave-to {
+  opacity: 0;
+}
+
+.chart-modal-enter-active .chart-modal__container,
+.chart-modal-leave-active .chart-modal__container {
+  transition: transform 0.3s ease;
+}
+
+.chart-modal-enter-from .chart-modal__container,
+.chart-modal-leave-to .chart-modal__container {
+  transform: translateY(100%);
+}
+
+[data-theme="dark"] {
+  .chart-modal__container {
+    background: linear-gradient(135deg,
+      rgba(30, 41, 59, 0.98) 0%,
+      rgba(51, 65, 85, 0.98) 100%
+    );
+  }
+
+  .chart-modal__header {
+    background: rgba(30, 41, 59, 0.95);
+    border-bottom-color: rgba(71, 85, 105, 0.4);
+  }
+
+  .chart-modal__title {
+    color: var(--weather-primary);
+  }
+
+  .chart-modal__close {
+    background: rgba(71, 85, 105, 0.3);
+
+    span {
+      color: var(--weather-primary);
+    }
+
+    &:hover {
+      background: rgba(71, 85, 105, 0.5);
+    }
+  }
+}

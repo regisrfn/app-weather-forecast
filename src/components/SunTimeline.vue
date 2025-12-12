@@ -1,45 +1,45 @@
 <template>
   <div class="sun-timeline">
-    <div class="timeline-container">
+    <div class="sun-timeline__container">
       <!-- Sunrise marker -->
-      <div class="time-point sunrise">
-        <div class="time-label">Nascer</div>
-        <div class="time-value">{{ formatTime(sunrise) }}</div>
+      <div class="sun-timeline__time-point sun-timeline__time-point--sunrise">
+        <div class="sun-timeline__time-label">Nascer</div>
+        <div class="sun-timeline__time-value">{{ formatTime(sunrise) }}</div>
       </div>
       
       <!-- Progress bar -->
-      <div class="progress-bar-container">
-        <div class="progress-bar">
+      <div class="sun-timeline__progress">
+        <div class="sun-timeline__bar">
           <!-- Background gradient - always visible -->
-          <div class="gradient-base"></div>
+          <div class="sun-timeline__gradient"></div>
           
           <!-- Dark overlay that covers progressively -->
           <div 
             v-if="isCurrentDay"
-            class="dark-cover" 
+            class="sun-timeline__dark-cover" 
             :style="{ clipPath: `inset(0 ${100 - sunProgress * 100}% 0 0)` }"
           ></div>
           
           <!-- Sun indicator -->
           <div 
             v-if="isCurrentDay" 
-            class="sun-indicator"
+            class="sun-timeline__indicator"
             :style="{ left: `${sunProgress * 100}%` }"
           >
-            <div class="sun-dot"></div>
+            <div class="sun-timeline__dot"></div>
           </div>
         </div>
         
         <!-- Status text -->
-        <div v-if="isCurrentDay" class="status-text">
+        <div v-if="isCurrentDay" class="sun-timeline__status">
           {{ statusText }}
         </div>
       </div>
       
       <!-- Sunset marker -->
-      <div class="time-point sunset">
-        <div class="time-label">Pôr</div>
-        <div class="time-value">{{ formatTime(sunset) }}</div>
+      <div class="sun-timeline__time-point sun-timeline__time-point--sunset">
+        <div class="sun-timeline__time-label">Pôr</div>
+        <div class="sun-timeline__time-value">{{ formatTime(sunset) }}</div>
       </div>
     </div>
   </div>
@@ -125,184 +125,3 @@ const statusText = computed(() => {
   return remainingHours > 0 ? `${remainingHours}h de luz restante` : 'Noite';
 });
 </script>
-
-<style scoped lang="scss">
-@use '../styles/abstracts/colors' as *;
-@use '../styles/abstracts/variables' as *;
-@use '../styles/abstracts/breakpoints' as *;
-@use '../styles/abstracts/mixins' as *;
-
-.sun-timeline {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.timeline-container {
-  display: flex;
-  align-items: center;
-  gap: $spacing-sm;
-  flex: 1;
-  
-  @include md {
-    gap: $spacing-xs;
-  }
-}
-
-.time-point {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  min-width: 50px;
-  
-  @include md {
-    min-width: 42px;
-  }
-}
-
-.time-label {
-  font-size: 0.65rem;
-  font-weight: $font-semibold;
-  color: var(--weather-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  
-  @include md {
-    font-size: 0.55rem;
-  }
-}
-
-.time-value {
-  font-size: $font-sm;
-  font-weight: $font-bold;
-  color: var(--weather-text-primary);
-  
-  @include md {
-    font-size: $font-xs;
-  }
-}
-
-.progress-bar-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  min-width: 60px;
-  padding: 0 $spacing-xs;
-}
-
-.progress-bar {
-  position: relative;
-  width: 100%;
-  height: 16px;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  
-  @include dark-mode {
-    border-color: rgba(71, 85, 105, 0.5);
-  }
-  
-  @include md {
-    height: 14px;
-    border-radius: 7px;
-  }
-}
-
-.gradient-base {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    to right,
-    #fde047 0%,
-    #fbbf24 20%,
-    #fcd34d 40%,
-    #fb923c 60%,
-    #f97316 75%,
-    #ea580c 85%,
-    #4c1d95 95%,
-    #1e3a8a 97%,
-    #0f172a 100%
-  );
-}
-
-.dark-cover {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: #0f172a;
-  transition: clip-path 0.6s ease;
-}
-
-.status-text {
-  font-size: 0.65rem;
-  font-weight: $font-semibold;
-  color: var(--weather-text-muted);
-  text-align: center;
-  opacity: 0.8;
-  letter-spacing: 0.2px;
-  
-  @include md {
-    font-size: 0.6rem;
-  }
-}
-
-.sun-indicator {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  pointer-events: none;
-  transition: left 0.6s ease;
-}
-
-.sun-dot {
-  width: 20px;
-  height: 20px;
-  background: radial-gradient(circle, #fde047 0%, #fbbf24 70%);
-  border: 3px solid white;
-  border-radius: $radius-full;
-  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.3),
-              0 3px 12px rgba(251, 191, 36, 0.8),
-              0 0 20px rgba(253, 224, 71, 0.5);
-  animation: pulse 2s ease-in-out infinite;
-  
-  @include dark-mode {
-    border-color: rgba(15, 23, 42, 0.95);
-    box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.25),
-                0 3px 12px rgba(251, 191, 36, 0.7),
-                0 0 20px rgba(253, 224, 71, 0.4);
-  }
-  
-  @include md {
-    width: 16px;
-    height: 16px;
-    border-width: 2px;
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.3),
-                0 3px 12px rgba(251, 191, 36, 0.8),
-                0 0 20px rgba(253, 224, 71, 0.5);
-  }
-  50% {
-    transform: scale(1.15);
-    box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.4),
-                0 5px 20px rgba(251, 191, 36, 1),
-                0 0 30px rgba(253, 224, 71, 0.7);
-  }
-}
-</style>

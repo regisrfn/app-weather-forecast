@@ -27,4 +27,11 @@
 @use 'components/weather-alerts';
 @use 'components/alert-detail-panel';
 @use 'components/city-search-modal';
+@use 'components/controls/layer-selector';
+@use 'components/carousels/touch-carousel';
+@use 'components/widgets/wind-compass';
+@use 'components/widgets/sun-timeline';
+@use 'components/charts/weather-chart';
+@use 'components/charts/hourly-chart';
+@use 'components/modals/chart-modal';
 @use 'components/static-pages';

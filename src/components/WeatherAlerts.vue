@@ -1,6 +1,6 @@
 <template>
   <div v-if="alerts && alerts.length > 0" class="weather-alerts">
-    <div class="alerts-header">
+    <div class="weather-alerts__header">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2L1 21h22L12 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         <path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -8,31 +8,31 @@
       <h3>Alertas Meteorológicos</h3>
     </div>
     
-    <div class="alerts-list">
+    <div class="weather-alerts__list">
       <div 
         v-for="(alert, index) in sortedAlerts" 
         :key="index"
-        class="alert-item"
-        :class="[`severity-${alert.severity}`]"
+        class="weather-alerts__item"
+        :class="[`weather-alerts__item--severity-${alert.severity}`]"
         @click="handleAlertClick(alert)"
         role="button"
         tabindex="0"
         @keypress.enter="handleAlertClick(alert)"
       >
-        <div class="alert-icon">
+        <div class="weather-alerts__icon">
           <component :is="getAlertIcon(alert.severity)" />
         </div>
-        <div class="alert-content">
-          <div class="alert-description">
-            <span class="alert-emoji">{{ getAlertEmoji(alert.code) }}</span>
+        <div class="weather-alerts__content">
+          <div class="weather-alerts__description">
+            <span class="weather-alerts__emoji">{{ getAlertEmoji(alert.code) }}</span>
             {{ getAlertDescription(alert.code) }}
           </div>
-          <div class="alert-meta">
-            <span class="alert-code">{{ getAlertCodeLabel(alert.code) }}</span>
-            <span class="alert-time">{{ formatAlertTime(alert.timestamp) }}</span>
+          <div class="weather-alerts__meta">
+            <span class="weather-alerts__code">{{ getAlertCodeLabel(alert.code) }}</span>
+            <span class="weather-alerts__time">{{ formatAlertTime(alert.timestamp) }}</span>
           </div>
         </div>
-        <div class="alert-arrow">
+        <div class="weather-alerts__arrow">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>

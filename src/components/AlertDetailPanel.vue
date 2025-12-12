@@ -39,18 +39,18 @@ const alertCodeLabels: Record<string, string> = {
 // Ícones SVG por severidade
 const getSeverityIcon = (severity: string) => {
   const icons = {
-    danger: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="severity-icon">
+    danger: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="alert-detail__severity-icon">
       <circle cx="12" cy="12" r="10" stroke-width="2"/>
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01"/>
     </svg>`,
-    alert: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="severity-icon">
+    alert: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="alert-detail__severity-icon">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
     </svg>`,
-    warning: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="severity-icon">
+    warning: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="alert-detail__severity-icon">
       <circle cx="12" cy="12" r="10" stroke-width="2"/>
       <circle cx="12" cy="12" r="3" fill="currentColor"/>
     </svg>`,
-    info: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="severity-icon">
+    info: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="alert-detail__severity-icon">
       <circle cx="12" cy="12" r="10" stroke-width="2"/>
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/>
     </svg>`,
@@ -281,19 +281,19 @@ const handleClose = () => {
 <template>
   <Teleport to="body">
     <Transition name="alert-panel">
-      <div v-if="isOpen && alert" class="alert-detail-overlay" @click.self="handleClose">
-        <div class="alert-detail-card" :class="`severity-${alert.severity}`">
+      <div v-if="isOpen && alert" class="alert-detail alert-detail__overlay" @click.self="handleClose">
+        <div class="alert-detail__card" :class="`alert-detail__card--severity-${alert.severity}`">
           <!-- Header -->
-          <div class="alert-header">
-            <div class="severity-badge" :class="`severity-${alert.severity}`">
+          <div class="alert-detail__header">
+            <div class="alert-detail__severity-badge" :class="`alert-detail__severity-badge--${alert.severity}`">
               <div v-html="getSeverityIcon(alert.severity)"></div>
-              <span class="severity-label">
+              <span class="alert-detail__severity-label">
                 {{ alert.severity === 'danger' ? 'PERIGO' : 
                    alert.severity === 'alert' ? 'ALERTA' : 
                    alert.severity === 'warning' ? 'ATENÇÃO' : 'INFO' }}
               </span>
             </div>
-            <button class="close-button" @click="handleClose" aria-label="Fechar">
+            <button class="alert-detail__close" @click="handleClose" aria-label="Fechar">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
               </svg>
@@ -301,14 +301,14 @@ const handleClose = () => {
           </div>
 
           <!-- Content -->
-          <div class="alert-detail-content">
+          <div class="alert-detail__content">
             <!-- Description -->
-            <div class="alert-detail-description">
+            <div class="alert-detail__description">
               <h2>{{ alert.description }}</h2>
-              <div class="alert-detail-meta">
-                <span class="alert-type">{{ alertLabel }}</span>
+              <div class="alert-detail__meta">
+                <span class="alert-detail__type">{{ alertLabel }}</span>
                 <button 
-                  class="alert-detail-time clickable"
+                  class="alert-detail__time alert-detail__time--clickable"
                   @click="handleTimestampClick"
                   title="Clique para buscar previsão neste horário"
                 >
@@ -322,12 +322,12 @@ const handleClose = () => {
             </div>
 
             <!-- Technical Details -->
-            <div v-if="formatDetails.length > 0" class="technical-details">
+            <div v-if="formatDetails.length > 0" class="alert-detail__technical">
               <h3>Detalhes Técnicos</h3>
-              <div class="details-grid">
-                <div v-for="detail in formatDetails" :key="detail.label" class="detail-item">
-                  <span class="detail-label">{{ detail.label }}</span>
-                  <span class="detail-value">{{ detail.value }}</span>
+              <div class="alert-detail__details-grid">
+                <div v-for="detail in formatDetails" :key="detail.label" class="alert-detail__detail">
+                  <span class="alert-detail__detail-label">{{ detail.label }}</span>
+                  <span class="alert-detail__detail-value">{{ detail.value }}</span>
                 </div>
               </div>
             </div>
@@ -337,7 +337,3 @@ const handleClose = () => {
     </Transition>
   </Teleport>
 </template>
-
-<style scoped lang="scss">
-// Styles will be in separate SCSS file
-</style>

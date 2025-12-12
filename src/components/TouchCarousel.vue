@@ -2,7 +2,7 @@
   <div class="touch-carousel">
     <div 
       ref="carouselTrack"
-      class="carousel-track"
+      class="touch-carousel__track"
       @mousedown="handleDragStart"
       @mousemove="handleDragMove"
       @mouseup="handleDragEnd"
@@ -18,7 +18,7 @@
     <!-- Navigation Buttons -->
     <button 
       v-if="showNavigation && canScrollLeft"
-      class="carousel-nav prev"
+      class="touch-carousel__nav touch-carousel__nav--prev"
       @click="scrollPrev"
       aria-label="Anterior"
     >
@@ -29,7 +29,7 @@
     
     <button 
       v-if="showNavigation && canScrollRight"
-      class="carousel-nav next"
+      class="touch-carousel__nav touch-carousel__nav--next"
       @click="scrollNext"
       aria-label="Próximo"
     >
@@ -39,12 +39,12 @@
     </button>
     
     <!-- Pagination Dots -->
-    <div v-if="showPagination" class="carousel-pagination">
+    <div v-if="showPagination" class="touch-carousel__pagination">
       <button
         v-for="(_, index) in totalSlides"
         :key="index"
-        class="pagination-dot"
-        :class="{ active: index === currentSlide }"
+        class="touch-carousel__dot"
+        :class="{ 'touch-carousel__dot--active': index === currentSlide }"
         @click="goToSlide(index)"
         :aria-label="`Ir para slide ${index + 1}`"
       />
@@ -259,127 +259,3 @@ defineExpose({
   currentSlide
 });
 </script>
-
-<style scoped lang="scss">
-@use '../styles/abstracts/colors' as *;
-@use '../styles/abstracts/variables' as *;
-@use '../styles/abstracts/mixins' as *;
-@use '../styles/abstracts/breakpoints' as *;
-
-.touch-carousel {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  padding: $spacing-md 0 $spacing-2xl 0;
-}
-
-.carousel-track {
-  display: flex;
-  width: 100%;
-  cursor: grab;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: pan-y;
-  will-change: transform;
-  
-  &:active {
-    cursor: grabbing;
-  }
-}
-
-.carousel-nav {
-  @include reset-button;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 48px;
-  height: 48px;
-  border-radius: $radius-full;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 2px solid rgba(139, 157, 225, 0.2);
-  color: #8b9de1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all $transition-normal;
-  box-shadow: 0 4px 16px rgba(139, 157, 225, 0.15);
-  z-index: 10;
-  
-  &:hover {
-    background: rgba(255, 255, 255, 1);
-    border-color: #8b9de1;
-    transform: translateY(-50%) scale(1.08);
-    box-shadow: 0 6px 24px rgba(139, 157, 225, 0.25);
-  }
-  
-  &:active {
-    transform: translateY(-50%) scale(1.02);
-  }
-  
-  &.prev {
-    left: -24px;
-    
-    @include md {
-      left: 4px;
-    }
-  }
-  
-  &.next {
-    right: -24px;
-    
-    @include md {
-      right: 4px;
-    }
-  }
-  
-  svg {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-  }
-  
-  @include md {
-    width: 40px;
-    height: 40px;
-    
-    svg {
-      width: 18px;
-      height: 18px;
-    }
-  }
-}
-
-.carousel-pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: $spacing-sm;
-  margin-top: $spacing-lg;
-  padding: $spacing-sm;
-}
-
-.pagination-dot {
-  @include reset-button;
-  width: 10px;
-  height: 10px;
-  border-radius: $radius-full;
-  background: rgba(139, 157, 225, 0.3);
-  border: none;
-  cursor: pointer;
-  transition: all $transition-fast;
-  
-  &:hover {
-    background: rgba(139, 157, 225, 0.5);
-    transform: scale(1.2);
-  }
-  
-  &.active {
-    background: #8b9de1;
-    width: 28px;
-    box-shadow: 0 2px 8px rgba(139, 157, 225, 0.4);
-  }
-}
-</style>

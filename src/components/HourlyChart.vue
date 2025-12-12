@@ -1,7 +1,7 @@
 <template>
   <div class="hourly-chart">
-    <h3 class="chart-title">Previsão Hora a Hora (Próximas {{ adjustedMaxHours }}h)</h3>
-    <div class="chart-container">
+    <h3 class="hourly-chart__title">Previsão Hora a Hora (Próximas {{ adjustedMaxHours }}h)</h3>
+    <div class="hourly-chart__container">
       <canvas ref="chartCanvas" role="img" :aria-label="chartAriaLabel"></canvas>
     </div>
   </div>
@@ -356,85 +356,3 @@ watch(() => props.hourlyForecasts, () => {
   createChart();
 }, { deep: true });
 </script>
-
-<style scoped lang="scss">
-@use '../styles/abstracts/colors' as *;
-@use '../styles/abstracts/variables' as *;
-@use '../styles/abstracts/mixins' as *;
-@use '../styles/abstracts/breakpoints' as *;
-
-.hourly-chart {
-  width: 100%;
-  animation: fadeIn 0.6s ease-out 0.3s both;
-}
-
-.chart-title {
-  font-size: $font-lg;
-  font-weight: $font-bold;
-  color: $weather-text-primary;
-  margin-bottom: $spacing-lg;
-  text-align: center;
-  
-  [data-theme="dark"] & {
-    color: rgba(226, 232, 240, 0.95);
-  }
-  
-  @include md {
-    font-size: $font-base;
-    margin-bottom: $spacing-md;
-  }
-}
-
-.chart-container {
-  position: relative;
-  width: 100%;
-  height: 350px;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(248, 250, 255, 0.92) 100%
-  );
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: $spacing-xl;
-  border-radius: $radius-xl;
-  box-shadow: 0 4px 16px rgba(139, 157, 225, 0.12);
-  border: 2px solid rgba(139, 157, 225, 0.15);
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  
-  [data-theme="dark"] & {
-    background: linear-gradient(135deg, 
-      rgba(30, 41, 59, 0.9) 0%,
-      rgba(51, 65, 85, 0.88) 100%
-    );
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-    border-color: rgba(71, 85, 105, 0.4);
-  }
-  
-  @include md {
-    height: 300px;
-    padding: $spacing-lg;
-  }
-  
-  @include sm {
-    height: 280px;
-    padding: $spacing-md;
-    
-    canvas {
-      min-width: 500px;
-    }
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-</style>

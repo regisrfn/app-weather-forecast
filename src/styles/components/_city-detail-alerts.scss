@@ -29,7 +29,7 @@
     }
   }
 
-  .alerts-header {
+  .weather-alerts__header {
     display: flex;
     align-items: center;
     gap: $spacing-md;
@@ -61,13 +61,13 @@
     }
   }
 
-  .alerts-list {
+  .weather-alerts__list {
     display: flex;
     flex-direction: column;
     gap: $spacing-md;
   }
 
-  .alert-item {
+  .weather-alerts__item {
     display: flex;
     align-items: center;
     gap: $spacing-lg;
@@ -103,7 +103,7 @@
     }
   }
 
-  .alert-icon {
+  .weather-alerts__icon {
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -127,19 +127,19 @@
     }
   }
 
-  .alert-content {
+  .weather-alerts__content {
     flex: 1;
     min-width: 0;
   }
 
-  .alert-description {
+  .weather-alerts__description {
     font-size: $font-base;
     font-weight: $font-bold;
     margin-bottom: $spacing-sm;
     line-height: 1.5;
     color: $weather-text-primary;
     
-    .alert-emoji {
+    .weather-alerts__emoji {
       margin-right: $spacing-xs;
       font-size: 1.2em;
     }
@@ -149,7 +149,7 @@
     }
   }
 
-  .alert-meta {
+  .weather-alerts__meta {
     display: flex;
     align-items: center;
     gap: $spacing-md;
@@ -163,7 +163,7 @@
     }
   }
 
-  .alert-code {
+  .weather-alerts__code {
     font-weight: $font-extrabold;
     text-transform: uppercase;
     letter-spacing: 0.8px;
@@ -173,13 +173,13 @@
     color: $weather-primary;
   }
 
-  .alert-time {
+  .weather-alerts__time {
     color: $weather-text-muted;
     font-weight: $font-semibold;
     font-variant-numeric: tabular-nums;
   }
 
-  .alert-arrow {
+  .weather-alerts__arrow {
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -195,7 +195,7 @@
       height: 20px;
     }
 
-    .alert-item:hover & {
+    .weather-alerts__item:hover & {
       opacity: 1;
       transform: translateX(4px);
       color: $weather-primary;
@@ -203,53 +203,53 @@
   }
 
   // Estilos por severidade com cores mantidas - aumentar especificidade
-  .alerts-list .alert-item.severity-danger {
+  .weather-alerts__list .weather-alerts__item--severity-danger {
     border-left-color: #dc2626 !important;
 
-    .alert-icon {
+    .weather-alerts__icon {
       color: #dc2626;
     }
     
-    .alert-code {
+    .weather-alerts__code {
       background: rgba(220, 38, 38, 0.1);
       color: #dc2626;
     }
   }
 
-  .alerts-list .alert-item.severity-alert {
+  .weather-alerts__list .weather-alerts__item--severity-alert {
     border-left-color: #ea580c !important;
 
-    .alert-icon {
+    .weather-alerts__icon {
       color: #ea580c;
     }
     
-    .alert-code {
+    .weather-alerts__code {
       background: rgba(234, 88, 12, 0.1);
       color: #ea580c;
     }
   }
 
-  .alerts-list .alert-item.severity-warning {
+  .weather-alerts__list .weather-alerts__item--severity-warning {
     border-left-color: #d97706 !important;
 
-    .alert-icon {
+    .weather-alerts__icon {
       color: #d97706;
     }
     
-    .alert-code {
+    .weather-alerts__code {
       background: rgba(217, 119, 6, 0.1);
       color: #d97706;
     }
   }
 
-  .alerts-list .alert-item.severity-info {
+  .weather-alerts__list .weather-alerts__item--severity-info {
     border-left-color: #0284c7 !important;
 
-    .alert-icon {
+    .weather-alerts__icon {
       color: #0284c7;
     }
     
-    .alert-code {
+    .weather-alerts__code {
       background: rgba(2, 132, 199, 0.1);
       color: #0284c7;
     }
@@ -258,7 +258,7 @@
 }
 
 // Dark mode overrides - moved outside .city-detail-page for proper cascade
-// Using higher specificity to override global .alert-item styles from _weather-alerts.scss
+// Using higher specificity to override global styles
 [data-theme="dark"] {
   .city-detail-page {
     .weather-alerts {
@@ -271,11 +271,11 @@
       box-shadow: 0 4px 16px var(--weather-shadow) !important;
     }
 
-    .alerts-header h3 {
+    .weather-alerts__header h3 {
       color: var(--weather-text-primary) !important;
     }
 
-    .alerts-list .alert-item {
+    .weather-alerts__list .weather-alerts__item {
       background: rgba(30, 41, 59, 0.90) !important;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
 
@@ -289,67 +289,67 @@
       }
     }
 
-    .alert-description {
+    .weather-alerts__description {
       color: var(--weather-text-primary) !important;
     }
 
-    .alert-meta {
+    .weather-alerts__meta {
       color: var(--weather-text-secondary) !important;
     }
 
-    .alert-time {
+    .weather-alerts__time {
       color: var(--weather-text-muted) !important;
     }
   }
 
   // Severity colors for dark mode with maximum specificity
-  .city-detail-page .alerts-section .alerts-list .alert-item.severity-danger {
+  .city-detail-page .alerts-section .weather-alerts__list .weather-alerts__item--severity-danger {
     border-left-color: #f87171 !important;
 
-    .alert-icon {
+    .weather-alerts__icon {
       color: #f87171 !important;
     }
     
-    .alert-code {
+    .weather-alerts__code {
       background: rgba(248, 113, 113, 0.15) !important;
       color: #fca5a5 !important;
     }
   }
 
-  .city-detail-page .alerts-section .alerts-list .alert-item.severity-alert {
+  .city-detail-page .alerts-section .weather-alerts__list .weather-alerts__item--severity-alert {
     border-left-color: #fb923c !important;
 
-    .alert-icon {
+    .weather-alerts__icon {
       color: #fb923c !important;
     }
     
-    .alert-code {
+    .weather-alerts__code {
       background: rgba(251, 146, 60, 0.15) !important;
       color: #fdba74 !important;
     }
   }
 
-  .city-detail-page .alerts-section .alerts-list .alert-item.severity-warning {
+  .city-detail-page .alerts-section .weather-alerts__list .weather-alerts__item--severity-warning {
     border-left-color: #fbbf24 !important;
 
-    .alert-icon {
+    .weather-alerts__icon {
       color: #fbbf24 !important;
     }
     
-    .alert-code {
+    .weather-alerts__code {
       background: rgba(251, 191, 36, 0.15) !important;
       color: #fcd34d !important;
     }
   }
 
-  .city-detail-page .alerts-section .alerts-list .alert-item.severity-info {
+  .city-detail-page .alerts-section .weather-alerts__list .weather-alerts__item--severity-info {
     border-left-color: #38bdf8 !important;
 
-    .alert-icon {
+    .weather-alerts__icon {
       color: #38bdf8 !important;
     }
     
-    .alert-code {
+    .weather-alerts__code {
       background: rgba(56, 189, 248, 0.15) !important;
       color: #7dd3fc !important;
     }

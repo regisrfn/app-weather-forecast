@@ -205,7 +205,3 @@ watch(() => props.isOpen, async (isOpen) => {
   }
 });
 </script>
-
-<style scoped lang="scss">
-// Os estilos já estão em _city-search-modal.scss
-</style>

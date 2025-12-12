@@ -1,5 +1,5 @@
 // =================================
-// WEATHER ALERTS COMPONENT
+// WEATHER ALERTS COMPONENT (BEM)
 // Estilos para página principal (WeatherMap)
 // =================================
 
@@ -12,189 +12,189 @@
   background: linear-gradient(135deg, #fff8dc 0%, #fffaf0 100%);
   padding: 1rem;
   border-left: 0.1rem solid #ffa500;
-}
 
-.alerts-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  color: #d97706;
-
-  svg {
-    flex-shrink: 0;
-  }
-
-  h3 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 600;
-  }
-}
-
-.alerts-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.alert-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 8px;
-  background: white;
-  border-left: 3px solid;
-  transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-  user-select: none;
-
-  // Only apply base styles to main page, not city detail
-  .info-panel & {
-    background: white !important;
-  }
-
-  &:hover {
-    transform: translateX(4px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  &:active {
-    transform: translateX(2px) scale(0.98);
-  }
-
-  &:focus {
-    outline: 2px solid rgba(0, 0, 0, 0.2);
-    outline-offset: 2px;
-  }
-}
-
-.alert-icon {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-}
-
-.alert-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.alert-description {
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 6px;
-  line-height: 1.4;
-}
-
-.alert-meta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-.alert-code {
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.alert-time {
-  color: #666;
-}
-
-.alert-arrow {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  opacity: 0.4;
-  transition: opacity 0.2s, transform 0.2s;
-
-  svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  .alert-item:hover & {
-    opacity: 0.8;
-    transform: translateX(2px);
-  }
-}
-
-// Estilos por severidade
-.alert-item.severity-danger {
-  border-left-color: #dc2626;
-
-  .alert-icon {
-    color: #dc2626;
-  }
-}
-
-.alert-item.severity-alert {
-  border-left-color: #ea580c;
-
-  .alert-icon {
-    color: #ea580c;
-  }
-}
-
-.alert-item.severity-warning {
-  border-left-color: #d97706;
-
-  .alert-icon {
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
     color: #d97706;
+
+    svg {
+      flex-shrink: 0;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    background: white;
+    border-left: 3px solid;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    user-select: none;
+
+    .info-panel & {
+      background: white !important;
+    }
+
+    &:hover {
+      transform: translateX(4px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    &:active {
+      transform: translateX(2px) scale(0.98);
+    }
+
+    &:focus {
+      outline: 2px solid rgba(0, 0, 0, 0.2);
+      outline-offset: 2px;
+    }
+
+    &--severity-danger {
+      border-left-color: #dc2626;
+
+      .weather-alerts__icon {
+        color: #dc2626;
+      }
+    }
+
+    &--severity-alert {
+      border-left-color: #ea580c;
+
+      .weather-alerts__icon {
+        color: #ea580c;
+      }
+    }
+
+    &--severity-warning {
+      border-left-color: #d97706;
+
+      .weather-alerts__icon {
+        color: #d97706;
+      }
+    }
+
+    &--severity-info {
+      border-left-color: #0284c7;
+
+      .weather-alerts__icon {
+        color: #0284c7;
+      }
+    }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__description {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    opacity: 0.7;
+  }
+
+  &__code {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__time {
+    color: #666;
+  }
+
+  &__emoji {
+    margin-right: 4px;
+  }
+
+  &__arrow {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    opacity: 0.4;
+    transition: opacity 0.2s, transform 0.2s;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .weather-alerts__item:hover & {
+      opacity: 0.8;
+      transform: translateX(2px);
+    }
   }
 }
 
-.alert-item.severity-info {
-  border-left-color: #0284c7;
-
-  .alert-icon {
-    color: #0284c7;
-  }
-}
-
-// Responsividade
 @include md {
   .weather-alerts {
     padding: 12px;
   }
   
-  .alerts-header h3 {
+  .weather-alerts__header h3 {
     font-size: 14px;
   }
   
-  .alert-item {
+  .weather-alerts__item {
     padding: 10px;
     gap: 10px;
   }
   
-  .alert-icon {
+  .weather-alerts__icon {
     width: 28px;
     height: 28px;
   }
   
-  .alert-description {
+  .weather-alerts__description {
     font-size: 13px;
   }
   
-  .alert-meta {
+  .weather-alerts__meta {
     font-size: 11px;
     gap: 8px;
   }
 }
 
-// Dark mode support for main weather map
 [data-theme="dark"] {
   .weather-alerts {
     background: linear-gradient(135deg, rgba(124, 242, 255, 0.12), rgba(159, 122, 234, 0.12));
@@ -205,7 +205,7 @@
       0 0 18px var(--home-glow);
   }
 
-  .alerts-header {
+  .weather-alerts__header {
     color: var(--home-text-strong);
     
     h3 {
@@ -213,7 +213,7 @@
     }
   }
 
-  .alert-item {
+  .weather-alerts__item {
     background: var(--home-surface) !important;
     box-shadow:
       0 12px 28px rgba(0, 0, 0, 0.5),
@@ -228,16 +228,16 @@
     }
   }
 
-  .alert-description {
+  .weather-alerts__description {
     color: var(--home-text-strong);
   }
 
-  .alert-meta,
-  .alert-time {
+  .weather-alerts__meta,
+  .weather-alerts__time {
     color: var(--home-text-muted);
   }
 
-  .alert-code {
+  .weather-alerts__code {
     background: rgba(124, 242, 255, 0.12);
     color: var(--home-text-strong);
   }

@@ -2,7 +2,7 @@
   <div class="wind-compass">
     <svg
       viewBox="0 0 200 200"
-      class="compass-svg"
+      class="wind-compass__svg"
       role="img"
       :aria-label="`Bússola indicando vento soprando para ${Math.round(displayedDirection)}° a ${windSpeed.toFixed(1)} km/h`"
     >
@@ -50,7 +50,7 @@
       <circle cx="100" cy="100" r="30" fill="none" stroke="currentColor" stroke-width="0.6" opacity="0.08" />
       
       <!-- Marcações de graus a cada 30° -->
-      <g class="degree-marks" opacity="0.3">
+      <g class="wind-compass__degree-marks" opacity="0.3">
         <line x1="100" y1="15" x2="100" y2="25" stroke="currentColor" stroke-width="2" />
         <line x1="143.3" y1="25" x2="138.3" y2="32.68" stroke="currentColor" stroke-width="1.5" />
         <line x1="175" y1="56.7" x2="167.32" y2="61.7" stroke="currentColor" stroke-width="1.5" />
@@ -66,14 +66,14 @@
       </g>
       
       <!-- Pontos cardeais -->
-      <text x="100" y="35" text-anchor="middle" class="cardinal-point cardinal-n" font-size="20" font-weight="bold">N</text>
-      <text x="165" y="108" text-anchor="middle" class="cardinal-point" font-size="16" font-weight="600">L</text>
-      <text x="100" y="175" text-anchor="middle" class="cardinal-point" font-size="16" font-weight="600">S</text>
-      <text x="35" y="108" text-anchor="middle" class="cardinal-point" font-size="16" font-weight="600">O</text>
+      <text x="100" y="35" text-anchor="middle" class="wind-compass__cardinal wind-compass__cardinal--north" font-size="20" font-weight="bold">N</text>
+      <text x="165" y="108" text-anchor="middle" class="wind-compass__cardinal" font-size="16" font-weight="600">L</text>
+      <text x="100" y="175" text-anchor="middle" class="wind-compass__cardinal" font-size="16" font-weight="600">S</text>
+      <text x="35" y="108" text-anchor="middle" class="wind-compass__cardinal" font-size="16" font-weight="600">O</text>
       
       <!-- Seta indicadora com animação de oscilação -->
       <g
-        class="wind-arrow"
+        class="wind-compass__arrow"
         :style="`--wind-direction: ${displayedDirection}deg`"
       >
         <!-- Sombra da seta -->
@@ -105,9 +105,9 @@
     </svg>
     
     <!-- Velocidade do vento -->
-    <div class="wind-speed">
-      <span class="wind-speed-value">{{ windSpeed.toFixed(1) }}</span>
-      <span class="wind-speed-unit">km/h</span>
+    <div class="wind-compass__speed">
+      <span class="wind-compass__speed-value">{{ windSpeed.toFixed(1) }}</span>
+      <span class="wind-compass__speed-unit">km/h</span>
     </div>
   </div>
 </template>
@@ -134,116 +134,3 @@ onMounted(() => {
   });
 });
 </script>
-
-<style scoped lang="scss">
-@use '../styles/abstracts/colors' as *;
-@use '../styles/abstracts/variables' as *;
-@use '../styles/abstracts/mixins' as *;
-@use '../styles/abstracts/breakpoints' as *;
-
-.wind-compass {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-md;
-  padding: 0;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  min-width: auto;
-  position: relative;
-  transition: all $transition-normal;
-  
-  &:hover {
-    transform: scale(1.02);
-  }
-  
-  @include md {
-    min-width: auto;
-    padding: 0;
-    gap: $spacing-sm;
-  }
-}
-
-.compass-svg {
-  width: 100%;
-  max-width: 180px;
-  height: auto;
-  color: $weather-text-secondary;
-  filter: drop-shadow(0 2px 8px rgba(139, 157, 225, 0.15));
-  
-  @include md {
-    max-width: 160px;
-  }
-}
-
-.cardinal-point {
-  fill: $weather-text-secondary;
-  font-weight: $font-semibold;
-  
-  &.cardinal-n {
-    fill: #ef4444;
-    font-weight: $font-extrabold;
-    filter: drop-shadow(0 1px 2px rgba(239, 68, 68, 0.5));
-  }
-}
-
-.degree-marks {
-  stroke: $weather-text-muted;
-}
-
-// Animação de oscilação realista da seta
-@keyframes windOscillation {
-  0%, 100% {
-    transform: rotate(calc(var(--wind-direction) - 3deg));
-  }
-  50% {
-    transform: rotate(calc(var(--wind-direction) + 3deg));
-  }
-}
-
-.wind-arrow {
-  transform-origin: 100px 100px;
-  transform: rotate(var(--wind-direction));
-  animation: windOscillation 2s ease-in-out infinite;
-  filter: drop-shadow(0 3px 8px rgba(239, 68, 68, 0.4));
-  will-change: transform;
-}
-
-// Pausa animação se usuário preferir movimento reduzido
-@media (prefers-reduced-motion: reduce) {
-  .wind-arrow {
-    animation: none;
-  }
-}
-
-.wind-speed {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding-top: $spacing-xs;
-  width: 100%;
-}
-
-.wind-speed-value {
-  font-size: 1.75rem;
-  font-weight: $font-extrabold;
-  color: $weather-primary;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-  
-  @include md {
-    font-size: 1.5rem;
-  }
-}
-
-.wind-speed-unit {
-  font-size: $font-xs;
-  font-weight: $font-bold;
-  color: $weather-text-secondary;
-  text-transform: uppercase;
-  letter-spacing: $letter-spacing-wide;
-  opacity: 0.75;
-}
-</style>

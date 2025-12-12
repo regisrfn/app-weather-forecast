@@ -1,0 +1,108 @@
+@use '../../abstracts/colors' as *;
+@use '../../abstracts/variables' as *;
+@use '../../abstracts/mixins' as *;
+@use '../../abstracts/breakpoints' as *;
+
+.wind-compass {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-md;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  min-width: auto;
+  position: relative;
+  transition: all $transition-normal;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+
+  @include md {
+    min-width: auto;
+    padding: 0;
+    gap: $spacing-sm;
+  }
+
+  &__svg {
+    width: 100%;
+    max-width: 180px;
+    height: auto;
+    color: $weather-text-secondary;
+    filter: drop-shadow(0 2px 8px rgba(139, 157, 225, 0.15));
+
+    @include md {
+      max-width: 160px;
+    }
+  }
+
+  &__cardinal {
+    fill: $weather-text-secondary;
+    font-weight: $font-semibold;
+
+    &--north {
+      fill: #ef4444;
+      font-weight: $font-extrabold;
+      filter: drop-shadow(0 1px 2px rgba(239, 68, 68, 0.5));
+    }
+  }
+
+  &__degree-marks {
+    stroke: $weather-text-muted;
+  }
+
+  &__arrow {
+    transform-origin: 100px 100px;
+    transform: rotate(var(--wind-direction));
+    animation: wind-compass-oscillation 2s ease-in-out infinite;
+    filter: drop-shadow(0 3px 8px rgba(239, 68, 68, 0.4));
+    will-change: transform;
+  }
+
+  &__speed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding-top: $spacing-xs;
+    width: 100%;
+  }
+
+  &__speed-value {
+    font-size: 1.75rem;
+    font-weight: $font-extrabold;
+    color: $weather-primary;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+
+    @include md {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__speed-unit {
+    font-size: $font-xs;
+    font-weight: $font-bold;
+    color: $weather-text-secondary;
+    text-transform: uppercase;
+    letter-spacing: $letter-spacing-wide;
+    opacity: 0.75;
+  }
+}
+
+@keyframes wind-compass-oscillation {
+  0%, 100% {
+    transform: rotate(calc(var(--wind-direction) - 3deg));
+  }
+  50% {
+    transform: rotate(calc(var(--wind-direction) + 3deg));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wind-compass__arrow {
+    animation: none;
+  }
+}

@@ -2,35 +2,49 @@
   <div class="layer-selector" ref="selectorRef">
     <button
       type="button"
-      class="selector-trigger"
+      class="layer-selector__trigger"
       @click="toggleDropdown"
-      :class="{ 'is-open': isOpen }"
+      :class="{ 'layer-selector__trigger--open': isOpen }"
     >
-      <div class="trigger-content">
-        <component :is="currentLayerIcon" class="layer-icon" />
-        <span class="layer-label">{{ currentLayerLabel }}</span>
+      <div class="layer-selector__trigger-content">
+        <component :is="currentLayerIcon" class="layer-selector__icon" />
+        <span class="layer-selector__label">{{ currentLayerLabel }}</span>
       </div>
-      <svg class="chevron-icon" :class="{ 'is-rotated': isOpen }" width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <svg
+        class="layer-selector__chevron"
+        :class="{ 'layer-selector__chevron--rotated': isOpen }"
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+      >
         <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
 
-    <Transition name="dropdown">
+    <Transition name="layer-selector-dropdown">
       <div 
         v-if="isOpen" 
-        class="dropdown-menu"
+        class="layer-selector__dropdown"
       >
         <button
           v-for="layer in layers"
           :key="layer.value"
           type="button"
-          class="dropdown-item"
-          :class="{ 'is-active': modelValue === layer.value }"
+          class="layer-selector__item"
+          :class="{ 'layer-selector__item--active': modelValue === layer.value }"
           @click="selectLayer(layer.value)"
         >
-          <component :is="layer.icon" class="layer-icon" />
-          <span class="layer-label">{{ layer.label }}</span>
-          <svg v-if="modelValue === layer.value" class="check-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <component :is="layer.icon" class="layer-selector__item-icon" />
+          <span class="layer-selector__item-label">{{ layer.label }}</span>
+          <svg
+            v-if="modelValue === layer.value"
+            class="layer-selector__check-icon"
+            width="18"
+            height="18"
+            viewBox="0 0 18 18"
+            fill="none"
+          >
             <path d="M3.75 9L7.5 12.75L14.25 5.25" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
@@ -130,195 +144,3 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });
 </script>
-
-<style scoped lang="scss">
-@use '../styles/abstracts/colors' as *;
-@use '../styles/abstracts/variables' as *;
-@use '../styles/abstracts/mixins' as *;
-@use '../styles/abstracts/breakpoints' as *;
-
-.layer-selector {
-  position: relative;
-  min-width: 160px;
-}
-
-.selector-trigger {
-  @include reset-button;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: $spacing-sm;
-  padding: 0.55rem 0.85rem;
-  background: linear-gradient(135deg, rgba(88, 177, 255, 0.04), rgba(139, 211, 255, 0.02)), var(--home-control-strong);
-  border: 1px solid var(--home-control-border);
-  border-radius: $radius-md;
-  color: var(--home-text-strong);
-  font-weight: $font-semibold;
-  font-size: $font-sm;
-  cursor: pointer;
-  transition: all $transition-fast;
-  box-shadow: var(--home-shadow-soft);
-  backdrop-filter: blur(12px);
-
-  &:hover {
-    background: linear-gradient(135deg, rgba(88, 177, 255, 0.08), rgba(139, 211, 255, 0.04)), var(--home-control-strong);
-    border-color: var(--home-border-strong);
-    transform: translateY(-1px);
-    box-shadow: var(--home-shadow-strong);
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-
-  &.is-open {
-    border-color: var(--home-accent);
-    box-shadow: 0 0 0 3px var(--home-glow), var(--home-shadow-strong);
-  }
-}
-
-.trigger-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: $spacing-xs;
-  flex: 1;
-
-  @include md {
-    margin-left: calc((40px + #{$spacing-sm}) / 2);
-  }
-}
-  
-
-.layer-icon {
-  flex-shrink: 0;
-  color: var(--home-accent);
-  transition: transform $transition-fast;
-
-  .selector-trigger:hover & {
-    transform: scale(1.1);
-  }
-}
-
-.layer-label {
-  font-size: $font-sm;
-  line-height: 1.1;
-  display: inline-flex;
-  align-items: center;
-}
-
-.chevron-icon {
-  flex-shrink: 0;
-  color: var(--home-text-muted);
-  transition: transform $transition-normal;
-  align-self: center;
-
-  &.is-rotated {
-    transform: rotate(180deg);
-  }
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  width: 100%;
-  background: var(--home-surface-strong);
-  border: 1px solid var(--home-border-strong);
-  border-radius: $radius-md;
-  box-shadow: var(--home-shadow-strong);
-  overflow: hidden;
-  z-index: 1050;
-  backdrop-filter: blur(16px);
-  margin-top: 0;
-}
-
-.dropdown-item {
-  @include reset-button;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: $spacing-sm;
-  padding: 0.65rem 0.85rem;
-  color: var(--home-text-strong);
-  font-size: $font-sm;
-  font-weight: $font-semibold;
-  cursor: pointer;
-  transition: all $transition-fast;
-  border-bottom: 1px solid var(--home-border-soft);
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  &:hover {
-    background: var(--home-control-hover);
-    padding-left: 1rem;
-
-    .layer-icon {
-      transform: scale(1.15);
-    }
-  }
-
-  &:active {
-    background: var(--home-control-hover);
-    transform: scale(0.98);
-  }
-
-  &.is-active {
-    background: linear-gradient(90deg, var(--home-glow), transparent);
-    color: var(--home-accent);
-
-    .layer-icon {
-      color: var(--home-accent);
-    }
-  }
-
-  .layer-icon {
-    flex-shrink: 0;
-    transition: all $transition-fast;
-  }
-
-  .layer-label {
-    flex: 1;
-    text-align: left;
-  }
-
-  .check-icon {
-    flex-shrink: 0;
-    color: var(--home-accent);
-  }
-}
-
-// Animações do dropdown
-.dropdown-enter-active {
-  animation: dropdown-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.dropdown-leave-active {
-  animation: dropdown-out 0.15s ease-in;
-}
-
-@keyframes dropdown-in {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes dropdown-out {
-  from {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-4px) scale(0.98);
-  }
-}
-</style>
