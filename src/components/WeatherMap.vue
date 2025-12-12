@@ -18,10 +18,6 @@
       </div>
 
       <div class="topbar-right">
-        <div class="pill-group">
-          <button class="pill-btn is-disabled" type="button" aria-disabled="true">Radar</button>
-          <button class="pill-btn is-disabled" type="button" aria-disabled="true">Satélite</button>
-        </div>
         <div class="layer-select">
           <label for="layer-select">Camada</label>
           <select id="layer-select" v-model="activeLayer">
