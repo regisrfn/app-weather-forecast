@@ -149,7 +149,9 @@
   top: 0;
   z-index: 10;
   background: var(--panel-header-gradient);
-  box-shadow: var(--home-shadow-soft);
+  border-bottom: 1px solid var(--info-panel-border);
+  box-shadow: 0 10px 30px rgba(53, 86, 163, 0.16);
+  backdrop-filter: blur(12px);
 
   @include md {
     padding: $spacing-md $spacing-sm;
@@ -183,15 +185,18 @@
     margin: 0;
     font-size: $font-3xl;
     font-weight: $font-bold;
+    color: var(--panel-header-text);
     cursor: pointer;
     transition: all $transition-fast;
-    text-decoration: underline solid rgba(255, 255, 255, 0.5);
+    text-decoration: underline solid rgba(15, 63, 140, 0.35);
     text-decoration-thickness: 2px;
     text-underline-offset: 4px;
-    padding: 6px 10px;
+    padding: 6px 12px;
     border-radius: $radius-md;
     position: relative;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(59, 130, 246, 0.22);
+    box-shadow: 0 10px 24px rgba(53, 86, 163, 0.14);
     width: fit-content;  
     
     @include md {
@@ -205,8 +210,8 @@
     }
     
     &:hover {
-      text-decoration-color: rgba(255, 255, 255, 0.9);
-      background: rgba(255, 255, 255, 0.2);
+      text-decoration-color: rgba(15, 63, 140, 0.75);
+      background: rgba(255, 255, 255, 0.9);
       transform: translateX(2px);
       
       &::after {
@@ -217,7 +222,7 @@
     
     &:active {
       transform: translateX(0) scale(0.98);
-      background: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.8);
     }
   }
 }
@@ -520,16 +525,17 @@
   height: 32px;
   border-radius: $radius-full;
   @include flex-center;
-  color: var(--home-text-strong);
+  color: var(--panel-header-text);
   transition: $transition-fast;
   flex-shrink: 0;
-  background: var(--home-control-bg);
-  border: 1px solid var(--home-border-soft);
-  box-shadow: var(--home-shadow-soft);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(59, 130, 246, 0.22);
+  box-shadow: 0 10px 22px rgba(53, 86, 163, 0.14);
 
   &:hover {
-    background: var(--home-control-hover);
-    border-color: var(--home-border-strong);
+    background: rgba(59, 130, 246, 0.14);
+    border-color: rgba(59, 130, 246, 0.32);
+    color: #0b3a83;
     transform: scale(1.1);
   }
 
@@ -540,6 +546,40 @@
   svg {
     width: 20px;
     height: 20px;
+  }
+}
+
+[data-theme="dark"] {
+  .panel-header {
+    box-shadow: var(--home-shadow-soft);
+    border-bottom: 1px solid var(--info-panel-border);
+    backdrop-filter: blur(10px);
+  }
+
+  .panel-header .city-name-clickable {
+    color: #e8f2ff;
+    text-decoration-color: rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: none;
+  }
+
+  .panel-header .city-name-clickable:hover {
+    background: rgba(255, 255, 255, 0.16);
+    text-decoration-color: rgba(255, 255, 255, 0.9);
+  }
+
+  .header-right .close-panel-btn {
+    background: var(--home-control-bg);
+    border: 1px solid var(--home-border-soft);
+    color: var(--home-text-strong);
+    box-shadow: var(--home-shadow-soft);
+  }
+
+  .header-right .close-panel-btn:hover {
+    background: var(--home-control-hover);
+    border-color: var(--home-border-strong);
+    color: var(--home-text-strong);
   }
 }
 
