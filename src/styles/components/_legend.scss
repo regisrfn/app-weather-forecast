@@ -8,12 +8,12 @@
 @use '../abstracts/breakpoints' as *;
 
 .legend-footer {
-  @include glass-effect(rgba(255, 255, 255, 0.95), 16px, 0.1);
+  background: linear-gradient(145deg, rgba(47, 107, 216, 0.06), rgba(42, 179, 255, 0.04)), var(--home-surface-soft);
   padding: $spacing-sm $spacing-md;
   border-radius: $radius-lg;
-  box-shadow: $shadow-xl;
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: var(--home-shadow-soft);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--home-border-soft);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -29,7 +29,7 @@
 .legend-title {
   font-size: $font-md;
   font-weight: $font-bold;
-  color: $text-muted;
+  color: var(--home-text-muted);
   text-transform: uppercase;
   letter-spacing: $letter-spacing-wide;
   white-space: nowrap;
@@ -80,7 +80,7 @@
   span {
     font-size: 0.72rem;
     font-weight: $font-semibold;
-    color: $text-dark;
+    color: var(--home-text-strong);
     white-space: nowrap;
 
     @include md {
@@ -101,8 +101,8 @@
   width: 18px;
   height: 14px;
   border-radius: $radius-xs;
-  border: 1px solid $border-medium;
-  box-shadow: $shadow-sm;
+  border: 1px solid var(--home-border-soft);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 
   @include md {
     width: 20px;

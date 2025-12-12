@@ -4,11 +4,15 @@ export type Theme = 'light' | 'dark';
 
 const THEME_STORAGE_KEY = 'app-weather-theme';
 
-// Get initial theme from localStorage or default to dark
+// Get initial theme from localStorage or system preference (fallback light)
 const getInitialTheme = (): Theme => {
   if (typeof window === 'undefined') return 'light';
   const stored = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
-  return stored || 'dark';
+  if (stored) return stored;
+
+  // Respeita a preferência do sistema quando não há valor salvo
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  return prefersDark ? 'dark' : 'light';
 };
 
 const currentTheme = ref<Theme>(getInitialTheme());

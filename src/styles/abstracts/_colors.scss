@@ -3,18 +3,18 @@
 // =================================
 
 // Cores Primárias (Gradiente)
-$primary-gradient-start: #133a63;
-$primary-gradient-end: #0d2b49;
+$primary-gradient-start: #2f6bd8;
+$primary-gradient-end: #48c7ff;
 
 // Cores de Background
-$bg-dark-primary: #0b1626;
-$bg-dark-secondary: #0c1d30;
-$bg-dark-tertiary: #091120;
-$bg-dark-footer: #070e1a;
+$bg-dark-primary: #050d1a;
+$bg-dark-secondary: #0a1627;
+$bg-dark-tertiary: #0d1b30;
+$bg-dark-footer: #081020;
 
 // Cores de Background com Blur
-$bg-header: rgba(14, 31, 52, 0.82);
-$bg-header-hover: rgba(18, 41, 70, 0.92);
+$bg-header: rgba(18, 35, 64, 0.82);
+$bg-header-hover: rgba(20, 52, 92, 0.92);
 
 // Cores de Texto
 $text-white: #ffffff;
@@ -93,72 +93,80 @@ $opacity-hover: 0.30;
   --color-primary-end: #{$primary-gradient-end};
   
   // Weather City Detail - Light Theme
-  --weather-primary: #{$weather-primary};
-  --weather-secondary: #{$weather-secondary};
-  --weather-accent: #{$weather-accent};
-  --weather-text-primary: #{$weather-text-primary};
-  --weather-text-secondary: #{$weather-text-secondary};
-  --weather-text-muted: #{$weather-text-muted};
-  --weather-surface: rgba(255, 255, 255, 0.85);
-  --weather-surface-blur: rgba(255, 255, 255, 0.75);
-  --weather-surface-card: rgba(255, 255, 255, 0.90);
-  --weather-border: rgba(139, 157, 225, 0.2);
-  --weather-border-light: rgba(139, 157, 225, 0.12);
-  --weather-shadow: rgba(139, 157, 225, 0.08);
-  --weather-shadow-md: rgba(139, 157, 225, 0.15);
-  --weather-shadow-lg: rgba(139, 157, 225, 0.25);
+  --weather-primary: #3a7ee0;
+  --weather-secondary: #5ab5ff;
+  --weather-accent: #2ab3ff;
+  --weather-text-primary: #0f233f;
+  --weather-text-secondary: #304566;
+  --weather-text-muted: #5b708d;
+  --weather-surface: rgba(255, 255, 255, 0.92);
+  --weather-surface-blur: rgba(255, 255, 255, 0.82);
+  --weather-surface-card: rgba(255, 255, 255, 0.94);
+  --weather-border: rgba(53, 86, 163, 0.18);
+  --weather-border-light: rgba(53, 86, 163, 0.12);
+  --weather-shadow: rgba(32, 68, 135, 0.12);
+  --weather-shadow-md: rgba(32, 68, 135, 0.18);
+  --weather-shadow-lg: rgba(24, 58, 120, 0.25);
   
   // Header
-  --header-bg: rgba(14, 31, 52, 0.9);
-  --header-bg-scrolled: rgba(18, 41, 70, 0.95);
-  --header-border: rgba(88, 177, 255, 0.25);
-  --header-text: #e8f2ff;
+  --header-bg: rgba(28, 56, 102, 0.85);
+  --header-bg-scrolled: rgba(36, 78, 138, 0.9);
+  --header-border: rgba(53, 86, 163, 0.24);
+  --header-text: #f7fbff;
   
   // Background
-  --bg-gradient-start: rgba(15, 31, 52, 0.25);
-  --bg-gradient-mid: rgba(10, 21, 33, 0.35);
-  --bg-gradient-end: rgba(8, 17, 29, 0.4);
-  --bg-base: #0b1626;
+  --bg-gradient-start: rgba(47, 107, 216, 0.08);
+  --bg-gradient-mid: rgba(42, 179, 255, 0.08);
+  --bg-gradient-end: rgba(255, 255, 255, 0.9);
+  --bg-base: #f4f7ff;
 
   // Home (Weather Map) - Base tokens (overridden on dark)
-  --home-ambient-1: #0b1626;
-  --home-ambient-2: #0f1f34;
-  --home-surface: rgba(13, 27, 48, 0.92);
-  --home-surface-strong: rgba(14, 31, 52, 0.96);
-  --home-surface-soft: rgba(14, 28, 48, 0.72);
-  --home-border-soft: rgba(88, 177, 255, 0.18);
-  --home-border-strong: rgba(88, 177, 255, 0.32);
-  --home-border-glow: rgba(88, 177, 255, 0.28);
-  --home-accent: #58b1ff;
-  --home-accent-2: #8bd3ff;
-  --home-glow: rgba(88, 177, 255, 0.18);
-  --home-gridline: rgba(88, 177, 255, 0.08);
-  --home-text-strong: #e8f2ff;
-  --home-text-muted: #a8b9d4;
+  --home-shell-bg: radial-gradient(circle at 20% 18%, rgba(47, 107, 216, 0.18), transparent 26%), radial-gradient(circle at 78% 10%, rgba(42, 179, 255, 0.22), transparent 24%), linear-gradient(135deg, #f5f8ff 0%, #e9f0ff 55%, #fdfbff 100%);
+  --home-ambient-1: #f3f7ff;
+  --home-ambient-2: #e6edff;
+  --home-surface: rgba(255, 255, 255, 0.9);
+  --home-surface-strong: rgba(255, 255, 255, 0.96);
+  --home-surface-soft: rgba(255, 255, 255, 0.82);
+  --home-surface-ghost: rgba(255, 255, 255, 0.72);
+  --home-border-soft: rgba(53, 86, 163, 0.14);
+  --home-border-strong: rgba(53, 86, 163, 0.26);
+  --home-border-glow: rgba(66, 134, 255, 0.26);
+  --home-accent: #2f6bd8;
+  --home-accent-2: #2ab3ff;
+  --home-glow: rgba(42, 179, 255, 0.14);
+  --home-gridline: rgba(47, 107, 216, 0.08);
+  --home-text-strong: #0f233f;
+  --home-text-muted: #4b6182;
+  --home-control-bg: rgba(255, 255, 255, 0.7);
+  --home-control-strong: rgba(255, 255, 255, 0.85);
+  --home-control-hover: rgba(47, 107, 216, 0.08);
+  --home-control-border: rgba(53, 86, 163, 0.28);
+  --home-shadow-soft: 0 14px 38px rgba(32, 68, 135, 0.16);
+  --home-shadow-strong: 0 20px 60px rgba(24, 58, 120, 0.22);
   
   // Legacy compatibility
-  --bg-primary: #{$bg-dark-primary};
-  --bg-secondary: #{$bg-dark-secondary};
-  --bg-tertiary: #{$bg-dark-tertiary};
-  --bg-header: #{$bg-header};
-  --bg-card: rgba(255, 255, 255, 0.95);
+  --bg-primary: #f4f7ff;
+  --bg-secondary: #eef2fb;
+  --bg-tertiary: #e2e8f0;
+  --bg-header: var(--header-bg);
+  --bg-card: rgba(255, 255, 255, 0.96);
   --bg-card-hover: rgba(255, 255, 255, 0.98);
   
   // Text Colors
-  --text-primary: #{$text-white};
-  --text-secondary: #{$text-light};
-  --text-muted: #{$text-gray};
-  --text-dark: #{$text-dark};
+  --text-primary: #0f233f;
+  --text-secondary: #203a5c;
+  --text-muted: #4b6182;
+  --text-dark: #0f233f;
   
   // Border Colors
-  --border-light: #{$border-light};
-  --border-medium: #{$border-medium};
-  --border-dark: #{$border-dark};
+  --border-light: rgba(53, 86, 163, 0.16);
+  --border-medium: rgba(53, 86, 163, 0.24);
+  --border-dark: rgba(53, 86, 163, 0.32);
   
   // Overlay Colors
-  --overlay-light: #{$overlay-light};
-  --overlay-medium: #{$overlay-medium};
-  --overlay-dark: #{$overlay-dark};
+  --overlay-light: rgba(255, 255, 255, 0.15);
+  --overlay-medium: rgba(47, 107, 216, 0.08);
+  --overlay-dark: rgba(0, 0, 0, 0.25);
   
   // Weather-specific Colors
   --weather-temp-cold: #3b82f6;
@@ -189,10 +197,18 @@ $opacity-hover: 0.30;
   --alpha-70: 0.7;
   --alpha-90: 0.9;
   --alpha-95: 0.95;
+
+  // Panel accents and overlays
+  --panel-header-gradient: linear-gradient(135deg, #2f6bd8 0%, #3f9ff5 50%, #48c7ff 100%);
+  --panel-header-text: #f7fbff;
 }
 
 // Dark Theme
 [data-theme="dark"] {
+  // Primary Colors - nuanced neon
+  --color-primary-start: #58b1ff;
+  --color-primary-end: #8bd3ff;
+
   // Weather City Detail - Dark Theme
   --weather-primary: #58b1ff;
   --weather-secondary: #7fc0ff;
@@ -210,33 +226,56 @@ $opacity-hover: 0.30;
   --weather-shadow-lg: rgba(0, 0, 0, 0.6);
   
   // Header
-  --header-bg: rgba(12, 22, 38, 0.9);
-  --header-bg-scrolled: rgba(16, 32, 52, 0.95);
-  --header-border: rgba(88, 177, 255, 0.25);
+  --header-bg: rgba(12, 22, 38, 0.88);
+  --header-bg-scrolled: rgba(14, 30, 52, 0.94);
+  --header-border: rgba(88, 177, 255, 0.26);
   --header-text: #e8f2ff;
   
   // Background
-  --bg-gradient-start: rgba(7, 15, 29, 0.4);
-  --bg-gradient-mid: rgba(9, 19, 35, 0.3);
-  --bg-gradient-end: rgba(5, 11, 22, 0.18);
-  --bg-base: #060f1d;
+  --bg-gradient-start: rgba(6, 17, 33, 0.4);
+  --bg-gradient-mid: rgba(8, 22, 40, 0.35);
+  --bg-gradient-end: rgba(4, 10, 20, 0.6);
+  --bg-base: #050d1a;
 
   // Home (Weather Map) - Neon glass dark palette (suavizado)
+  --home-shell-bg: radial-gradient(circle at 18% 18%, rgba(88, 177, 255, 0.12), transparent 25%), radial-gradient(circle at 80% 12%, rgba(84, 152, 255, 0.18), transparent 28%), linear-gradient(135deg, #050d1a 0%, #0a1627 52%, #040a15 100%);
   --home-ambient-1: #050d1a;
   --home-ambient-2: #0a1627;
-  --home-surface: rgba(10, 20, 35, 0.85);
-  --home-surface-strong: rgba(12, 24, 41, 0.92);
-  --home-surface-soft: rgba(12, 24, 41, 0.7);
+  --home-surface: rgba(10, 18, 32, 0.88);
+  --home-surface-strong: rgba(12, 22, 40, 0.94);
+  --home-surface-soft: rgba(12, 24, 41, 0.78);
+  --home-surface-ghost: rgba(255, 255, 255, 0.05);
   --home-border-soft: rgba(88, 177, 255, 0.18);
   --home-border-strong: rgba(88, 177, 255, 0.32);
-  --home-border-glow: rgba(88, 177, 255, 0.24);
-  --home-accent: #58b1ff;
-  --home-accent-2: #8bd3ff;
+  --home-border-glow: rgba(88, 177, 255, 0.3);
+  --home-accent: #7fd1ff;
+  --home-accent-2: #58b1ff;
   --home-glow: rgba(88, 177, 255, 0.2);
   --home-gridline: rgba(88, 177, 255, 0.06);
   --home-text-strong: #e8f2ff;
   --home-text-muted: #9db4d6;
+  --home-control-bg: rgba(255, 255, 255, 0.06);
+  --home-control-strong: rgba(255, 255, 255, 0.1);
+  --home-control-hover: rgba(88, 177, 255, 0.12);
+  --home-control-border: rgba(88, 177, 255, 0.26);
+  --home-shadow-soft: 0 18px 46px rgba(0, 0, 0, 0.45);
+  --home-shadow-strong: 0 24px 66px rgba(0, 0, 0, 0.65);
   
   // Text adjustments for dark mode
+  --text-primary: #e8f2ff;
+  --text-secondary: #c8dbf5;
+  --text-muted: #9db4d6;
   --text-dark: #e5e7eb;
+
+  // Legacy compatibility
+  --bg-primary: #050d1a;
+  --bg-secondary: #0a1627;
+  --bg-tertiary: #0d1b30;
+  --bg-header: var(--header-bg);
+  --bg-card: rgba(12, 22, 38, 0.94);
+  --bg-card-hover: rgba(12, 22, 38, 0.98);
+
+  // Panel accents and overlays
+  --panel-header-gradient: linear-gradient(135deg, #0b2540 0%, #10375f 55%, #13507c 100%);
+  --panel-header-text: #e8f2ff;
 }
