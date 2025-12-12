@@ -245,7 +245,7 @@ onUnmounted(() => {
   overflow: hidden;
   z-index: 1050;
   backdrop-filter: blur(16px);
-  min-width: 160px;
+  margin-top: 0;
 }
 
 .dropdown-item {
