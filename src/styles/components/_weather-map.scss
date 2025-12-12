@@ -318,12 +318,19 @@
 
 .city-item-text {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
   line-height: 1.2;
+  flex-wrap: wrap;
 }
 
 .city-name {
   font-weight: $font-semibold;
+}
+
+.city-state {
+  color: var(--home-text-muted);
+  font-size: $font-xs;
 }
 
 .city-distance {

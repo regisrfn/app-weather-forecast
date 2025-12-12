@@ -119,7 +119,7 @@
               <span class="city-dot" :class="{ active: centerCityId === city.id }"></span>
               <div class="city-item-text">
                 <span class="city-name">{{ city.name }}</span>
-                <small>{{ city.state }}</small>
+                <span class="city-state">- {{ city.state }}</span>
               </div>
               <span class="city-distance" v-if="city.distance">{{ city.distance.toFixed(0) }} km</span>
             </button>
