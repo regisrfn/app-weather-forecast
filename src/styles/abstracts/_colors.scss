@@ -198,9 +198,16 @@ $opacity-hover: 0.30;
   --alpha-90: 0.9;
   --alpha-95: 0.95;
 
+  // Info Panel palette (light)
+  --info-panel-surface: linear-gradient(180deg, #ffffff 0%, #edf3ff 100%);
+  --info-panel-soft: rgba(241, 246, 255, 0.9);
+  --info-panel-border: rgba(43, 92, 167, 0.24);
+  --info-panel-shadow: 0 24px 80px rgba(43, 76, 137, 0.16);
+  --info-panel-highlight: rgba(37, 99, 235, 0.1);
+
   // Panel accents and overlays
-  --panel-header-gradient: linear-gradient(135deg, #2f6bd8 0%, #3f9ff5 50%, #48c7ff 100%);
-  --panel-header-text: #f7fbff;
+  --panel-header-gradient: linear-gradient(135deg, #1d4ed8 0%, #2563eb 45%, #38bdf8 100%);
+  --panel-header-text: #f8fbff;
 }
 
 // Dark Theme
@@ -275,8 +282,15 @@ $opacity-hover: 0.30;
   --bg-card: rgba(12, 22, 38, 0.94);
   --bg-card-hover: rgba(12, 22, 38, 0.98);
 
+  // Info Panel palette (dark)
+  --info-panel-surface: linear-gradient(180deg, rgba(10, 18, 32, 0.98) 0%, rgba(8, 24, 46, 0.94) 100%);
+  --info-panel-soft: rgba(12, 24, 41, 0.86);
+  --info-panel-border: rgba(88, 177, 255, 0.28);
+  --info-panel-shadow: 0 28px 90px rgba(0, 0, 0, 0.68);
+  --info-panel-highlight: rgba(88, 177, 255, 0.14);
+
   // Panel accents and overlays
-  --panel-header-gradient: linear-gradient(135deg, #0b2540 0%, #10375f 55%, #13507c 100%);
+  --panel-header-gradient: linear-gradient(135deg, #0b1f3a 0%, #0f305a 55%, #164a78 100%);
   --panel-header-text: #e8f2ff;
 }
 

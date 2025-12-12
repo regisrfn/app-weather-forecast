@@ -1104,13 +1104,13 @@
 
 .panel-fade-enter-active,
 .panel-fade-leave-active {
-  transition: opacity 0.2s ease, transform 0.25s ease;
+  transition: opacity 0.3s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .panel-fade-enter-from,
 .panel-fade-leave-to {
   opacity: 0;
-  transform: translateY(6px);
+  transform: translateX(36px);
 }
 
 // =================================

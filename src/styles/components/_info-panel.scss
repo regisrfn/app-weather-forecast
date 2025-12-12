@@ -79,47 +79,66 @@
 
 // Painel de Informações - Desktop: Sidebar lateral full-height
 .info-panel {
+  --panel-shift-x: 100%;
+  --panel-opacity: 0;
+  --panel-shadow: var(--info-panel-shadow, -8px 0 32px rgba(0, 0, 0, 0.15));
+
   position: fixed;
   top: 0;
   right: 0;
   width: 420px;
   height: 100vh;
-  background: var(--home-surface-strong);
-  border-left: 1px solid var(--home-border-strong);
-  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
+  background: var(--info-panel-surface, var(--home-surface-strong));
+  border-left: 1px solid var(--info-panel-border, var(--home-border-strong));
+  box-shadow: var(--panel-shadow);
   overflow-y: auto;
   overflow-x: hidden;
   z-index: $z-info-panel;
-  transform: translateX(100%);
-  opacity: 0;
+  transform: translate3d(var(--panel-shift-x), 0, 0);
+  opacity: var(--panel-opacity);
   pointer-events: none;
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease, box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
   color: var(--home-text-strong);
   backdrop-filter: blur(16px);
 
   &.is-open {
-    transform: translateX(0);
-    opacity: 1;
+    --panel-shift-x: 0;
+    --panel-opacity: 1;
     pointer-events: auto;
+  }
+
+  &.panel-fade-enter-active,
+  &.panel-fade-leave-active {
+    transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s ease, box-shadow 0.35s ease;
+  }
+
+  &.panel-fade-enter-from,
+  &.panel-fade-leave-to {
+    --panel-shift-x: calc(100% + 24px);
+    --panel-opacity: 0;
+    box-shadow: -2px 0 20px rgba(0, 0, 0, 0.08);
+  }
+
+  &.panel-fade-enter-to,
+  &.panel-fade-leave-from {
+    --panel-shift-x: 0;
+    --panel-opacity: 1;
   }
 
   @include md {
     position: fixed;
-    inset: auto 0 0 0;
+    inset: 0;
     width: 100%;
-    max-width: 100%;
-    height: auto;
-    max-height: 78vh;
+    max-width: none;
+    height: 100vh;
+    height: 100dvh;
+    max-height: none;
     border-left: none;
-    border-radius: $radius-lg $radius-lg 0 0;
-    border-top: 1px solid var(--home-border-strong);
-    padding-bottom: calc(env(safe-area-inset-bottom) + $spacing-sm);
-    transform: translateY(100%);
-    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15);
-
-    &.is-open {
-      transform: translateY(0);
-    }
+    border-top: none;
+    border-radius: 0;
+    padding-bottom: calc(env(safe-area-inset-bottom) + $spacing-md);
+    padding-top: calc(env(safe-area-inset-top) + $spacing-sm);
+    box-shadow: 0 22px 64px rgba(0, 0, 0, 0.35);
   }
 }
 
@@ -352,7 +371,7 @@
   display: flex;
   gap: $spacing-sm;
   padding: $spacing-lg;
-  background: linear-gradient(145deg, rgba(47, 107, 216, 0.05), rgba(42, 179, 255, 0.03)), var(--home-surface-soft);
+  background: linear-gradient(145deg, rgba(37, 99, 235, 0.06), rgba(14, 165, 233, 0.05)), var(--info-panel-soft, var(--home-surface-soft));
   border-bottom: 1px solid var(--home-border-soft);
   overflow-x: auto;
 
@@ -366,7 +385,7 @@
   flex: 1;
   min-width: 100px;
   padding: $spacing-md;
-  background: var(--home-surface);
+  background: var(--info-panel-surface, var(--home-surface));
   border-radius: $radius-lg;
   border: 1px solid var(--home-border-soft);
   cursor: pointer;
@@ -384,9 +403,9 @@
   }
 
   &.is-current {
-    background: linear-gradient(135deg, rgba(47, 107, 216, 0.16), rgba(42, 179, 255, 0.12));
-    border-color: var(--home-border-strong);
-    box-shadow: 0 0 0 3px rgba(66, 134, 255, 0.16);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(14, 165, 233, 0.12));
+    border-color: var(--info-panel-border, var(--home-border-strong));
+    box-shadow: 0 0 0 3px var(--info-panel-highlight, rgba(66, 134, 255, 0.16));
   }
 
   &:not(.is-current):hover {
@@ -548,7 +567,7 @@
   grid-template-columns: repeat(2, 1fr);
   gap: $font-2xl;
   padding: $spacing-lg;
-  background: var(--home-surface-soft);
+  background: var(--info-panel-soft, var(--home-surface-soft));
   border-top: 1px solid var(--home-border-soft);
 
   @include md {
@@ -599,7 +618,7 @@
   font-size: $font-base;
   color: var(--home-text-muted);
   text-align: center;
-  background: var(--home-surface-soft);
+  background: var(--info-panel-soft, var(--home-surface-soft));
   border-top: 1px solid var(--home-border-soft);
   font-weight: $font-regular;
   opacity: 0.8;
