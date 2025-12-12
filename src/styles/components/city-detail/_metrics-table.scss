@@ -25,7 +25,7 @@
 .metrics-title {
   font-size: $font-xl;
   font-weight: $font-bold;
-  color: rgba(59, 130, 246, 0.85);
+  color: var(--weather-text-secondary);
   margin: 0;
   
   @include md {
@@ -41,8 +41,8 @@
   width: 36px;
   height: 36px;
   border-radius: $radius-md;
-  background: rgba(59, 130, 246, 0.1);
-  color: rgba(59, 130, 246, 0.8);
+  background: rgba(47, 101, 224, 0.12);
+  color: var(--weather-primary);
   transition: all $transition-normal;
   
   svg {
@@ -54,8 +54,8 @@
   }
   
   &:hover {
-    background: rgba(59, 130, 246, 0.15);
-    color: rgba(59, 130, 246, 1);
+    background: rgba(47, 101, 224, 0.16);
+    color: var(--weather-accent);
   }
   
   @include md {
@@ -115,7 +115,7 @@
   align-items: center;
   gap: $spacing-sm;
   font-weight: $font-semibold;
-  color: var(--weather-text-secondary);
+  color: var(--weather-text-muted);
   font-size: $font-base;
   
   @include md {
@@ -126,7 +126,8 @@
 
 .metric-value {
   font-weight: $font-bold;
-  color: var(--weather-text-primary);
+  color: var(--weather-text-secondary);
+  opacity: 0.9;
   font-size: $font-lg;
   white-space: nowrap;
   
@@ -138,7 +139,7 @@
 .metric-icon {
   font-size: 20px;
   line-height: 1;
-  filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.15));
+  filter: drop-shadow(0 2px 4px rgba(47, 101, 224, 0.16));
   
   @include md {
     font-size: 18px;
