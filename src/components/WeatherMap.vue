@@ -642,10 +642,11 @@ const filterCities = () => {
 };
 
 const selectCity = (city: SidebarCity) => {
+  const shouldKeepPanelOpen = isPanelOpen.value;
+
   // Se a cidade já está selecionada, apenas abrir o painel
   if (centerCityId.value === city.id) {
     isPanelOpen.value = true;
-    isSidebarOpen.value = false;
     return;
   }
   
@@ -654,8 +655,7 @@ const selectCity = (city: SidebarCity) => {
   centerLng.value = city.longitude;
   searchQuery.value = '';
   filteredCities.value = [];
-  isPanelOpen.value = false;
-  isSidebarOpen.value = false; // Fechar sidebar ao selecionar cidade
+  isPanelOpen.value = shouldKeepPanelOpen;
   
   // Atualizar mapa e dados
   updateMapCenter();

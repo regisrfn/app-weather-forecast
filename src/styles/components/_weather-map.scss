@@ -76,30 +76,26 @@
 }
 
 .brand-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: $radius-lg;
-  background: radial-gradient(circle at 30% 30%, var(--home-control-hover), rgba(255, 255, 255, 0.1));
-  border: 1px solid var(--home-border-strong);
-  color: var(--home-accent-2);
-  display: grid;
-  place-items: center;
-  box-shadow: var(--home-shadow-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
 
   svg,
   img {
-    width: 26px;
-    height: 26px;
+    width: 3rem;
+    height: 3rem;
   }
 
   @include md {
-    width: 36px;
-    height: 36px;
-    
     svg,
     img {
-      width: 22px;
-      height: 22px;
+      width: 2.5rem;
+      height: 2.5rem;
     }
   }
 }
@@ -526,7 +522,7 @@
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: $z-info-toggle;
+    z-index: $z-sidebar-overlay;
     backdrop-filter: blur(4px);
     animation: fadeIn 0.25s ease;
   }
@@ -577,7 +573,7 @@
     bottom: 0;
     width: 85%;
     max-width: 320px;
-    z-index: $z-info-panel;
+    z-index: $z-sidebar;
     border-radius: 0;
     padding: 1.25rem;
     gap: 1rem;

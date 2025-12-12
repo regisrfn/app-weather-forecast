@@ -199,15 +199,15 @@ $opacity-hover: 0.30;
   --alpha-95: 0.95;
 
   // Info Panel palette (light)
-  --info-panel-surface: linear-gradient(180deg, #ffffff 0%, #edf3ff 100%);
-  --info-panel-soft: rgba(241, 246, 255, 0.9);
-  --info-panel-border: rgba(43, 92, 167, 0.24);
-  --info-panel-shadow: 0 24px 80px rgba(43, 76, 137, 0.16);
-  --info-panel-highlight: rgba(37, 99, 235, 0.1);
+  --info-panel-surface: linear-gradient(180deg, #fdfefe 0%, #e7f0ff 100%);
+  --info-panel-soft: rgba(245, 249, 255, 0.94);
+  --info-panel-border: rgba(59, 130, 246, 0.18);
+  --info-panel-shadow: 0 22px 72px rgba(53, 86, 163, 0.14);
+  --info-panel-highlight: rgba(59, 130, 246, 0.14);
 
   // Panel accents and overlays
-  --panel-header-gradient: linear-gradient(135deg, #1d4ed8 0%, #2563eb 45%, #38bdf8 100%);
-  --panel-header-text: #f8fbff;
+  --panel-header-gradient: linear-gradient(135deg, #e9f1ff 0%, #d4e4ff 48%, #b8dbff 100%);
+  --panel-header-text: #0f3f8c;
 }
 
 // Dark Theme
