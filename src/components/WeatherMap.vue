@@ -4,10 +4,7 @@
       <div class="topbar-left">
         <div class="brand">
           <div class="brand-icon">
-            <svg width="26" height="26" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="38" cy="20" r="8" fill="currentColor" opacity="0.9" />
-              <path d="M18 32c-6 0-10 4-10 9s4 9 10 9h24c5.5 0 10-4.5 10-10 0-5-4-9-9-9-1 0-2 0-3 1-1-6-6-10-12-10-5 0-9 3-11 7-3 0-5 1-5 3z" fill="white" opacity="0.9" />
-            </svg>
+            <img src="/weather-icon.svg" alt="Ícone de previsão do tempo" width="26" height="26" loading="lazy" />
           </div>
           <div class="brand-text">
             <div class="brand-title">Previsão do Tempo</div>
@@ -191,10 +188,7 @@
           <div v-if="isLoading" class="loading-overlay"></div>
           <div v-if="isLoading" class="loading-indicator">
             <div class="weather-icon-loading">
-              <svg width="48" height="48" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="38" cy="20" r="8" fill="#FDB813" opacity="0.9" />
-                <path d="M18 32c-6 0-10 4-10 9s4 9 10 9h24c5.5 0 10-4.5 10-10 0-5-4-9-9-9-1 0-2 0-3 1-1-6-6-10-12-10-5 0-9 3-11 7-3 0-5 1-5 3z" fill="white" opacity="0.9" />
-              </svg>
+              <img src="/weather-icon.svg" alt="Carregando previsão do tempo" width="48" height="48" />
             </div>
             <div class="spinner-container">
               <div class="spinner"></div>

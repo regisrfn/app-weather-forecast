@@ -86,11 +86,18 @@
   place-items: center;
   box-shadow: var(--home-shadow-soft);
 
+  svg,
+  img {
+    width: 26px;
+    height: 26px;
+  }
+
   @include md {
     width: 36px;
     height: 36px;
     
-    svg {
+    svg,
+    img {
       width: 22px;
       height: 22px;
     }
@@ -1138,7 +1145,8 @@
 .weather-icon-loading {
   animation: bounce 1.5s ease-in-out infinite;
   
-  svg {
+  svg,
+  img {
     width: 48px;
     height: 48px;
     filter: drop-shadow(0 2px 8px var(--home-accent));
