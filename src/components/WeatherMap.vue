@@ -15,9 +15,20 @@
           </div>
         </div>
         <div class="topbar-date">{{ headerDateLabel }}</div>
+        <button
+          class="hamburger-btn"
+          type="button"
+          @click="toggleHeaderControls"
+          :aria-label="isHeaderExpanded ? 'Ocultar controles' : 'Mostrar controles'"
+          :aria-expanded="isHeaderExpanded"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </div>
 
-      <div class="topbar-right">
+      <div class="topbar-right" :class="{ 'is-collapsed': !isHeaderExpanded }">
         <div class="layer-select">
           <label for="layer-select">Camada</label>
           <select id="layer-select" v-model="activeLayer">
@@ -51,10 +62,39 @@
       </div>
     </header>
 
+    <button
+      class="floating-sidebar-btn"
+      type="button"
+      @click="toggleSidebar"
+      :aria-label="isSidebarOpen ? 'Fechar menu lateral' : 'Abrir menu lateral'"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+    </button>
+
     <div class="weather-grid">
-      <aside class="sidebar-card">
+      <div 
+        v-if="isSidebarOpen" 
+        class="sidebar-backdrop" 
+        @click="toggleSidebar"
+        aria-hidden="true"
+      ></div>
+      <aside class="sidebar-card" :class="{ 'is-open': isSidebarOpen }">
         <div class="sidebar-header">
-          <div class="sidebar-title">Previsão do tempo</div>
+          <div class="sidebar-title-row">
+            <div class="sidebar-title">Previsão do tempo</div>
+            <button
+              class="sidebar-close-btn"
+              type="button"
+              @click="toggleSidebar"
+              aria-label="Fechar menu"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor" />
+              </svg>
+            </button>
+          </div>
           <div class="sidebar-subtitle">Escolha a cidade centro e personalize os dados.</div>
         </div>
 
@@ -100,6 +140,8 @@
             <span class="radius-value">{{ searchRadius }} km</span>
           </div>
         </div>
+
+
 
         <div class="sidebar-section">
           <div class="section-label">Cidades próximas</div>
@@ -420,6 +462,13 @@ const showDayCarousel = ref<boolean>(false); // Controla exibição do carrossel
 // Controle de abertura do painel
 const isPanelOpen = ref<boolean>(false);
 
+// Controle de abertura do sidebar (mobile)
+// Usado para exibir/ocultar o sidebar em dispositivos móveis através do menu hambúrguer
+const isSidebarOpen = ref<boolean>(false);
+
+// Controle de expansão dos controles do header (mobile)
+const isHeaderExpanded = ref<boolean>(true);
+
 // Controle do painel de detalhes de alertas
 const selectedAlert = ref<WeatherAlert | null>(null);
 const isAlertPanelOpen = ref<boolean>(false);
@@ -443,6 +492,21 @@ const forecastTimeSlots = ref<ForecastSlot[]>([
 
 const togglePanel = () => {
   isPanelOpen.value = !isPanelOpen.value;
+};
+
+/**
+ * Alterna a visibilidade do sidebar em dispositivos móveis
+ * Controla o menu hambúrguer e o overlay do sidebar
+ */
+const toggleSidebar = () => {
+  isSidebarOpen.value = !isSidebarOpen.value;
+};
+
+/**
+ * Alterna a visibilidade dos controles do header (camadas e tema) em mobile
+ */
+const toggleHeaderControls = () => {
+  isHeaderExpanded.value = !isHeaderExpanded.value;
 };
 
 const handleAlertClick = (alert: WeatherAlert) => {
@@ -581,12 +645,20 @@ const filterCities = () => {
 };
 
 const selectCity = (city: SidebarCity) => {
+  // Se a cidade já está selecionada, apenas abrir o painel
+  if (centerCityId.value === city.id) {
+    isPanelOpen.value = true;
+    isSidebarOpen.value = false;
+    return;
+  }
+  
   centerCityId.value = city.id;
   centerLat.value = city.latitude;
   centerLng.value = city.longitude;
   searchQuery.value = '';
   filteredCities.value = [];
   isPanelOpen.value = false;
+  isSidebarOpen.value = false; // Fechar sidebar ao selecionar cidade
   
   // Atualizar mapa e dados
   updateMapCenter();
