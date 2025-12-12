@@ -19,7 +19,6 @@
       <div 
         v-if="isOpen" 
         class="dropdown-menu"
-        :style="dropdownPosition"
       >
         <button
           v-for="layer in layers"
@@ -58,7 +57,6 @@ const emit = defineEmits<Emits>();
 
 const isOpen = ref(false);
 const selectorRef = ref<HTMLElement | null>(null);
-const dropdownPosition = ref<Record<string, string>>({});
 
 // Ícones SVG inline como componentes
 const RainIcon = {
@@ -109,22 +107,8 @@ const currentLayerIcon = computed(() => {
   return layers.find(l => l.value === props.modelValue)?.icon || RainIcon;
 });
 
-const updateDropdownPosition = () => {
-  if (!selectorRef.value) return;
-  
-  const rect = selectorRef.value.getBoundingClientRect();
-  dropdownPosition.value = {
-    top: `${rect.bottom + 6}px`,
-    left: `${rect.left}px`,
-    width: `${rect.width}px`,
-  };
-};
-
 const toggleDropdown = () => {
   isOpen.value = !isOpen.value;
-  if (isOpen.value) {
-    updateDropdownPosition();
-  }
 };
 
 const selectLayer = (value: LayerType) => {
@@ -138,22 +122,12 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 
-const handleScroll = () => {
-  if (isOpen.value) {
-    updateDropdownPosition();
-  }
-};
-
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
-  window.addEventListener('scroll', handleScroll, true);
-  window.addEventListener('resize', handleScroll);
 });
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
-  window.removeEventListener('scroll', handleScroll, true);
-  window.removeEventListener('resize', handleScroll);
 });
 </script>
 
@@ -223,13 +197,16 @@ onUnmounted(() => {
 
 .layer-label {
   font-size: $font-sm;
-  line-height: 1;
+  line-height: 1.1;
+  display: inline-flex;
+  align-items: center;
 }
 
 .chevron-icon {
   flex-shrink: 0;
   color: var(--home-text-muted);
   transition: transform $transition-normal;
+  align-self: center;
 
   &.is-rotated {
     transform: rotate(180deg);
@@ -237,7 +214,10 @@ onUnmounted(() => {
 }
 
 .dropdown-menu {
-  position: fixed;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
   background: var(--home-surface-strong);
   border: 1px solid var(--home-border-strong);
   border-radius: $radius-md;
