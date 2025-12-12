@@ -159,7 +159,7 @@
   }
 
   @include md {
-    color: var(--home-text-strong);
+    color: var(--home-text-muted);
     font-size: $font-sm;
     font-weight: $font-semibold;
     min-width: 160px;
@@ -916,7 +916,7 @@
 
 .city-name {
   font-weight: $font-semibold;
-  color: var(--home-text-strong);
+  color: var(--home-text-muted);
 }
 
 .city-state {

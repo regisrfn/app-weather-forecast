@@ -36,15 +36,7 @@
       </div>
 
       <div class="topbar-right" :class="{ 'is-collapsed': !isHeaderExpanded }">
-        <div class="layer-select">
-          <label for="layer-select">Camada</label>
-          <select id="layer-select" v-model="activeLayer">
-            <option value="rain">Chuva</option>
-            <option value="alerts">Alertas</option>
-            <option value="temperature">Temperatura</option>
-            <option value="wind">Vento</option>
-          </select>
-        </div>
+        <LayerSelector v-model="activeLayer" />
         <button
           class="pill-btn ghost"
           type="button"
@@ -397,6 +389,7 @@ import { getCloudsDescription, getRainfallColor, getRainfallDescription } from '
 import DayCarousel from './DayCarousel.vue';
 import WeatherAlerts from './WeatherAlerts.vue';
 import AlertDetailPanel from './AlertDetailPanel.vue';
+import LayerSelector from './LayerSelector.vue';
 import type { WeatherAlert, WeatherData } from '../types/weather';
 import { componentLogger } from '../utils/logger';
 import { useTheme } from '../composables/useTheme';
