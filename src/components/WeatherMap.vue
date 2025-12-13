@@ -161,7 +161,7 @@
         </div>
 
         <div class="sidebar-section">
-          <div class="section-label">Camada temporal</div>
+          <div class="section-label">Previsão</div>
           <div class="resolution-switch" role="group" aria-label="Dados por hora ou por dia">
             <button
               type="button"
@@ -948,7 +948,8 @@ const activeBadge = computed(() => {
 
   if (activeLayer.value === 'accumulation') {
     const acc = getAccumulationValue(city);
-    return { label: `${acc.toFixed(1)} mm (dia)`, color: getAccumulationColor(acc) };
+    const unit = dataResolution.value === 'daily' ? 'mm' : 'mm/h';
+    return { label: `${acc.toFixed(1)} ${unit}`, color: getAccumulationColor(acc) };
   }
 
   const intensity = getRainIntensityValue(city);
@@ -977,7 +978,6 @@ const formatDateShort = (dateStr: string): string => {
 };
 
 const getTooltipContent = (cityName: string, weather: WeatherData): string => {
-  const dailyLabel = dataResolution.value === 'daily' ? ' (dia)' : '';
   if (activeLayer.value === 'temperature') {
     const tempValue = getTemperatureValue(weather);
     return `<b>${cityName}</b><br>Temperatura: ${tempValue.toFixed(1)}°C`;
@@ -1000,7 +1000,7 @@ const getTooltipContent = (cityName: string, weather: WeatherData): string => {
   }
 
   const intensity = getRainIntensityValue(weather);
-  return `<b>${cityName}</b><br>Intensidade${dailyLabel}: ${intensity.toFixed(0)} - ${getRainfallDescription(intensity)}`;
+  return `<b>${cityName}</b><br>Intensidade: ${intensity.toFixed(0)} - ${getRainfallDescription(intensity)}`;
 };
 
 const initMap = () => {
