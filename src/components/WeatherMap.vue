@@ -796,11 +796,11 @@ const getAlertColor = (alerts?: WeatherAlert[]) => {
 };
 
 const getAccumulationColor = (volume: number) => {
-  if (volume <= 1) return 'rgba(148, 163, 184, 0.7)';
-  if (volume <= 5) return 'rgba(96, 165, 250, 0.85)';
-  if (volume <= 15) return 'rgba(59, 130, 246, 0.9)';
-  if (volume <= 30) return 'rgba(37, 99, 235, 0.95)';
-  return 'rgba(30, 64, 175, 0.95)';
+  if (volume <= 1) return 'rgba(226, 232, 240, 0.9)'; // Cinza-azulado bem claro
+  if (volume <= 5) return 'rgba(189, 222, 251, 0.9)'; // Azul claro
+  if (volume <= 15) return 'rgba(96, 165, 250, 0.9)'; // Azul médio
+  if (volume <= 30) return 'rgba(37, 99, 235, 0.95)'; // Azul forte
+  return 'rgba(6, 56, 131, 1)'; // Azul petróleo escuro
 };
 
 const getRainIntensityValue = (weather: WeatherData): number => {
