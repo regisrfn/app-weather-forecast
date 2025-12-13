@@ -188,9 +188,6 @@
     color: var(--panel-header-text);
     cursor: pointer;
     transition: all $transition-fast;
-    text-decoration: underline solid rgba(15, 63, 140, 0.35);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 4px;
     padding: 6px 12px;
     border-radius: $radius-md;
     position: relative;
