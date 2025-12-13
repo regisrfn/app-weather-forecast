@@ -952,11 +952,8 @@ const activeBadge = computed(() => {
   }
 
   const intensity = getRainIntensityValue(city);
-  const rainLabel = dataResolution.value === 'daily'
-    ? `Máx ${intensity.toFixed(0)} - ${getRainfallDescription(intensity)}`
-    : getRainfallDescription(intensity);
   return {
-    label: rainLabel,
+    label: getRainfallDescription(intensity),
     color: getRainfallColor(intensity),
   };
 });
@@ -983,12 +980,12 @@ const getTooltipContent = (cityName: string, weather: WeatherData): string => {
   const dailyLabel = dataResolution.value === 'daily' ? ' (dia)' : '';
   if (activeLayer.value === 'temperature') {
     const tempValue = getTemperatureValue(weather);
-    return `<b>${cityName}</b><br>Temperatura${dailyLabel}: ${tempValue.toFixed(1)}°C`;
+    return `<b>${cityName}</b><br>Temperatura: ${tempValue.toFixed(1)}°C`;
   }
 
   if (activeLayer.value === 'wind') {
     const windValue = getWindValue(weather);
-    return `<b>${cityName}</b><br>Vento${dailyLabel}: ${windValue.toFixed(1)} km/h`;
+    return `<b>${cityName}</b><br>Vento: ${windValue.toFixed(1)} km/h`;
   }
 
   if (activeLayer.value === 'alerts') {
@@ -998,9 +995,8 @@ const getTooltipContent = (cityName: string, weather: WeatherData): string => {
 
   if (activeLayer.value === 'accumulation') {
     const acc = getAccumulationValue(weather);
-    const unit = dataResolution.value === 'daily' ? 'mm (dia)' : 'mm/h';
-    const scope = dataResolution.value === 'daily' ? 'Acúmulo diário' : 'Acúmulo hora';
-    return `<b>${cityName}</b><br>${scope}: ${acc.toFixed(1)} ${unit}`;
+    const unit = dataResolution.value === 'daily' ? 'mm' : 'mm/h';
+    return `<b>${cityName}</b><br>Acúmulo: ${acc.toFixed(1)} ${unit}`;
   }
 
   const intensity = getRainIntensityValue(weather);
