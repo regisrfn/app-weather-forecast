@@ -226,6 +226,53 @@
   }
 }
 
+.resolution-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.4rem;
+  background: var(--home-surface-strong);
+  border: 1px solid var(--home-border-soft);
+  border-radius: $radius-md;
+  box-shadow: var(--home-shadow-soft);
+  width: 100%;
+
+  @include md {
+    justify-content: center;
+  }
+}
+
+.resolution-btn {
+  @include reset-button;
+  padding: 0.35rem 0.8rem;
+  border-radius: $radius-sm;
+  color: var(--home-text-muted);
+  font-weight: $font-semibold;
+  font-size: $font-sm;
+  background: transparent;
+  transition: all $transition-fast;
+  border: 1px solid transparent;
+
+  &:hover {
+    color: var(--home-text-strong);
+    border-color: var(--home-border-strong);
+  }
+
+  &.is-active {
+    color: var(--home-text-strong);
+    background: linear-gradient(135deg, rgba(88, 177, 255, 0.18), rgba(52, 211, 153, 0.15));
+    border-color: var(--home-border-strong);
+    box-shadow: var(--home-shadow-strong);
+  }
+}
+
+.resolution-hint {
+  margin-top: 0.35rem;
+  color: var(--home-text-muted);
+  font-size: $font-xs;
+  line-height: 1.3;
+}
+
 // Animação de slide down para controles expandidos
 @keyframes slideDown {
   from {

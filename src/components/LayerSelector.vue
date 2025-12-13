@@ -56,7 +56,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 
-type LayerType = 'rain' | 'alerts' | 'temperature' | 'wind';
+type LayerType = 'rain' | 'alerts' | 'temperature' | 'wind' | 'accumulation';
 
 interface Props {
   modelValue: LayerType;
@@ -106,8 +106,18 @@ const WindIcon = {
   `
 };
 
+const AccumulationIcon = {
+  template: `
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 2C10 2 5 8 5 11.5C5 14.538 7.239 17 10 17C12.761 17 15 14.538 15 11.5C15 8 10 2 10 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8.5 11.5C8.5 12.88 9.62 14 11 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  `
+};
+
 const layers = [
   { value: 'rain' as LayerType, label: 'Chuva', icon: RainIcon },
+  { value: 'accumulation' as LayerType, label: 'Chuva acumulada', icon: AccumulationIcon },
   { value: 'alerts' as LayerType, label: 'Alertas', icon: AlertIcon },
   { value: 'temperature' as LayerType, label: 'Temperatura', icon: TemperatureIcon },
   { value: 'wind' as LayerType, label: 'Vento', icon: WindIcon },

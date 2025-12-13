@@ -161,6 +161,31 @@
         </div>
 
         <div class="sidebar-section">
+          <div class="section-label">Camada temporal</div>
+          <div class="resolution-switch" role="group" aria-label="Dados por hora ou por dia">
+            <button
+              type="button"
+              class="resolution-btn"
+              :class="{ 'is-active': dataResolution === 'hourly' }"
+              @click="setDataResolution('hourly')"
+            >
+              Hora a hora
+            </button>
+            <button
+              type="button"
+              class="resolution-btn"
+              :class="{ 'is-active': dataResolution === 'daily' }"
+              @click="setDataResolution('daily')"
+            >
+              Dia
+            </button>
+          </div>
+          <div class="resolution-hint">
+            Hora: usa valores do horário escolhido. Dia: agrega chuva, vento e temperatura máximos do dia.
+          </div>
+        </div>
+
+        <div class="sidebar-section">
           <div class="section-label">Indicadores</div>
           <div class="filter-list">
             <label class="filter-item">
@@ -310,17 +335,25 @@
           </div>
 
           <div class="weather-grid">
-            <div class="weather-item" v-if="metricsToggles.rain && selectedCity.rainfallProbability !== undefined">
+            <div class="weather-item" v-if="metricsToggles.rain && (selectedCity.rainfallProbability !== undefined || selectedCity.dailyAggregates)">
               <span class="weather-label">Prob. Chuva</span>
-              <span class="weather-value">{{ selectedCity.rainfallProbability.toFixed(0) }}%</span>
+              <span class="weather-value">{{ getRainProbabilityValue(selectedCity).toFixed(0) }}%</span>
             </div>
-            <div class="weather-item" v-if="metricsToggles.rain && selectedCity.dailyRainAccumulation !== undefined && selectedCity.rainfallIntensity > 0">
-              <span class="weather-label">Acum. Dia</span>
-              <span class="weather-value">{{ selectedCity.dailyRainAccumulation.toFixed(1) }} mm</span>
+            <div class="weather-item" v-if="metricsToggles.rain && ((dataResolution === 'daily' && (selectedCity.dailyRainAccumulation !== undefined || selectedCity.dailyAggregates?.rainVolume !== undefined)) || (dataResolution === 'hourly' && selectedCity.rainVolumeHour !== undefined))">
+              <span class="weather-label">{{ dataResolution === 'daily' ? 'Acum. Dia' : 'Chuva (mm/h)' }}</span>
+              <span class="weather-value">
+                {{
+                  (dataResolution === 'daily'
+                    ? (selectedCity.dailyAggregates?.rainVolume ?? selectedCity.dailyRainAccumulation ?? 0)
+                    : (selectedCity.rainVolumeHour ?? 0)
+                  ).toFixed(1)
+                }}
+                {{ dataResolution === 'daily' ? 'mm' : 'mm/h' }}
+              </span>
             </div>
             <div class="weather-item" v-if="metricsToggles.temperature">
-              <span class="weather-label">Temp.</span>
-              <span class="weather-value">{{ selectedCity.temperature.toFixed(1) }}°C</span>
+              <span class="weather-label">{{ dataResolution === 'daily' ? 'Temp. máx' : 'Temp.' }}</span>
+              <span class="weather-value">{{ getTemperatureValue(selectedCity).toFixed(1) }}°C</span>
             </div>
             <div class="weather-item" v-if="metricsToggles.temperature && selectedCity.tempMin !== undefined && selectedCity.tempMax !== undefined">
               <span class="weather-label">Mín/Máx</span>
@@ -332,7 +365,7 @@
             </div>
             <div class="weather-item" v-if="metricsToggles.wind">
               <span class="weather-label">Vento</span>
-              <span class="weather-value">{{ selectedCity.windSpeed.toFixed(1) }} km/h</span>
+              <span class="weather-value">{{ getWindValue(selectedCity).toFixed(1) }} km/h</span>
             </div>
             <div class="weather-item" v-if="selectedCity.clouds !== undefined && metricsToggles.rain">
               <span class="weather-label">Tempo</span>
@@ -384,7 +417,7 @@ import DayCarousel from './DayCarousel.vue';
 import WeatherAlerts from './WeatherAlerts.vue';
 import AlertDetailPanel from './AlertDetailPanel.vue';
 import LayerSelector from './LayerSelector.vue';
-import type { AlertSeverity, WeatherAlert, WeatherData } from '../types/weather';
+import type { AlertSeverity, DataResolution, WeatherAlert, WeatherData } from '../types/weather';
 import { componentLogger } from '../utils/logger';
 import { useTheme } from '../composables/useTheme';
 
@@ -432,7 +465,8 @@ const filteredCities = ref<Array<{ id: string; name: string; state: string; lati
 const sidebarCities = ref<SidebarCity[]>([]);
 const mapCities = ref<SidebarCity[]>([]);
 
-const activeLayer = ref<'rain' | 'alerts' | 'temperature' | 'wind'>('rain');
+const activeLayer = ref<'rain' | 'alerts' | 'temperature' | 'wind' | 'accumulation'>('rain');
+const dataResolution = ref<DataResolution>('daily');
 const metricsToggles = ref({
   rain: true,
   temperature: true,
@@ -504,6 +538,13 @@ const toggleSidebar = () => {
  */
 const toggleHeaderControls = () => {
   isHeaderExpanded.value = !isHeaderExpanded.value;
+};
+
+const setDataResolution = (mode: DataResolution) => {
+  dataResolution.value = mode;
+  if (regionalData.value.length > 0) {
+    renderCityMeshes().catch(error => logger.error('Erro ao redesenhar malhas para resolução diária:', error));
+  }
 };
 
 const handleAlertClick = (alert: WeatherAlert) => {
@@ -737,16 +778,73 @@ const getAlertColor = (alerts?: WeatherAlert[]) => {
   return 'rgba(148, 163, 184, 0.6)';
 };
 
+const getAccumulationColor = (volume: number) => {
+  if (volume <= 1) return 'rgba(148, 163, 184, 0.7)';
+  if (volume <= 5) return 'rgba(96, 165, 250, 0.85)';
+  if (volume <= 15) return 'rgba(59, 130, 246, 0.9)';
+  if (volume <= 30) return 'rgba(37, 99, 235, 0.95)';
+  return 'rgba(30, 64, 175, 0.95)';
+};
+
+const getRainIntensityValue = (weather: WeatherData): number => {
+  if (dataResolution.value === 'daily' && weather.dailyAggregates) {
+    return weather.dailyAggregates.rainIntensityMax ?? weather.rainfallIntensity;
+  }
+  return weather.rainfallIntensity;
+};
+
+const getRainProbabilityValue = (weather: WeatherData): number => {
+  if (dataResolution.value === 'daily' && weather.dailyAggregates) {
+    return weather.dailyAggregates.rainProbabilityMax ?? (weather.rainfallProbability ?? 0);
+  }
+  return weather.rainfallProbability ?? 0;
+};
+
+const getWindValue = (weather: WeatherData): number => {
+  if (dataResolution.value === 'daily' && weather.dailyAggregates) {
+    return weather.dailyAggregates.windSpeedMax ?? weather.windSpeed;
+  }
+  return weather.windSpeed;
+};
+
+const getTemperatureValue = (weather: WeatherData): number => {
+  if (dataResolution.value === 'daily' && weather.dailyAggregates) {
+    return weather.dailyAggregates.tempMax ?? weather.temperature;
+  }
+  return weather.temperature;
+};
+
+const getAccumulationValue = (weather: WeatherData): number => {
+  // Se visão diária, usar acumulado do dia
+  if (dataResolution.value === 'daily') {
+    if (weather.dailyAggregates?.rainVolume !== undefined) {
+      return weather.dailyAggregates.rainVolume;
+    }
+    if (weather.dailyRainAccumulation !== undefined) {
+      return weather.dailyRainAccumulation;
+    }
+    return 0;
+  }
+
+  // Visão horária: usar volume por hora
+  if (weather.rainVolumeHour !== undefined) {
+    return weather.rainVolumeHour;
+  }
+  return weather.rainfallIntensity ? weather.rainfallIntensity / 10 : 0; // fallback aproximado
+};
+
 const getLayerColor = (weather: WeatherData) => {
   switch (activeLayer.value) {
     case 'temperature':
-      return getTemperatureColor(weather.temperature);
+      return getTemperatureColor(getTemperatureValue(weather));
     case 'wind':
-      return getWindColor(weather.windSpeed);
+      return getWindColor(getWindValue(weather));
+    case 'accumulation':
+      return getAccumulationColor(getAccumulationValue(weather));
     case 'alerts':
       return getAlertColor(weather.weatherAlert);
     default:
-      return getRainfallColor(weather.rainfallIntensity);
+      return getRainfallColor(getRainIntensityValue(weather));
   }
 };
 
@@ -776,6 +874,16 @@ const legendItems = computed(() => {
     ];
   }
 
+  if (activeLayer.value === 'accumulation') {
+    return [
+      { color: getAccumulationColor(0.5), label: '0 - 1 mm' },
+      { color: getAccumulationColor(3), label: '1 - 5 mm' },
+      { color: getAccumulationColor(10), label: '5 - 15 mm' },
+      { color: getAccumulationColor(22), label: '15 - 30 mm' },
+      { color: getAccumulationColor(35), label: '> 30 mm' },
+    ];
+  }
+
   if (activeLayer.value === 'alerts') {
     return [
       { color: alertColor(), label: 'Sem alertas' },
@@ -800,11 +908,19 @@ const activeBadge = computed(() => {
   if (!city) return { label: '', color: 'transparent' };
 
   if (activeLayer.value === 'temperature') {
-    return { label: `${city.temperature.toFixed(1)}°C`, color: getTemperatureColor(city.temperature) };
+    const tempValue = getTemperatureValue(city);
+    const label = dataResolution.value === 'daily'
+      ? `${tempValue.toFixed(1)}°C máx`
+      : `${tempValue.toFixed(1)}°C`;
+    return { label, color: getTemperatureColor(tempValue) };
   }
 
   if (activeLayer.value === 'wind') {
-    return { label: `${city.windSpeed.toFixed(1)} km/h`, color: getWindColor(city.windSpeed) };
+    const windValue = getWindValue(city);
+    const label = dataResolution.value === 'daily'
+      ? `Vento ${windValue.toFixed(1)} km/h`
+      : `${windValue.toFixed(1)} km/h`;
+    return { label, color: getWindColor(windValue) };
   }
 
   if (activeLayer.value === 'alerts') {
@@ -813,9 +929,18 @@ const activeBadge = computed(() => {
     return { label: hasAlerts ? 'Alertas ativos' : 'Sem alertas', color };
   }
 
+  if (activeLayer.value === 'accumulation') {
+    const acc = getAccumulationValue(city);
+    return { label: `${acc.toFixed(1)} mm (dia)`, color: getAccumulationColor(acc) };
+  }
+
+  const intensity = getRainIntensityValue(city);
+  const rainLabel = dataResolution.value === 'daily'
+    ? `Máx ${intensity.toFixed(0)} - ${getRainfallDescription(intensity)}`
+    : getRainfallDescription(intensity);
   return {
-    label: getRainfallDescription(city.rainfallIntensity),
-    color: getRainfallColor(city.rainfallIntensity),
+    label: rainLabel,
+    color: getRainfallColor(intensity),
   };
 });
 
@@ -838,12 +963,15 @@ const formatDateShort = (dateStr: string): string => {
 };
 
 const getTooltipContent = (cityName: string, weather: WeatherData): string => {
+  const dailyLabel = dataResolution.value === 'daily' ? ' (dia)' : '';
   if (activeLayer.value === 'temperature') {
-    return `<b>${cityName}</b><br>Temperatura: ${weather.temperature.toFixed(1)}°C`;
+    const tempValue = getTemperatureValue(weather);
+    return `<b>${cityName}</b><br>Temperatura${dailyLabel}: ${tempValue.toFixed(1)}°C`;
   }
 
   if (activeLayer.value === 'wind') {
-    return `<b>${cityName}</b><br>Vento: ${weather.windSpeed.toFixed(1)} km/h`;
+    const windValue = getWindValue(weather);
+    return `<b>${cityName}</b><br>Vento${dailyLabel}: ${windValue.toFixed(1)} km/h`;
   }
 
   if (activeLayer.value === 'alerts') {
@@ -851,7 +979,15 @@ const getTooltipContent = (cityName: string, weather: WeatherData): string => {
     return `<b>${cityName}</b><br>${alertCount > 0 ? `${alertCount} alerta(s)` : 'Sem alertas'}`;
   }
 
-  return `<b>${cityName}</b><br>Intensidade: ${weather.rainfallIntensity.toFixed(0)} - ${getRainfallDescription(weather.rainfallIntensity)}`;
+  if (activeLayer.value === 'accumulation') {
+    const acc = getAccumulationValue(weather);
+    const unit = dataResolution.value === 'daily' ? 'mm (dia)' : 'mm/h';
+    const scope = dataResolution.value === 'daily' ? 'Acúmulo diário' : 'Acúmulo hora';
+    return `<b>${cityName}</b><br>${scope}: ${acc.toFixed(1)} ${unit}`;
+  }
+
+  const intensity = getRainIntensityValue(weather);
+  return `<b>${cityName}</b><br>Intensidade${dailyLabel}: ${intensity.toFixed(0)} - ${getRainfallDescription(intensity)}`;
 };
 
 const initMap = () => {
@@ -1187,6 +1323,11 @@ const navigateNextDay = async () => {
 onMounted(async () => {
   // Carregar dados dos municípios
   await loadMunicipalities();
+
+  // Em telas pequenas, encolher controles por padrão para abrir mais espaço
+  if (window.innerWidth < 960) {
+    isHeaderExpanded.value = false;
+  }
   
   // Inicializar data e hora padrão (agora em horário Brasil)
   const now = new Date();
@@ -1335,6 +1476,11 @@ watch([centerCityId, searchRadius, forecastDate, forecastTime], () => {
 watch(activeLayer, () => {
   selectedLayer = null;
   renderCityMeshes().catch(error => logger.error('Erro ao redesenhar malhas para camada ativa:', error));
+});
+
+watch(dataResolution, () => {
+  selectedLayer = null;
+  renderCityMeshes().catch(error => logger.error('Erro ao redesenhar malhas para granularidade:', error));
 });
 
 onUnmounted(() => {

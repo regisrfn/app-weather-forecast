@@ -9,6 +9,7 @@ export interface City {
 }
 
 export type AlertSeverity = 'info' | 'warning' | 'alert' | 'danger';
+export type DataResolution = 'hourly' | 'daily';
 
 export interface WeatherAlert {
   code: string;
@@ -32,6 +33,16 @@ export interface RainfallData {
   tempMax?: number; // Temperatura máxima (°C)
 }
 
+export interface DailyAggregates {
+  date: string;
+  rainVolume: number;
+  rainIntensityMax: number;
+  rainProbabilityMax: number;
+  windSpeedMax: number;
+  tempMin: number;
+  tempMax: number;
+}
+
 // Dados meteorológicos agregados consumidos pelo mapa
 export interface WeatherData extends RainfallData {
   timestamp: string; // Backend retorna ISO string
@@ -42,6 +53,7 @@ export interface WeatherData extends RainfallData {
   pressure?: number;
   visibility?: number;
   description?: string;
+  dailyAggregates?: DailyAggregates;
 }
 
 // Tipos para resposta detalhada da API
