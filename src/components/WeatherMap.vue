@@ -166,18 +166,18 @@
             <button
               type="button"
               class="resolution-btn"
-              :class="{ 'is-active': dataResolution === 'hourly' }"
-              @click="setDataResolution('hourly')"
-            >
-              Hora a hora
-            </button>
-            <button
-              type="button"
-              class="resolution-btn"
               :class="{ 'is-active': dataResolution === 'daily' }"
               @click="setDataResolution('daily')"
             >
               Dia
+            </button>
+            <button
+              type="button"
+              class="resolution-btn"
+              :class="{ 'is-active': dataResolution === 'hourly' }"
+              @click="setDataResolution('hourly')"
+            >
+              Hora a hora
             </button>
           </div>
           <div class="resolution-hint">
@@ -209,6 +209,26 @@
       </aside>
 
       <section class="map-area">
+        <div class="map-context-card">
+          <div class="context-eyebrow">
+            <span class="dot"></span>
+            {{ resolutionLabel }}
+          </div>
+          <div class="context-city-row">
+            <RouterLink
+              v-if="selectedCity"
+              :to="`/city/${selectedCity.cityId}`"
+              class="context-city-link"
+              :aria-label="`Ver detalhes de ${selectedCity.cityName}`"
+            >
+              {{ selectedCity.cityName }}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </RouterLink>
+            <span v-else class="context-city-placeholder">{{ getCurrentCenterCityName() }}</span>
+          </div>
+        </div>
         <div class="map-wrapper">
           <div v-if="isLoading" class="loading-overlay"></div>
           <div v-if="isLoading" class="loading-indicator">
@@ -415,7 +435,7 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { APP_CONFIG } from '../config/app';
 import { getNeighborCities, getRegionalWeather } from '../services/apiService';
 import { getMultipleMunicipalityMeshes } from '../services/ibgeService';
@@ -770,6 +790,8 @@ const headerDateLabel = computed(() => {
   const timeLabel = forecastTime.value || '';
   return `${dayLabel}, ${formattedDate}${timeLabel ? ` - ${timeLabel}` : ''}`;
 });
+
+const resolutionLabel = computed(() => (dataResolution.value === 'daily' ? 'Previsão diária' : 'Previsão hora a hora'));
 
 const getTemperatureColor = (temperature: number) => {
   if (temperature < 18) return 'rgba(99, 179, 237, 0.85)';
