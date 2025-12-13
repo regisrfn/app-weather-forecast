@@ -314,18 +314,25 @@
               @click="jumpToTime(forecast.time, forecast.date)"
             >
               <div class="forecast-time">
-                {{ forecast.time }}
-                <span v-if="forecast.date !== forecastDate" class="forecast-date-label">
+                <template v-if="dataResolution === 'daily'">
                   {{ formatDateShort(forecast.date) }}
-                </span>
+                </template>
+                <template v-else>
+                  {{ forecast.time }}
+                  <span v-if="forecast.date !== forecastDate" class="forecast-date-label">
+                    {{ formatDateShort(forecast.date) }}
+                  </span>
+                </template>
               </div>
               <div v-if="!forecast.loading && forecast.data" class="forecast-content">
-                <div class="forecast-temp">{{ forecast.data.temperature.toFixed(1) }}°C</div>
+                <div class="forecast-temp">
+                  {{ (dataResolution === 'daily' ? getTemperatureValue(forecast.data) : forecast.data.temperature).toFixed(1) }}°C
+                </div>
                 <div class="forecast-rain" v-if="forecast.data.rainfallProbability !== undefined">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" fill="currentColor" opacity="0.6" />
                   </svg>
-                  <span>{{ forecast.data.rainfallProbability.toFixed(0) }}%</span>
+                  <span>{{ getRainProbabilityValue(forecast.data).toFixed(0) }}%</span>
                 </div>
               </div>
               <div v-else-if="forecast.loading" class="forecast-loading">
@@ -351,8 +358,8 @@
                 {{ dataResolution === 'daily' ? 'mm' : 'mm/h' }}
               </span>
             </div>
-            <div class="weather-item" v-if="metricsToggles.temperature">
-              <span class="weather-label">{{ dataResolution === 'daily' ? 'Temp. máx' : 'Temp.' }}</span>
+            <div class="weather-item" v-if="metricsToggles.temperature && dataResolution === 'hourly'">
+              <span class="weather-label">Temp.</span>
               <span class="weather-value">{{ getTemperatureValue(selectedCity).toFixed(1) }}°C</span>
             </div>
             <div class="weather-item" v-if="metricsToggles.temperature && selectedCity.tempMin !== undefined && selectedCity.tempMax !== undefined">
@@ -520,6 +527,7 @@ const forecastTimeSlots = ref<ForecastSlot[]>([
   { time: '03:00', date: '', data: null, loading: false },
   { time: '06:00', date: '', data: null, loading: false }
 ]);
+const DAILY_SLOT_TIME = '12:00';
 
 const togglePanel = () => {
   isPanelOpen.value = !isPanelOpen.value;
@@ -587,34 +595,44 @@ const updateForecastSlots = async () => {
   const currentTime = forecastTime.value;
   const parts = currentTime.split(':');
   const currentHours = parts[0] ? parseInt(parts[0]) : 0;
-  
-  // Calcular os 3 slots de tempo (atual, +3h, +6h) com transição de dia
+
   const slots: Array<{ time: string; date: string }> = [];
   let currentDate = forecastDate.value;
-  
-  for (let i = 0; i < 3; i++) {
-    let hour = currentHours + (i * 3);
-    let dateToUse = currentDate;
-    
-    // Se hora passa de 24, ajustar para próximo dia
-    if (hour >= 24) {
-      hour = hour - 24;
-      // Incrementar data em 1 dia
+
+  if (dataResolution.value === 'daily') {
+    // 3 dias: hoje + 2 próximos
+    for (let i = 0; i < 3; i++) {
       const date = new Date(currentDate + 'T00:00:00');
-      date.setDate(date.getDate() + 1);
+      date.setDate(date.getDate() + i);
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
-      dateToUse = `${year}-${month}-${day}`;
+      const dateStr = `${year}-${month}-${day}`;
+      slots.push({ time: DAILY_SLOT_TIME, date: dateStr });
     }
-    
-    slots.push({
-      time: `${String(hour).padStart(2, '0')}:00`,
-      date: dateToUse
-    });
+  } else {
+    // Calcular 3 horários (atual, +3h, +6h)
+    for (let i = 0; i < 3; i++) {
+      let hour = currentHours + (i * 3);
+      let dateToUse = currentDate;
+      
+      if (hour >= 24) {
+        hour = hour - 24;
+        const date = new Date(currentDate + 'T00:00:00');
+        date.setDate(date.getDate() + 1);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        dateToUse = `${year}-${month}-${day}`;
+      }
+      
+      slots.push({
+        time: `${String(hour).padStart(2, '0')}:00`,
+        date: dateToUse
+      });
+    }
   }
   
-  // Atualizar os slots
   forecastTimeSlots.value = slots.map(({ time, date }, index) => ({
     time,
     date,
@@ -622,7 +640,6 @@ const updateForecastSlots = async () => {
     loading: index > 0
   }));
   
-  // Buscar dados para os próximos horários
   for (let i = 1; i < slots.length; i++) {
     const slotData = slots[i];
     if (!slotData) continue;
