@@ -274,7 +274,7 @@
               <div class="header-right">
                 <span
                   class="intensity-badge"
-                  :style="{ backgroundColor: activeBadge.color }"
+                  :style="{ '--intensity-color': activeBadge.color }"
                 >
                   {{ activeBadge.label }}
                 </span>

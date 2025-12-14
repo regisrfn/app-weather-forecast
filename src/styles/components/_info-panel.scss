@@ -581,20 +581,35 @@
 }
 
 .intensity-badge {
-  display: inline-block;
-  padding: 0.3rem $spacing-md;
+  --intensity-color: var(--home-accent);
+
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: 0.25rem $spacing-sm;
   border-radius: $radius-md;
-  font-size: $font-base;
-  font-weight: $font-bold;
-  color: var(--home-text-strong);
-  @include text-shadow;
+  font-size: $font-sm;
+  font-weight: $font-semibold;
+  color: var(--home-text-muted);
   white-space: nowrap;
-  background: var(--home-control-strong) !important;
-  border: 1px solid var(--home-border-soft);
-  backdrop-filter: blur(6px);
+  background: var(--home-control-bg);
+  background: color-mix(in srgb, var(--home-control-bg) 55%, transparent);
+  border: none;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(10px);
+
+  &::before {
+    content: '';
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: $radius-full;
+    background: var(--intensity-color);
+    box-shadow: 0 0 0 4px var(--home-control-bg);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--home-control-bg) 50%, transparent);
+  }
 
   @include md {
-    font-size: 0.65rem;
+    font-size: $font-xs;
     padding: 0.2rem $spacing-xs;
   }
 }
@@ -676,7 +691,7 @@
     align-items: center;
     
     // Sublinhado mais visível em telas pequenas
-    text-decoration: underline solid rgba(255, 255, 255, 0.5);
+    text-decoration: none;
     text-decoration-thickness: 2px;
     text-underline-offset: 5px;
     
