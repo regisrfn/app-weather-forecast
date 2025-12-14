@@ -116,11 +116,11 @@ const AccumulationIcon = {
 };
 
 const layers = [
-  { value: 'rain' as LayerType, label: 'Chuva', icon: RainIcon },
-  { value: 'accumulation' as LayerType, label: 'Chuva acumulada', icon: AccumulationIcon },
-  { value: 'alerts' as LayerType, label: 'Alertas', icon: AlertIcon },
+  { value: 'rain' as LayerType, label: 'Intensidade de Chuva', icon: RainIcon },
+  { value: 'accumulation' as LayerType, label: 'Volume de chuva', icon: AccumulationIcon },
   { value: 'temperature' as LayerType, label: 'Temperatura', icon: TemperatureIcon },
   { value: 'wind' as LayerType, label: 'Vento', icon: WindIcon },
+  { value: 'alerts' as LayerType, label: 'Alertas', icon: AlertIcon }
 ];
 
 const currentLayerLabel = computed(() => {

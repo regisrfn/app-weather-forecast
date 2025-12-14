@@ -236,10 +236,6 @@
   border-radius: $radius-md;
   box-shadow: var(--home-shadow-soft);
   width: 100%;
-
-  @include md {
-    justify-content: center;
-  }
 }
 
 .resolution-btn {
