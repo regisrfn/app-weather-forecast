@@ -12,14 +12,6 @@
           </div>
         </div>
         <button
-          class="topbar-date-btn"
-          type="button"
-          @click="openDateTimePicker"
-          aria-label="Selecionar data e hora"
-        >
-          {{ headerDateLabel }}
-        </button>
-        <button
           class="hamburger-btn"
           type="button"
           @click="toggleHeaderControls"
@@ -521,9 +513,6 @@ const searchRadius = ref<number>(APP_CONFIG.RADIUS.DEFAULT);
 const forecastDate = ref<string>(''); // YYYY-MM-DD
 const forecastTime = ref<string>(''); // HH:MM
 const showDayCarousel = ref<boolean>(false); // Controla exibição do carrossel
-const openDateTimePicker = () => {
-  showDayCarousel.value = true;
-};
 
 // Controle de abertura do painel
 const isPanelOpen = ref<boolean>(false);
@@ -790,27 +779,6 @@ const getCurrentCenterCityName = (): string => {
   const city = municipalities.value.find(c => c.id === centerCityId.value);
   return city ? `${city.name}, ${city.state}` : 'Carregando...';
 };
-
-const headerDateLabel = computed(() => {
-  if (!forecastDate.value) return '';
-  const [yearStr, monthStr, dayStr] = forecastDate.value.split('-');
-  const year = Number(yearStr);
-  const month = Number(monthStr);
-  const day = Number(dayStr);
-  if (!year || !month || !day) return forecastDate.value;
-
-  const date = new Date(year, month - 1, day);
-  const now = new Date();
-  const brasilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-  brasilTime.setHours(0, 0, 0, 0);
-  date.setHours(0, 0, 0, 0);
-
-  const diffDays = Math.floor((date.getTime() - brasilTime.getTime()) / (1000 * 60 * 60 * 24));
-  const dayLabel = diffDays === 0 ? 'Hoje' : diffDays === 1 ? 'Amanhã' : date.toLocaleDateString('pt-BR', { weekday: 'short' });
-  const formattedDate = `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}`;
-  const timeLabel = forecastTime.value || '';
-  return `${dayLabel}, ${formattedDate}${timeLabel ? ` - ${timeLabel}` : ''}`;
-});
 
 const resolutionLabel = computed(() => (dataResolution.value === 'daily' ? 'Previsão diária' : 'Previsão hora a hora'));
 

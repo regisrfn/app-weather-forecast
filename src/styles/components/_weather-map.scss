@@ -135,41 +135,6 @@
   }
 }
 
-.topbar-date-btn {
-  @include reset-button;
-  color: var(--home-text-muted);
-  font-size: $font-base;
-  background: var(--home-control-strong);
-  border: 1px solid var(--home-border-soft);
-  border-radius: $radius-md;
-  padding: 0.45rem 0.75rem;
-  box-shadow: var(--home-shadow-soft);
-  transition: $transition-fast;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-
-  &:hover {
-    color: var(--home-text-strong);
-    border-color: var(--home-border-strong);
-    background: var(--home-control-hover);
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  @include md {
-    color: var(--home-text-muted);
-    font-size: $font-sm;
-    font-weight: $font-semibold;
-    min-width: 160px;
-    justify-content: center;
-  }
-}
-
 .topbar-right {
   display: flex;
   align-items: center;
