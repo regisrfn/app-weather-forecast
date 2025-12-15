@@ -50,17 +50,6 @@
       </div>
     </header>
 
-    <button
-      class="floating-sidebar-btn"
-      type="button"
-      @click="toggleSidebar"
-      :aria-label="isSidebarOpen ? 'Fechar menu lateral' : 'Abrir menu lateral'"
-    >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-      </svg>
-    </button>
-
     <div class="weather-grid">
       <div 
         v-if="isSidebarOpen" 
@@ -242,6 +231,17 @@
               <div class="sub-text">Buscando dados meteorológicos</div>
             </div>
           </div>
+          <button
+            class="floating-sidebar-btn"
+            type="button"
+            v-if="!isSidebarOpen"
+            @click="toggleSidebar"
+            :aria-label="isSidebarOpen ? 'Fechar menu lateral' : 'Abrir menu lateral'"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </button>
           <div id="map" ref="mapContainer"></div>
         </div>
 
