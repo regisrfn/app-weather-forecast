@@ -229,6 +229,13 @@
             <span v-else class="context-city-placeholder">{{ getCurrentCenterCityName() }}</span>
           </div>
         </div>
+        <CarouselWrapper
+          :resolution="dataResolution"
+          :selectedDate="forecastDate"
+          :selectedTime="forecastTime"
+          :maxDays="6"
+          @select="handleDateTimeSelect"
+        />
         <div class="map-wrapper">
           <div v-if="isLoading" class="loading-overlay"></div>
           <div v-if="isLoading" class="loading-indicator">
@@ -441,6 +448,7 @@ import { getNeighborCities, getRegionalWeather } from '../services/apiService';
 import { getMultipleMunicipalityMeshes } from '../services/ibgeService';
 import { getCloudsDescription, getRainfallColor, getRainfallDescription } from '../utils/weather';
 import DayCarousel from './DayCarousel.vue';
+import CarouselWrapper from './CarouselWrapper.vue';
 import WeatherAlerts from './WeatherAlerts.vue';
 import AlertDetailPanel from './AlertDetailPanel.vue';
 import LayerSelector from './LayerSelector.vue';
@@ -547,6 +555,7 @@ const forecastTimeSlots = ref<ForecastSlot[]>([
   { time: '03:00', date: '', data: null, loading: false },
   { time: '06:00', date: '', data: null, loading: false }
 ]);
+const DAILY_NAVIGATION_TIME = '00:00';
 const DAILY_SLOT_TIME = '12:00';
 
 const togglePanel = () => {
@@ -569,9 +578,21 @@ const toggleHeaderControls = () => {
 };
 
 const setDataResolution = (mode: DataResolution) => {
+  const previousTime = forecastTime.value;
   dataResolution.value = mode;
+
+  if (mode === 'daily') {
+    forecastTime.value = DAILY_NAVIGATION_TIME;
+  }
+
+  const timeChanged = forecastTime.value !== previousTime;
+
   if (regionalData.value.length > 0) {
-    renderCityMeshes().catch(error => logger.error('Erro ao redesenhar malhas para resolução diária:', error));
+    if (timeChanged) {
+      updateRegionalData();
+    } else {
+      renderCityMeshes().catch(error => logger.error('Erro ao redesenhar malhas para resolução diária:', error));
+    }
   }
 };
 
@@ -1377,9 +1398,7 @@ onMounted(async () => {
   const defaultDate = `${year}-${month}-${day}`;
   
   // Formatar hora HH:MM
-  const hours = String(brasilTime.getHours()).padStart(2, '0');
-  const minutes = String(brasilTime.getMinutes()).padStart(2, '0');
-  const defaultTime = `${hours}:${minutes}`;
+  const defaultTime = DAILY_NAVIGATION_TIME;
   
   // Inicializar estado a partir da URL ou usar valores padrão
   initializeFromURL(defaultDate, defaultTime);
