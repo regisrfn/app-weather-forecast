@@ -6,25 +6,25 @@
 .map-carousel {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   width: 100%;
   min-width: 0;
-  padding: 0.55rem 0.7rem;
+  padding: 0.5rem 0.65rem;
   border-radius: $radius-lg;
   border: 1px solid var(--home-border-strong);
   background: linear-gradient(140deg, rgba(47, 107, 216, 0.08), rgba(52, 211, 153, 0.06)), var(--home-surface-soft);
   box-shadow: var(--home-shadow-soft);
-  min-height: 64px;
+  min-height: 60px;
 
   @include md {
-    padding: 0.5rem 0.6rem;
-    gap: 0.35rem;
+    padding: 0.45rem 0.55rem;
+    gap: 0.3rem;
   }
 
   &__nav {
     @include reset-button;
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: $radius-full;
     border: 1px solid var(--home-border-soft);
     background: var(--home-control-bg);
@@ -35,6 +35,11 @@
     box-shadow: var(--home-shadow-soft);
     transition: $transition-fast;
     flex-shrink: 0;
+
+    @include md {
+      width: 32px;
+      height: 32px;
+    }
 
     &:hover:not(:disabled) {
       color: var(--home-text-strong);
@@ -53,8 +58,8 @@
     }
 
     svg {
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
     }
 
     &--prev {
@@ -69,23 +74,26 @@
   &__track {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.55rem;
+    justify-content: flex-start;
+    gap: 0.5rem;
     flex: 1;
     min-width: 0;
     width: 100%;
     overflow-x: auto;
-    padding: 0.15rem 0.1rem;
+    padding: 0.1rem 0.2rem;
     scroll-behavior: smooth;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0.2rem;
+    -webkit-overflow-scrolling: touch;
 
     &::-webkit-scrollbar {
       display: none;
     }
 
     @include md {
-      gap: 0.45rem;
+      gap: 0.4rem;
     }
   }
 
@@ -95,9 +103,9 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.1rem;
-    min-width: 92px;
-    padding: 0.55rem 0.65rem;
+    gap: 0.12rem;
+    min-width: 84px;
+    padding: 0.5rem 0.55rem;
     border-radius: $radius-md;
     border: 1px solid var(--home-border-soft);
     background: var(--home-surface);
@@ -106,10 +114,12 @@
     transition: $transition-fast;
     text-align: center;
     flex-grow: 1;
+    scroll-snap-align: start;
+    white-space: nowrap;
 
     @include md {
-      min-width: 86px;
-      padding: 0.5rem 0.55rem;
+      min-width: 78px;
+      padding: 0.45rem 0.5rem;
     }
 
     &:hover {
@@ -127,40 +137,27 @@
       box-shadow: var(--home-shadow-strong);
       color: #fff;
 
-      .map-carousel__label,
-      .map-carousel__meta,
-      .map-carousel__month {
+      .map-carousel__label {
         color: rgba(255, 255, 255, 0.9);
       }
     }
   }
 
   &__label {
-    font-size: $font-xs;
-    letter-spacing: $letter-spacing-wide;
-    text-transform: uppercase;
+    font-size: 0.68rem;
+    letter-spacing: $letter-spacing-tight;
     color: var(--home-text-muted);
     font-weight: $font-semibold;
+    line-height: 1.1;
   }
 
   &__value {
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     font-weight: $font-semibold;
-    line-height: 1.1;
+    line-height: 1.05;
 
     @include md {
-      font-size: 0.98rem;
+      font-size: 0.9rem;
     }
-  }
-
-  &__month {
-    color: var(--home-text-muted);
-    font-size: 0.95em;
-  }
-
-  &__meta {
-    font-size: $font-xs;
-    color: var(--home-text-muted);
-    line-height: 1.1;
   }
 }

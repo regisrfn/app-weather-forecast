@@ -22,13 +22,10 @@
           type="button"
           @click="emitDay(day.value)"
           :aria-pressed="day.value === selectedDate"
+          :aria-label="`Selecionar previsão de ${day.ariaLabel}`"
         >
-          <span class="map-carousel__label">{{ day.label }}</span>
-          <span class="map-carousel__value">
-            {{ day.day }}
-            <span class="map-carousel__month">, {{ day.month }}</span>
-          </span>
-          <span class="map-carousel__meta">{{ day.weekday }}</span>
+          <span class="map-carousel__label">{{ day.weekdayShort }}</span>
+          <span class="map-carousel__value">{{ day.dayMonth }}</span>
         </button>
       </template>
 
@@ -42,9 +39,8 @@
           @click="emitHour(slot)"
           :aria-pressed="slot === selectedTime"
         >
-          <span class="map-carousel__label">{{ hourLabel }}</span>
-          <span class="map-carousel__value">{{ slot }}</span>
-          <span class="map-carousel__meta">{{ selectedDayMeta }}</span>
+          <span class="map-carousel__label">{{ formatHourLabel(slot) }}</span>
+          <span class="map-carousel__value">{{ selectedDaySummary }}</span>
         </button>
       </template>
     </div>
@@ -69,6 +65,22 @@ import type { DataResolution } from '../types/weather';
 
 const DAILY_NAVIGATION_TIME = '00:00';
 const BASE_HOUR_SLOTS = ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'];
+
+const capitalize = (value: string) => {
+  if (!value) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1);
+};
+
+const formatWeekdayShort = (date: Date) => {
+  const weekday = date.toLocaleDateString('pt-BR', { weekday: 'short', timeZone: 'America/Sao_Paulo' }).replace('.', '');
+  return capitalize(weekday);
+};
+
+const formatDayMonth = (date: Date) => {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = date.toLocaleDateString('pt-BR', { month: 'short', timeZone: 'America/Sao_Paulo' });
+  return `${day} ${month}`;
+};
 
 const props = defineProps<{
   resolution: DataResolution;
@@ -101,7 +113,7 @@ const resolvedDate = computed(() => {
 });
 
 const days = computed(() => {
-  const result: Array<{ value: string; label: string; day: string; month: string; weekday: string }> = [];
+  const result: Array<{ value: string; weekdayShort: string; dayMonth: string; ariaLabel: string }> = [];
   const maxDays = props.maxDays ?? 6;
 
   const now = new Date();
@@ -117,16 +129,15 @@ const days = computed(() => {
     const day = String(dayNumber).padStart(2, '0');
     const value = `${year}-${month}-${day}`;
 
-    const label = i === 0 ? 'Hoje' : i === 1 ? 'Amanhã' : date.toLocaleDateString('pt-BR', { weekday: 'short', timeZone: 'America/Sao_Paulo' });
-    const monthLabel = date.toLocaleDateString('pt-BR', { month: 'short', timeZone: 'America/Sao_Paulo' }).replace('.', '');
-    const weekday = date.toLocaleDateString('pt-BR', { weekday: 'short', timeZone: 'America/Sao_Paulo' });
+    const weekdayShort = formatWeekdayShort(date);
+    const dayMonth = formatDayMonth(date);
+    const ariaLabel = date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', timeZone: 'America/Sao_Paulo' });
 
     result.push({
       value,
-      label,
-      day: String(dayNumber),
-      month: monthLabel,
-      weekday,
+      weekdayShort,
+      dayMonth,
+      ariaLabel,
     });
   }
 
@@ -141,18 +152,22 @@ const hourSlots = computed(() => {
   return Array.from(slots).sort();
 });
 
-const selectedDayMeta = computed(() => {
+const selectedDaySummary = computed(() => {
   if (!resolvedDate.value) return '';
   const date = new Date(resolvedDate.value + 'T00:00:00');
-  const weekday = date.toLocaleDateString('pt-BR', { weekday: 'short', timeZone: 'America/Sao_Paulo' });
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = date
-    .toLocaleDateString('pt-BR', { month: 'short', timeZone: 'America/Sao_Paulo' })
-    .replace('.', '');
-  return `${weekday} · ${day}, ${month}`;
+  const weekday = formatWeekdayShort(date);
+  const dayMonth = formatDayMonth(date);
+  return `${weekday} ${dayMonth}`;
 });
 
-const hourLabel = computed(() => (props.resolution === 'hourly' ? 'Hora' : ''));
+const formatHourLabel = (time: string) => {
+  const [hour, minute] = time.split(':');
+  if (!hour || minute === undefined) return time;
+  if (minute === '00') {
+    return `${hour}h`;
+  }
+  return `${hour}h${minute}`;
+};
 
 const emitDay = (value: string) => {
   emit('select', value, DAILY_NAVIGATION_TIME);
@@ -196,6 +211,7 @@ onMounted(() => {
     trackRef.value.addEventListener('scroll', updateScrollButtons);
     updateScrollButtons();
   }
+  resetScroll();
 });
 
 onUnmounted(() => {
@@ -206,5 +222,10 @@ onUnmounted(() => {
 
 watch([isDaily, () => props.selectedDate, () => props.selectedTime], () => {
   resetScroll();
+});
+
+watch([days, hourSlots], async () => {
+  await nextTick();
+  updateScrollButtons();
 });
 </script>
