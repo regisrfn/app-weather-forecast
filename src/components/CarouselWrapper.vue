@@ -197,12 +197,38 @@ const updateScrollButtons = () => {
   canScrollRight.value = scrollLeft < scrollWidth - clientWidth - 5;
 };
 
-const resetScroll = async () => {
+const ensureActiveVisible = async () => {
   await nextTick();
-  if (trackRef.value) {
-    trackRef.value.scrollTo({ left: 0 });
-    updateScrollButtons();
+  if (!trackRef.value) return;
+
+  const track = trackRef.value;
+  const activeItem = track.querySelector<HTMLElement>('.map-carousel__item--active');
+
+  updateScrollButtons();
+  if (!activeItem) return;
+
+  const padding = 12;
+  const currentLeft = track.scrollLeft;
+  const clientWidth = track.clientWidth;
+  const itemLeft = activeItem.offsetLeft - padding;
+  const itemRight = activeItem.offsetLeft + activeItem.offsetWidth + padding;
+  const visibleLeft = currentLeft;
+  const visibleRight = currentLeft + clientWidth;
+
+  let targetLeft = currentLeft;
+  if (itemLeft < visibleLeft) {
+    targetLeft = itemLeft;
+  } else if (itemRight > visibleRight) {
+    targetLeft = itemRight - clientWidth;
   }
+
+  targetLeft = Math.max(0, Math.min(targetLeft, track.scrollWidth - clientWidth));
+
+  if (targetLeft !== currentLeft) {
+    track.scrollTo({ left: targetLeft, behavior: 'smooth' });
+  }
+
+  updateScrollButtons();
 };
 
 onMounted(() => {
@@ -210,7 +236,7 @@ onMounted(() => {
     trackRef.value.addEventListener('scroll', updateScrollButtons);
     updateScrollButtons();
   }
-  resetScroll();
+  ensureActiveVisible();
 });
 
 onUnmounted(() => {
@@ -220,11 +246,10 @@ onUnmounted(() => {
 });
 
 watch([isDaily, () => props.selectedDate, () => props.selectedTime], () => {
-  resetScroll();
+  ensureActiveVisible();
 });
 
 watch([days, hourSlots], async () => {
-  await nextTick();
-  updateScrollButtons();
+  await ensureActiveVisible();
 });
 </script>
