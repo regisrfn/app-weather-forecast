@@ -39,8 +39,8 @@
           @click="emitHour(slot)"
           :aria-pressed="slot === selectedTime"
         >
-          <span class="map-carousel__label">{{ formatHourLabel(slot) }}</span>
-          <span class="map-carousel__value">{{ selectedDaySummary }}</span>
+          <span class="map-carousel__label">{{ selectedWeekdayTiny }}</span>
+          <span class="map-carousel__value">{{ formatHourLabel(slot) }}</span>
         </button>
       </template>
     </div>
@@ -74,6 +74,10 @@ const capitalize = (value: string) => {
 const formatWeekdayShort = (date: Date) => {
   const weekday = date.toLocaleDateString('pt-BR', { weekday: 'short', timeZone: 'America/Sao_Paulo' }).replace('.', '');
   return capitalize(weekday);
+};
+
+const formatWeekdayTiny = (date: Date) => {
+  return date.toLocaleDateString('pt-BR', { weekday: 'short', timeZone: 'America/Sao_Paulo' });
 };
 
 const formatDayMonth = (date: Date) => {
@@ -152,20 +156,15 @@ const hourSlots = computed(() => {
   return Array.from(slots).sort();
 });
 
-const selectedDaySummary = computed(() => {
+const selectedWeekdayTiny = computed(() => {
   if (!resolvedDate.value) return '';
   const date = new Date(resolvedDate.value + 'T00:00:00');
-  const weekday = formatWeekdayShort(date);
-  const dayMonth = formatDayMonth(date);
-  return `${weekday} ${dayMonth}`;
+  return formatWeekdayTiny(date);
 });
 
 const formatHourLabel = (time: string) => {
   const [hour, minute] = time.split(':');
   if (!hour || minute === undefined) return time;
-  if (minute === '00') {
-    return `${hour}h`;
-  }
   return `${hour}h${minute}`;
 };
 
