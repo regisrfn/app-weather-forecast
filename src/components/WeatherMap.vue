@@ -238,8 +238,21 @@
             @click="toggleSidebar"
             :aria-label="isSidebarOpen ? 'Fechar menu lateral' : 'Abrir menu lateral'"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            <svg
+              class="floating-sidebar-btn__icon"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M3.5 6.5 9 4.5 15 6.5 20.5 4.5v13l-5.5 2-6-2-5.5 2z" />
+              <path d="M9 4.5v13" />
+              <path d="M15 6.5v13" />
             </svg>
           </button>
           <div id="map" ref="mapContainer"></div>
