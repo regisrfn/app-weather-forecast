@@ -760,7 +760,7 @@ const selectCity = (city: SidebarCity) => {
   
   // Atualizar mapa e dados
   updateMapCenter();
-  updateRadiusCircle();
+  updateRadiusCircle(true);
   selectedLayer = null;
   loadRegionalData({ preferredCityId: centerCityId.value });
 };
@@ -1050,10 +1050,20 @@ const initMap = () => {
     .openPopup();
   
   // Adicionar círculo de raio
-  updateRadiusCircle();
+  updateRadiusCircle(true);
 };
 
-const updateRadiusCircle = () => {
+const fitMapToRadius = () => {
+  if (!map || !radiusCircle) return;
+
+  const bounds = radiusCircle.getBounds();
+  map.fitBounds(bounds, {
+    padding: [32, 32],
+    maxZoom: APP_CONFIG.MAP.MAX_ZOOM,
+  });
+};
+
+const updateRadiusCircle = (fitToRadius = false) => {
   if (!map) return;
   
   // Remover círculo anterior
@@ -1070,6 +1080,10 @@ const updateRadiusCircle = () => {
     weight: 2,
     dashArray: '6, 10',
   }).addTo(map);
+
+  if (fitToRadius) {
+    fitMapToRadius();
+  }
 };
 
 const loadRegionalData = async (options: { preferredCityId?: string } = {}) => {
@@ -1237,7 +1251,7 @@ const debouncedUpdateRegionalData = () => {
   }
   
   // Atualizar círculo imediatamente para feedback visual
-  updateRadiusCircle();
+  updateRadiusCircle(true);
   
   // Aguardar 500ms antes de fazer a chamada API
   debounceTimer = window.setTimeout(async () => {
