@@ -49,17 +49,15 @@ export function getWeatherIconByCode(weatherCode?: number, description?: string)
   if (code >= 100 && code < 200) return '☀️';
   if (code >= 200 && code < 300) return '⛅';
   if (code >= 300 && code < 350) return '☁️';
-  if (code >= 350 && code < 400) return '🌥️';
-  if (code >= 400 && code < 410) return '🌦️';
-  if (code >= 410 && code < 500) return '🌧️';
+  if (code >= 350 && code < 400) return '☁️';
+  if (code >= 400 && code < 500) return '🌦️';
   if (code >= 500 && code < 600) return '🌧️';
-  if (code >= 630) return '🌩️';
   if (code >= 600 && code < 630) return '⛈️';
-  if (code >= 700 && code < 800) return '🌫️';
-  if (code >= 800 && code < 900) return '🌫️';
-  if (code >= 920) return '🌨️';
+  if (code >= 630 && code < 700) return '🌩️';
+  if (code >= 700 && code < 721) return '🌫️';
+  if (code === 800) return '🌫️';
+  if (code >= 900 && code < 910) return '❄️';
   if (code >= 910) return '🌨️';
-  if (code >= 900) return '❄️';
 
   return description ? getWeatherIcon(description) : '🌤️';
 }
