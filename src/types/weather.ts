@@ -73,6 +73,7 @@ export interface CurrentWeather extends RainfallData {
   clouds: number; // Override: sempre presente em CurrentWeather
   cloudsDescription: string;
   windDirection: number; // Direção do vento em graus (0-360)
+  weatherCode?: number;
   timestamp: string; // Override: sempre string ISO na API
 }
 
@@ -108,6 +109,8 @@ export interface DailyForecast {
   daylightHours: number;
   moonPhase: string;
   weatherDescription: string;
+  description?: string;
+  weatherCode?: number;
 }
 
 export interface HourlyForecast {

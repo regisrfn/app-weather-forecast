@@ -121,7 +121,7 @@
         <div class="hero-cards-grid">
           <!-- Temperatura Principal -->
           <div class="hero-temp-card">
-            <span class="hero-icon">{{ getWeatherIcon(detailedWeather.currentWeather.description) }}</span>
+            <span class="hero-icon">{{ getWeatherIconByCode(detailedWeather.currentWeather.weatherCode, detailedWeather.currentWeather.description) }}</span>
             <div class="hero-temp-info">
               <span class="hero-temp-value">{{ detailedWeather.currentWeather.temperature.toFixed(1) }}°C</span>
               <span class="hero-temp-label">{{ detailedWeather.currentWeather.description }}</span>
@@ -299,7 +299,7 @@
             <div class="forecast-date">{{ formatForecastDate(forecast.date) }}</div>
             
             <div class="forecast-icon">
-              {{ forecast.weatherDescription ? getWeatherIcon(forecast.weatherDescription) : getPrecipitationIcon(forecast.precipitationMm) }}
+              {{ getForecastIcon(forecast) }}
             </div>
             
             <div class="forecast-temps">
@@ -406,7 +406,7 @@ import { ref, onMounted, nextTick, watch, computed, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { getCityWeatherDetailed } from '../services/apiService';
-import type { DetailedWeatherResponse } from '../types/weather';
+import type { DailyForecast, DetailedWeatherResponse } from '../types/weather';
 import WeatherChart from '../components/WeatherChart.vue';
 import HourlyChart from '../components/HourlyChart.vue';
 import HourlyChartModal from '../components/HourlyChartModal.vue';
@@ -418,6 +418,7 @@ import CitySearchModal from '../components/CitySearchModal.vue';
 import SunTimeline from '../components/SunTimeline.vue';
 import { 
   getWeatherIcon, 
+  getWeatherIconByCode,
   getContrastColor,
   getPrecipitationIcon
 } from '../utils/weatherVisuals';
@@ -670,6 +671,20 @@ const getCurrentTempRange = (): { tempMax: number; tempMin: number } => {
 
   // Fallback: retornar temperatura atual como max/min
   return { tempMax: current.temperature, tempMin: current.temperature };
+};
+
+const getForecastIcon = (forecast: DailyForecast): string => {
+  const description = forecast.weatherDescription || forecast.description;
+
+  if (typeof forecast.weatherCode === 'number') {
+    return getWeatherIconByCode(forecast.weatherCode, description);
+  }
+
+  if (description) {
+    return getWeatherIcon(description);
+  }
+
+  return getPrecipitationIcon(forecast.precipitationMm);
 };
 
 /**
