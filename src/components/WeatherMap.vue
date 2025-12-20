@@ -482,6 +482,7 @@ const mapContainer = ref<HTMLElement | null>(null);
 let map: L.Map | null = null;
 const selectedCity = ref<WeatherData | null>(null);
 const regionalData = ref<WeatherData[]>([]);
+const cityMeshes = ref<Map<string, GeoJSON.Feature>>(new Map());
 const geoJsonLayers: L.GeoJSON[] = [];
 let updateInterval: number | null = null;
 let radiusCircle: L.Circle | null = null;
@@ -1108,14 +1109,27 @@ const loadRegionalData = async (options: { preferredCityId?: string } = {}) => {
     sidebarCities.value = allCities.slice(0, 6);
     const cityIds = allCities.map(c => c.id);
     
-    // 2. Buscar dados climáticos do backend com cache
-    // SEMPRE passa data e hora (inicializadas com horário Brasil correto)
-    const weatherData = await getRegionalWeather(cityIds, forecastDate.value, forecastTime.value);
-    
+    // 2. Buscar dados climáticos E malhas em paralelo
+    const [weatherResult, meshResult] = await Promise.allSettled([
+      getRegionalWeather(cityIds, forecastDate.value, forecastTime.value),
+      getMultipleMunicipalityMeshes(cityIds),
+    ]);
+
+    const weatherData = weatherResult.status === 'fulfilled' ? weatherResult.value : [];
+    const meshMap = meshResult.status === 'fulfilled' ? meshResult.value : new Map<string, GeoJSON.Feature>();
+
+    if (weatherResult.status === 'rejected') {
+      logger.error('Erro ao buscar dados climáticos:', weatherResult.reason);
+    }
+    if (meshResult.status === 'rejected') {
+      logger.error('Erro ao buscar malhas geográficas:', meshResult.reason);
+    }
+
     regionalData.value = weatherData;
+    cityMeshes.value = meshMap;
     
     // 3. Renderizar malhas no mapa
-    await renderCityMeshes(allCities, weatherData);
+    await renderCityMeshes(allCities, weatherData, meshMap);
     
     // 4. Preservar cidade selecionada quando possível
     const preferredData = desiredCityId 
@@ -1139,7 +1153,8 @@ const loadRegionalData = async (options: { preferredCityId?: string } = {}) => {
 
 const renderCityMeshes = async (
   cities: SidebarCity[] = mapCities.value,
-  weatherData: WeatherData[] = regionalData.value
+  weatherData: WeatherData[] = regionalData.value,
+  meshMap: Map<string, GeoJSON.Feature> = cityMeshes.value
 ) => {
   if (!map || cities.length === 0 || weatherData.length === 0) return;
 
@@ -1149,9 +1164,6 @@ const renderCityMeshes = async (
   geoJsonLayers.length = 0;
   layerColors.clear();
   selectedLayer = null;
-
-  const cityIds = cities.map(c => c.id);
-  const meshMap = await getMultipleMunicipalityMeshes(cityIds);
 
   for (const city of cities) {
     const geometry = meshMap.get(city.id);

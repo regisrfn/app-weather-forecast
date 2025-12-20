@@ -51,6 +51,20 @@ export async function getCityWeather(cityId: string): Promise<WeatherData> {
 }
 
 /**
+ * Buscar malhas geográficas de múltiplos municípios
+ * Backend: POST /api/geo/municipalities
+ */
+export async function postMunicipalityMeshes(
+  cityIds: string[],
+): Promise<Record<string, GeoJSON.Feature>> {
+  const response = await api.post<Record<string, GeoJSON.Feature>>(
+    '/api/geo/municipalities',
+    { cityIds },
+  );
+  return response.data;
+}
+
+/**
  * Buscar dados de um chunk de cidades da API
  */
 async function fetchWeatherChunk(

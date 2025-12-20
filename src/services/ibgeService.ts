@@ -7,6 +7,9 @@
  */
 
 import localforage from 'localforage';
+import { APP_CONFIG } from '../config/app';
+import { postMunicipalityMeshes } from './apiService';
+import { chunkArray } from '../utils/array';
 import { ibgeLogger } from '../utils/logger';
 
 // Store dedicado para malhas do IBGE
@@ -20,6 +23,18 @@ const ibgeMetadataStore = localforage.createInstance({
   name: 'weather-forecast',
   storeName: 'ibge_metadata',
 });
+
+// Garantir que os object stores existem antes de qualquer operação
+const storesReadyPromise = Promise.all([ibgeMeshStore.ready(), ibgeMetadataStore.ready()]);
+
+async function ensureStoresReady(): Promise<void> {
+  try {
+    await storesReadyPromise;
+  } catch (error) {
+    ibgeLogger.error('Erro ao inicializar stores do IBGE:', error);
+    throw error;
+  }
+}
 
 interface CachedMesh {
   data: GeoJSON.Feature;
@@ -51,6 +66,7 @@ let ibgeMetadata: IBGEMetadata = {
  */
 async function initIBGEMetadata(): Promise<void> {
   try {
+    await ensureStoresReady();
     const stored = await ibgeMetadataStore.getItem<IBGEMetadata>('metadata');
     if (stored) {
       ibgeMetadata = stored;
@@ -86,6 +102,100 @@ function formatBytes(bytes: number): string {
   if (bytes < 1024) return bytes + ' B';
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
   return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+}
+
+/**
+ * Armazena uma malha no cache com controle de espaço
+ */
+async function persistMeshInCache(
+  municipalityId: string,
+  mesh: GeoJSON.Feature,
+  skipMetadataSave: boolean = false
+): Promise<void> {
+  await ensureStoresReady();
+  const size = calculateSize(mesh);
+
+  // Se já existe uma entrada antiga, remover tamanho anterior da contagem
+  try {
+    const existing = await ibgeMeshStore.getItem<CachedMesh>(municipalityId);
+    if (existing?.size) {
+      ibgeMetadata.totalSize = Math.max(0, ibgeMetadata.totalSize - existing.size);
+    }
+  } catch (error) {
+    ibgeLogger.error(`Erro ao ler cache existente para ${municipalityId}:`, error);
+  }
+
+  if (ibgeMetadata.totalSize + size > IBGE_CACHE_LIMIT) {
+    await evictLRU(size);
+  }
+
+  const cachedMesh: CachedMesh = {
+    data: mesh,
+    timestamp: Date.now(),
+    size,
+  };
+
+  await ibgeMeshStore.setItem(municipalityId, cachedMesh);
+
+  if (!ibgeMetadata.keys.includes(municipalityId)) {
+    ibgeMetadata.keys.push(municipalityId);
+  }
+  ibgeMetadata.totalSize += size;
+  ibgeMetadata.lastAccessed[municipalityId] = Date.now();
+
+  if (!skipMetadataSave) {
+    await saveIBGEMetadata();
+  }
+}
+
+/**
+ * Busca malhas no backend em chunks paralelos de até 50 cidades
+ */
+async function fetchMeshesFromBackend(
+  municipalityIds: string[]
+): Promise<Map<string, GeoJSON.Feature>> {
+  const meshMap = new Map<string, GeoJSON.Feature>();
+  const uniqueIds = Array.from(new Set(municipalityIds));
+
+  if (uniqueIds.length === 0) {
+    return meshMap;
+  }
+
+  const chunks = chunkArray(uniqueIds, APP_CONFIG.API.MAX_CITIES_PER_BATCH);
+
+  const requests = chunks.map((chunk, index) =>
+    postMunicipalityMeshes(chunk)
+      .then((data) => ({
+        status: 'fulfilled' as const,
+        data,
+        chunk,
+        chunkIndex: index,
+      }))
+      .catch((error) => ({
+        status: 'rejected' as const,
+        reason: error,
+        chunk,
+        chunkIndex: index,
+      })),
+  );
+
+  const results = await Promise.all(requests);
+
+  for (const result of results) {
+    if (result.status === 'fulfilled') {
+      Object.entries(result.data).forEach(([cityId, mesh]) => {
+        meshMap.set(cityId, mesh as GeoJSON.Feature);
+      });
+      ibgeLogger.debug(`✓ Chunk ${result.chunkIndex + 1}/${chunks.length} OK: ${result.chunk.length} cidades`);
+    } else {
+      ibgeLogger.error(
+        `✗ Chunk ${result.chunkIndex + 1}/${chunks.length} falhou (${result.chunk.length} cidades)`,
+        result.reason,
+      );
+    }
+  }
+
+  return meshMap;
 }
 
 /**
@@ -132,6 +242,7 @@ export async function getMunicipalityMesh(
   skipMetadataSave: boolean = false
 ): Promise<GeoJSON.Feature | null> {
   try {
+    await ensureStoresReady();
     // Verificar cache primeiro
     const cached = await ibgeMeshStore.getItem<CachedMesh>(municipalityId);
     
@@ -159,45 +270,18 @@ export async function getMunicipalityMesh(
       }
     }
     
-    ibgeLogger.debug(`MISS: ${municipalityId} - Buscando do IBGE`);
-    
-    // Buscar da API do IBGE
-    const response = await fetch(
-      `https://servicodados.ibge.gov.br/api/v3/malhas/municipios/${municipalityId}?formato=application/vnd.geo+json`
-    );
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+    ibgeLogger.debug(`MISS: ${municipalityId} - Buscando do backend`);
+
+    const backendMeshes = await fetchMeshesFromBackend([municipalityId]);
+    const mesh = backendMeshes.get(municipalityId) || null;
+
+    if (!mesh) {
+      ibgeLogger.error(`Backend não retornou malha para ${municipalityId}`);
+      return null;
     }
-    
-    const mesh: GeoJSON.Feature = await response.json();
-    const size = calculateSize(mesh);
-    
-    // Verificar se precisa fazer evicção
-    if (ibgeMetadata.totalSize + size > IBGE_CACHE_LIMIT) {
-      await evictLRU(size);
-    }
-    
-    // Salvar no cache
-    const cachedMesh: CachedMesh = {
-      data: mesh,
-      timestamp: Date.now(),
-      size,
-    };
-    
-    await ibgeMeshStore.setItem(municipalityId, cachedMesh);
-    
-    // Atualizar metadata
-    if (!ibgeMetadata.keys.includes(municipalityId)) {
-      ibgeMetadata.keys.push(municipalityId);
-    }
-    ibgeMetadata.totalSize += size;
-    ibgeMetadata.lastAccessed[municipalityId] = Date.now();
-    
-    if (!skipMetadataSave) {
-      await saveIBGEMetadata();
-    }
-    
+
+    await persistMeshInCache(municipalityId, mesh, skipMetadataSave);
+
     return mesh;
   } catch (error) {
     ibgeLogger.error(`Erro ao buscar malha do município ${municipalityId}:`, error);
@@ -210,6 +294,7 @@ export async function getMunicipalityMesh(
  */
 export async function clearMeshCache(): Promise<void> {
   try {
+    await ensureStoresReady();
     await ibgeMeshStore.clear();
     ibgeMetadata = {
       keys: [],
@@ -254,25 +339,56 @@ export async function getMultipleMunicipalityMeshes(
   municipalityIds: string[]
 ): Promise<Map<string, GeoJSON.Feature>> {
   const meshMap = new Map<string, GeoJSON.Feature>();
+  if (municipalityIds.length === 0) {
+    return meshMap;
+  }
 
-  // Buscar todas as malhas em paralelo, pulando save individual de metadata
-  const promises = municipalityIds.map(async (id) => {
-    const mesh = await getMunicipalityMesh(id, true); // true = skip metadata save
-    if (mesh) {
-      meshMap.set(id, mesh);
+  const uniqueIds = Array.from(new Set(municipalityIds));
+  const missingIds: string[] = [];
+
+  await ensureStoresReady();
+
+  // Primeira passada: tentar preencher via cache local
+  for (const id of uniqueIds) {
+    const cached = await ibgeMeshStore.getItem<CachedMesh>(id);
+
+    if (cached) {
+      const isExpired = Date.now() - cached.timestamp > IBGE_TTL;
+
+      if (isExpired) {
+        ibgeLogger.debug(`EXPIRED: ${id} - removendo do cache`);
+        await ibgeMeshStore.removeItem(id);
+        ibgeMetadata.totalSize -= cached.size;
+        ibgeMetadata.keys = ibgeMetadata.keys.filter(k => k !== id);
+        delete ibgeMetadata.lastAccessed[id];
+        missingIds.push(id);
+      } else {
+        meshMap.set(id, cached.data);
+        ibgeMetadata.lastAccessed[id] = Date.now();
+      }
+    } else {
+      missingIds.push(id);
     }
-  });
+  }
 
-  await Promise.all(promises);
+  // Buscar ids faltantes no backend em chunks paralelos
+  if (missingIds.length > 0) {
+    const fetchedMeshes = await fetchMeshesFromBackend(missingIds);
 
-  // Salvar metadata uma única vez ao final (batch update)
+    for (const [cityId, mesh] of fetchedMeshes.entries()) {
+      meshMap.set(cityId, mesh);
+      await persistMeshInCache(cityId, mesh, true); // true = salvar metadata apenas uma vez ao final
+    }
+  }
+
   await saveIBGEMetadata();
-  
-  ibgeLogger.info(`Batch: ${municipalityIds.length} malhas processadas (${meshMap.size} sucessos)`);
+
+  ibgeLogger.info(
+    `Batch: ${uniqueIds.length} malhas processadas (${meshMap.size} sucessos, ${missingIds.length} fetch backend)`
+  );
 
   return meshMap;
 }
 
 // Inicializar metadata ao carregar o módulo
 initIBGEMetadata();
-
