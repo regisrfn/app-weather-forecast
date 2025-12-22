@@ -446,9 +446,6 @@
 <script setup lang="ts">
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { APP_CONFIG } from '../config/app';
@@ -473,11 +470,12 @@ const { toggleTheme, isDark } = useTheme();
 const route = useRoute();
 const router = useRouter();
 
-// Usa os ícones padrão empacotados pelo Vite para evitar 404 em produção
+// Corrigir ícones do Leaflet para produção
+delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: markerIcon2x,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
+  iconRetinaUrl: '/marker-icon-2x.png',
+  iconUrl: '/marker-icon.png',
+  shadowUrl: '/marker-shadow.png',
 });
 
 const mapContainer = ref<HTMLElement | null>(null);
