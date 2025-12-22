@@ -559,7 +559,7 @@ const forecastTimeSlots = ref<ForecastSlot[]>([
   { time: '06:00', date: '', data: null, loading: false }
 ]);
 const DAILY_NAVIGATION_TIME = '00:00';
-const DAILY_SLOT_TIME = '12:00';
+const DAILY_SLOT_TIME = '00:00';
 
 const togglePanel = () => {
   isPanelOpen.value = !isPanelOpen.value;
@@ -684,24 +684,43 @@ const updateForecastSlots = async () => {
     loading: index > 0
   }));
   
-  for (let i = 1; i < slots.length; i++) {
-    const slotData = slots[i];
-    if (!slotData) continue;
-    
-    const { time, date } = slotData;
-    const slot = forecastTimeSlots.value[i];
+  const cityId = selectedCity.value.cityId;
+  const slotRequests = slots
+    .map((slot, index) => ({ ...slot, index }))
+    .filter(({ index }) => index > 0)
+    .map(({ time, date, index }) =>
+      getRegionalWeather([cityId], date, time)
+        .then((weatherData) => ({
+          status: 'fulfilled' as const,
+          index,
+          date,
+          time,
+          weatherData
+        }))
+        .catch((error) => ({
+          status: 'rejected' as const,
+          index,
+          date,
+          time,
+          error
+        }))
+    );
+
+  const results = await Promise.all(slotRequests);
+
+  for (const result of results) {
+    const slot = forecastTimeSlots.value[result.index];
     if (!slot) continue;
-    
-    try {
-      const weatherData = await getRegionalWeather([selectedCity.value.cityId], date, time);
-      if (weatherData.length > 0 && weatherData[0]) {
-        slot.data = weatherData[0];
+
+    if (result.status === 'fulfilled') {
+      if (result.weatherData.length > 0 && result.weatherData[0]) {
+        slot.data = result.weatherData[0];
       }
-    } catch (error) {
-      logger.error(`Erro ao buscar previsão para ${date} ${time}:`, error);
-    } finally {
-      slot.loading = false;
+    } else {
+      logger.error(`Erro ao buscar previsão para ${result.date} ${result.time}:`, result.error);
     }
+
+    slot.loading = false;
   }
 };
 
