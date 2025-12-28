@@ -1,7 +1,3 @@
-<script setup lang="ts">
-import AdBanner from '../components/AdBanner.vue';
-</script>
-
 <template>
   <div class="content-page">
     <section class="content-hero">
@@ -16,8 +12,6 @@ import AdBanner from '../components/AdBanner.vue';
         <span>Projeto independente, aberto para parcerias</span>
       </div>
     </section>
-
-    <AdBanner slotId="6154580818" />
 
     <section class="content-section">
       <h2>O que você encontra aqui</h2>
@@ -82,8 +76,6 @@ import AdBanner from '../components/AdBanner.vue';
         </article>
       </div>
     </section>
-
-    <AdBanner slotId="2230991134" />
 
     <section class="content-section">
       <h2>Fale com a gente</h2>

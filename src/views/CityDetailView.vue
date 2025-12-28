@@ -222,8 +222,6 @@
         </div>
       </section>
 
-      <AdBanner slotId="6154580818" />
-
       <!-- Alertas Meteorológicos -->
       <section v-if="detailedWeather.currentWeather.weatherAlert && detailedWeather.currentWeather.weatherAlert.length > 0" class="alerts-section">
         <WeatherAlerts 
@@ -369,8 +367,6 @@
           </div>
         </div>
       </section>
-
-      <AdBanner slotId="2230991134" />
     </main>
 
     <!-- Alert Detail Panel -->
@@ -420,7 +416,6 @@ import AlertDetailPanel from '../components/AlertDetailPanel.vue';
 import WindCompass from '../components/WindCompass.vue';
 import CitySearchModal from '../components/CitySearchModal.vue';
 import SunTimeline from '../components/SunTimeline.vue';
-import AdBanner from '../components/AdBanner.vue';
 import { 
   getWeatherIcon, 
   getWeatherIconByCode,

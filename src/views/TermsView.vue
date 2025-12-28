@@ -1,7 +1,3 @@
-<script setup lang="ts">
-import AdBanner from '../components/AdBanner.vue';
-</script>
-
 <template>
   <div class="content-page">
     <section class="content-hero">
@@ -16,8 +12,6 @@ import AdBanner from '../components/AdBanner.vue';
         <span>Dúvidas: <a href="mailto:contato@vemchuvabrasil.com">contato@vemchuvabrasil.com</a></span>
       </div>
     </section>
-
-    <AdBanner slotId="6154580818" />
 
     <section class="content-section">
       <h2>1. Aceitação</h2>
@@ -52,8 +46,6 @@ import AdBanner from '../components/AdBanner.vue';
       <h2>6. Privacidade e anúncios</h2>
       <p>Seguimos a Política de Privacidade disponível em <a href="/politica-de-privacidade">/politica-de-privacidade</a>. Anúncios são veiculados via Google AdSense conforme as políticas do programa.</p>
     </section>
-
-    <AdBanner slotId="2230991134" />
 
     <section class="content-section">
       <h2>7. Suspensão ou mudanças</h2>
