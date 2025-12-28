@@ -50,6 +50,8 @@
       </div>
     </header>
 
+    <AdBanner slotId="6154580818" />
+
     <div class="weather-grid">
       <div 
         v-if="isSidebarOpen" 
@@ -425,6 +427,8 @@
       </transition>
     </div>
 
+    <AdBanner slotId="2230991134" />
+
     <DayCarousel
       v-if="showDayCarousel"
       :initialDate="forecastDate"
@@ -457,6 +461,7 @@ import CarouselWrapper from './CarouselWrapper.vue';
 import WeatherAlerts from './WeatherAlerts.vue';
 import AlertDetailPanel from './AlertDetailPanel.vue';
 import LayerSelector from './LayerSelector.vue';
+import AdBanner from './AdBanner.vue';
 import type { AlertSeverity, DataResolution, WeatherAlert, WeatherData } from '../types/weather';
 import { componentLogger } from '../utils/logger';
 import { useTheme } from '../composables/useTheme';

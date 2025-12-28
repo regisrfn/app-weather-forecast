@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import AdBanner from '../components/AdBanner.vue';
+</script>
+
 <template>
   <div class="content-page">
     <section class="content-hero">
@@ -12,6 +16,8 @@
         <span>Contato: <a href="mailto:contato@vemchuvabrasil.com">contato@vemchuvabrasil.com</a></span>
       </div>
     </section>
+
+    <AdBanner slotId="6154580818" />
 
     <section class="content-section">
       <h2>Dados que coletamos</h2>
@@ -67,6 +73,8 @@
       <h2>Segurança</h2>
       <p>O site utiliza HTTPS/TLS. Dados armazenados localmente permanecem no seu dispositivo. Relatórios de erros são mínimos e usados somente para corrigir falhas.</p>
     </section>
+
+    <AdBanner slotId="2230991134" />
 
     <section class="content-section">
       <h2>Seus controles</h2>

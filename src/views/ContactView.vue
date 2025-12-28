@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import AdBanner from '../components/AdBanner.vue';
+</script>
+
 <template>
   <div class="content-page">
     <section class="content-hero">
@@ -12,6 +16,8 @@
         <span><a href="mailto:contato@vemchuvabrasil.com">contato@vemchuvabrasil.com</a></span>
       </div>
     </section>
+
+    <AdBanner slotId="6154580818" />
 
     <section class="content-section">
       <h2>Formas de contato</h2>
@@ -40,6 +46,8 @@
         <li>Capturas de tela (se possível) e passos para reproduzir.</li>
       </ul>
     </section>
+
+    <AdBanner slotId="2230991134" />
 
     <section class="content-section">
       <h2>Transparência</h2>
