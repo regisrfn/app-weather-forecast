@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import AdSlot from '../components/AdSlot.vue';
+</script>
+
 <template>
   <div class="content-page">
     <section class="content-hero">
@@ -28,6 +32,11 @@
           <p>Usamos monitoramento de performance (Datadog RUM) para métricas agregadas de navegação. Os dados são anônimos, usados para detectar erros e melhorar estabilidade.</p>
         </article>
       </div>
+    </section>
+
+    <section class="content-section ad-section">
+      <p class="ad-kicker">Patrocinado</p>
+      <AdSlot size="300x250" />
     </section>
 
     <section class="content-section">

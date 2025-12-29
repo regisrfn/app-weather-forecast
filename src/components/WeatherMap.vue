@@ -187,6 +187,11 @@
             </label>
           </div>
         </div>
+
+        <div class="sidebar-section">
+          <div class="section-label">Patrocinado</div>
+          <AdSlot size="300x250" />
+        </div>
       </aside>
 
       <section class="map-area">
@@ -460,6 +465,7 @@ import LayerSelector from './LayerSelector.vue';
 import type { AlertSeverity, DataResolution, WeatherAlert, WeatherData } from '../types/weather';
 import { componentLogger } from '../utils/logger';
 import { useTheme } from '../composables/useTheme';
+import AdSlot from './AdSlot.vue';
 
 const logger = componentLogger('WeatherMap');
 

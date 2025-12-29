@@ -153,6 +153,11 @@
           </div>
         </div>
 
+        <div class="sponsored-block">
+          <div class="sponsored-eyebrow">Patrocinado</div>
+          <AdSlot size="336x280" />
+        </div>
+
         <!-- Tabela de Métricas -->
         <div class="metrics-container">
           <div class="metrics-header" @click="metricsExpanded = !metricsExpanded">
@@ -416,6 +421,7 @@ import AlertDetailPanel from '../components/AlertDetailPanel.vue';
 import WindCompass from '../components/WindCompass.vue';
 import CitySearchModal from '../components/CitySearchModal.vue';
 import SunTimeline from '../components/SunTimeline.vue';
+import AdSlot from '../components/AdSlot.vue';
 import { 
   getWeatherIcon, 
   getWeatherIconByCode,

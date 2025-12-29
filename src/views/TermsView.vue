@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import AdSlot from '../components/AdSlot.vue';
+</script>
+
 <template>
   <div class="content-page">
     <section class="content-hero">
@@ -16,6 +20,11 @@
     <section class="content-section">
       <h2>1. Aceitação</h2>
       <p>O uso do site implica concordância com estes Termos e com a <a href="/politica-de-privacidade">Política de Privacidade</a>. Se você não concordar, interrompa o uso.</p>
+    </section>
+
+    <section class="content-section ad-section">
+      <p class="ad-kicker">Patrocinado</p>
+      <AdSlot size="300x250" />
     </section>
 
     <section class="content-section">
