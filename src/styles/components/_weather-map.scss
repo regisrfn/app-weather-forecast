@@ -1019,7 +1019,7 @@
   min-width: 0;
 
   @include md {
-    gap: 0.65rem;
+    gap: 0.5rem;
   }
 }
 
@@ -1150,7 +1150,7 @@
 
 .map-wrapper {
   position: relative;
-  min-height: 70vh;
+  min-height: 68vh;
   border-radius: $radius-xl;
   overflow: hidden;
   border: 1px solid var(--home-border-strong);
@@ -1159,7 +1159,7 @@
 
   @include md {
     border-radius: $radius-lg;
-    min-height: 55vh;
+    min-height: 45vh;
   }
 }
 
@@ -1168,7 +1168,7 @@
   z-index: $z-map;
   width: 100%;
   height: 100%;
-  min-height: 70vh;
+  min-height: 68vh;
 
   svg path,
   .leaflet-interactive {
@@ -1176,7 +1176,7 @@
   }
 
   @include md {
-    min-height: 55vh;
+    min-height: 45vh;
 
     .leaflet-control-zoom {
       display: none !important;
