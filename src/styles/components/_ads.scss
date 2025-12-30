@@ -49,3 +49,17 @@
     font-size: $font-sm;
   }
 }
+
+.ad-wrapper--inline {
+  display: block;
+  margin: 0;
+
+  // Mobile: reduzir respiro vertical
+  @media (max-width: 767px) {
+    margin: 0;
+  }
+}
+
+.city-detail-page .ad-wrapper {
+  margin-bottom: 1rem;
+}
