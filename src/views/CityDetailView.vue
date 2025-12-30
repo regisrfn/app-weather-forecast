@@ -153,7 +153,7 @@
           </div>
         </div>
 
-        <div class="sponsored-block">
+        <div v-if="hasAdsense" class="sponsored-block">
           <div class="sponsored-eyebrow">Patrocinado</div>
           <AdSlot size="336x280" />
         </div>
@@ -434,6 +434,7 @@ import { useTheme } from '../composables/useTheme';
 
 const logger = componentLogger('CityDetailView');
 const { toggleTheme, isDark } = useTheme();
+const hasAdsense = Boolean(import.meta.env.VITE_ADSENSE_CLIENT_ID);
 
 interface Municipality {
   id: string;

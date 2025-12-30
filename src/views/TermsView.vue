@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import AdSlot from '../components/AdSlot.vue';
+
+const hasAdsense = Boolean(import.meta.env.VITE_ADSENSE_CLIENT_ID);
 </script>
 
 <template>
@@ -22,7 +24,7 @@ import AdSlot from '../components/AdSlot.vue';
       <p>O uso do site implica concordância com estes Termos e com a <a href="/politica-de-privacidade">Política de Privacidade</a>. Se você não concordar, interrompa o uso.</p>
     </section>
 
-    <section class="content-section ad-section">
+    <section v-if="hasAdsense" class="content-section ad-section">
       <p class="ad-kicker">Patrocinado</p>
       <AdSlot size="300x250" />
     </section>

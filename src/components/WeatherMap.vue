@@ -189,8 +189,8 @@
         </div>
 
         <div class="sidebar-section">
-          <div class="section-label">Patrocinado</div>
-          <AdSlot size="300x250" />
+          <div v-if="hasAdsense" class="section-label">Patrocinado</div>
+          <AdSlot v-if="hasAdsense" size="300x250" />
         </div>
       </aside>
 
@@ -471,6 +471,8 @@ const logger = componentLogger('WeatherMap');
 
 // Theme
 const { toggleTheme, isDark } = useTheme();
+
+const hasAdsense = Boolean(import.meta.env.VITE_ADSENSE_CLIENT_ID);
 
 // Router
 const route = useRoute();

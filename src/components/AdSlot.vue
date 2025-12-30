@@ -96,15 +96,8 @@ watch(
 </script>
 
 <template>
-  <div class="ad-slot" :data-slot-key="selectedSlot?.key">
-    <div v-if="!adClientId" class="ad-slot__placeholder">
-      Configure a variável VITE_ADSENSE_CLIENT_ID para exibir anúncios.
-    </div>
-    <div v-else-if="!selectedSlot" class="ad-slot__placeholder">
-      Nenhum slot compatível com este tamanho.
-    </div>
+  <div v-if="adClientId && selectedSlot" class="ad-slot" :data-slot-key="selectedSlot.key">
     <ins
-      v-else
       :key="adRenderKey"
       class="adsbygoogle"
       :style="insStyle"
@@ -122,16 +115,5 @@ watch(
   display: flex;
   justify-content: center;
   padding: 0.5rem 0;
-}
-
-.ad-slot__placeholder {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  font-size: 0.9rem;
-  color: #5d6b82;
-  background: #f8fafc;
-  border: 1px dashed #d0d5dd;
-  border-radius: 12px;
-  text-align: center;
 }
 </style>
