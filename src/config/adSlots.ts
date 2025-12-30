@@ -44,6 +44,7 @@ export const AD_SLOTS: AdSlotDefinition[] = [
     key: 'medium-rectangle',
     adSlotId: '2230991134',
     sizes: [
+      [336, 280],
       [300, 250],
     ],
   },

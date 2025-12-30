@@ -155,7 +155,7 @@
 
         <div v-if="hasAdsense" class="sponsored-block">
           <div class="sponsored-eyebrow">Patrocinado</div>
-          <AdSlot size="336x280" />
+          <AdSlot size="300x250" />
         </div>
 
         <!-- Tabela de Métricas -->
