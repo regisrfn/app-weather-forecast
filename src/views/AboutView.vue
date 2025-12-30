@@ -1,9 +1,3 @@
-<script setup lang="ts">
-import AdSlot from '../components/AdSlot.vue';
-
-const hasAdsense = Boolean(import.meta.env.VITE_ADSENSE_CLIENT_ID);
-</script>
-
 <template>
   <div class="content-page">
     <section class="content-hero">
@@ -35,11 +29,6 @@ const hasAdsense = Boolean(import.meta.env.VITE_ADSENSE_CLIENT_ID);
           <p>Sem necessidade de login. Cache local para manter buscas recentes, tema escuro/claro e filtros do seu jeito.</p>
         </article>
       </div>
-    </section>
-
-    <section v-if="hasAdsense" class="content-section ad-section">
-      <p class="ad-kicker">Patrocinado</p>
-      <AdSlot size="300x250" />
     </section>
 
     <section class="content-section">
