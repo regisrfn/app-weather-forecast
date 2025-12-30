@@ -1,0 +1,51 @@
+@use '../abstracts/variables' as *;
+
+.ad-wrapper {
+  width: 100%;
+  padding: 0.85rem 1rem 1rem;
+  border-radius: $radius-xl;
+  border: 1px solid var(--home-border-soft);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.04), rgba(118, 75, 162, 0.04));
+  box-shadow: var(--home-shadow-soft);
+
+  &.ad-wrapper--sidebar {
+    margin: 1rem 0 0;
+  }
+
+  &.ad-wrapper--loading {
+    opacity: 0.88;
+  }
+}
+
+.ad-wrapper__label {
+  margin: 0 0 0.5rem;
+  font-size: $font-sm;
+  font-weight: $font-semibold;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--home-text-muted);
+}
+
+.ad-wrapper__frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+.ad-placeholder {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: $radius-md;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px dashed var(--home-border-soft);
+  color: var(--home-text-muted);
+  font-size: $font-sm;
+  text-align: center;
+
+  code {
+    font-size: $font-sm;
+  }
+}

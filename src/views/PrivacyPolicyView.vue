@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import AdSlot from '../components/AdSlot.vue';
+import { AD_SIZE_PRESETS } from '../config/ads';
+</script>
+
 <template>
   <div class="content-page">
     <section class="content-hero">
@@ -12,6 +17,10 @@
         <span>Contato: <a href="mailto:contato@vemchuvabrasil.com">contato@vemchuvabrasil.com</a></span>
       </div>
     </section>
+
+    <AdSlot
+      :sizes="AD_SIZE_PRESETS.top"
+    />
 
     <section class="content-section">
       <h2>Dados que coletamos</h2>
@@ -53,6 +62,10 @@
         <li>Veicular anúncios em conformidade com as políticas do Google AdSense.</li>
       </ul>
     </section>
+
+    <AdSlot
+      :sizes="AD_SIZE_PRESETS.middle"
+    />
 
     <section class="content-section">
       <h2>Compartilhamento de dados</h2>

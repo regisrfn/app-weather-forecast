@@ -104,6 +104,9 @@
 
     <!-- Main Content -->
     <main v-else-if="detailedWeather" class="page-content">
+      <AdSlot
+        :sizes="AD_SIZE_PRESETS.top"
+      />
       <!-- Clima Atual -->
       <section class="current-weather-section">
         <div class="section-header">
@@ -262,6 +265,10 @@
         </div>
       </section>
 
+      <AdSlot
+        :sizes="AD_SIZE_PRESETS.middle"
+      />
+
       <!-- Carrossel de Previsões Diárias -->
       <section class="forecast-section">
         <div class="forecast-header">
@@ -416,6 +423,8 @@ import AlertDetailPanel from '../components/AlertDetailPanel.vue';
 import WindCompass from '../components/WindCompass.vue';
 import CitySearchModal from '../components/CitySearchModal.vue';
 import SunTimeline from '../components/SunTimeline.vue';
+import AdSlot from '../components/AdSlot.vue';
+import { AD_SIZE_PRESETS } from '../config/ads';
 import { 
   getWeatherIcon, 
   getWeatherIconByCode,

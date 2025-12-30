@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import AdSlot from '../components/AdSlot.vue';
+import { AD_SIZE_PRESETS } from '../config/ads';
+</script>
+
 <template>
   <div class="content-page">
     <section class="content-hero">
@@ -12,6 +17,10 @@
         <span>Projeto independente, aberto para parcerias</span>
       </div>
     </section>
+
+    <AdSlot
+      :sizes="AD_SIZE_PRESETS.top"
+    />
 
     <section class="content-section">
       <h2>O que você encontra aqui</h2>
@@ -54,6 +63,10 @@
         <li>Criadores de conteúdo ou órgãos locais que divulgam avisos rápidos para suas comunidades.</li>
       </ul>
     </section>
+
+    <AdSlot
+      :sizes="AD_SIZE_PRESETS.middle"
+    />
 
     <section class="content-section">
       <h2>Compromissos de qualidade</h2>

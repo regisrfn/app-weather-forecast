@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import AdSlot from '../components/AdSlot.vue';
+import { AD_SIZE_PRESETS } from '../config/ads';
+</script>
+
 <template>
   <div class="content-page">
     <section class="content-hero">
@@ -12,6 +17,10 @@
         <span>Dúvidas: <a href="mailto:contato@vemchuvabrasil.com">contato@vemchuvabrasil.com</a></span>
       </div>
     </section>
+
+    <AdSlot
+      :sizes="AD_SIZE_PRESETS.top"
+    />
 
     <section class="content-section">
       <h2>1. Aceitação</h2>
@@ -36,6 +45,10 @@
       <h2>4. Responsabilidade</h2>
       <p>O VemChuva Brasil não se responsabiliza por decisões tomadas exclusivamente com base nas informações exibidas. Em situações de risco, consulte sempre órgãos oficiais.</p>
     </section>
+
+    <AdSlot
+      :sizes="AD_SIZE_PRESETS.middle"
+    />
 
     <section class="content-section">
       <h2>5. Propriedade intelectual</h2>

@@ -50,6 +50,10 @@
       </div>
     </header>
 
+    <AdSlot
+      :sizes="AD_SIZE_PRESETS.top"
+    />
+
     <div class="weather-grid">
       <div 
         v-if="isSidebarOpen" 
@@ -187,6 +191,11 @@
             </label>
           </div>
         </div>
+
+        <AdSlot
+          :sizes="AD_SIZE_PRESETS.sidebar"
+          variant="sidebar"
+        />
       </aside>
 
       <section class="map-area">
@@ -449,11 +458,13 @@ import 'leaflet/dist/leaflet.css';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { APP_CONFIG } from '../config/app';
+import { AD_SIZE_PRESETS } from '../config/ads';
 import { getNeighborCities, getRegionalWeather } from '../services/apiService';
 import { getMultipleMunicipalityMeshes } from '../services/ibgeService';
 import { getCloudsDescription, getRainfallColor, getRainfallDescription } from '../utils/weather';
 import DayCarousel from './DayCarousel.vue';
 import CarouselWrapper from './CarouselWrapper.vue';
+import AdSlot from './AdSlot.vue';
 import WeatherAlerts from './WeatherAlerts.vue';
 import AlertDetailPanel from './AlertDetailPanel.vue';
 import LayerSelector from './LayerSelector.vue';

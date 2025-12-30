@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import AdSlot from '../components/AdSlot.vue';
+import { AD_SIZE_PRESETS } from '../config/ads';
+</script>
+
 <template>
   <div class="content-page">
     <section class="content-hero">
@@ -12,6 +17,10 @@
         <span><a href="mailto:contato@vemchuvabrasil.com">contato@vemchuvabrasil.com</a></span>
       </div>
     </section>
+
+    <AdSlot
+      :sizes="AD_SIZE_PRESETS.top"
+    />
 
     <section class="content-section">
       <h2>Formas de contato</h2>
@@ -40,6 +49,10 @@
         <li>Capturas de tela (se possível) e passos para reproduzir.</li>
       </ul>
     </section>
+
+    <AdSlot
+      :sizes="AD_SIZE_PRESETS.middle"
+    />
 
     <section class="content-section">
       <h2>Transparência</h2>
