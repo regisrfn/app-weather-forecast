@@ -32,7 +32,10 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  overflow: visible;
+  position: relative;
+  overflow: hidden;
+  min-height: var(--ad-height);
+  height: var(--ad-height);
 }
 
 .ad-placeholder {
@@ -62,4 +65,12 @@
 
 .city-detail-page .ad-wrapper {
   margin-bottom: 1rem;
+}
+
+.ad-wrapper .adsbygoogle {
+  display: block !important;
+  width: var(--ad-width, 100%) !important;
+  max-width: 100% !important;
+  height: var(--ad-height, auto) !important;
+  max-height: var(--ad-height, none) !important;
 }

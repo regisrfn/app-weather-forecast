@@ -67,9 +67,16 @@ const shouldShowWrapper = computed(() => isConfigured.value || showPlaceholder.v
 
 const adKey = computed(() => `${resolvedSlotId.value || 'slot'}-${currentSize.value?.width ?? 'auto'}x${currentSize.value?.height ?? 'auto'}`);
 
-const frameStyle = computed(() => ({
-  minHeight: currentSize.value ? `${currentSize.value.height}px` : undefined,
-}));
+const frameStyle = computed(() => (
+  currentSize.value
+    ? {
+        '--ad-width': `${currentSize.value.width}px`,
+        '--ad-height': `${currentSize.value.height}px`,
+        minHeight: `${currentSize.value.height}px`,
+        height: `${currentSize.value.height}px`,
+      }
+    : {}
+));
 
 const insStyle = computed(() => ({
   display: 'block',

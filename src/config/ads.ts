@@ -23,15 +23,15 @@ export const AD_SLOT_IDS = {
   top: {
     desktop: '6154580818', // 970x90
     tablet: '7399148217', // 728x90
-    mobile: '1180072844', // 320x100
+    mobile: '1180072844', // 320x50
   },
   middle: {
     desktop: '2230991134', // 336x280
     mobile: '2549813732', // 300x250
   },
   sidebar: {
-    desktop: '7418997036', // 300x600
-    mobile: '2836236614', // 300x250
+    desktop: '7418997036', // 300x300
+    mobile: '2836236614', // 200x200
   },
 } as const;
 
