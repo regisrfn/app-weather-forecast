@@ -77,7 +77,9 @@ export const parseAdSize = (size?: string | AdSize): ParsedSize | null => {
     return null
   }
 
-  const [w, h] = size.toLowerCase().split('x').map(Number)
+  const [wRaw, hRaw] = size.toLowerCase().split('x')
+  const w = Number(wRaw)
+  const h = Number(hRaw)
   if (Number.isFinite(w) && Number.isFinite(h)) {
     return { width: w, height: h }
   }
