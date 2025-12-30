@@ -43,7 +43,7 @@ export const AD_SIZE_PRESETS: Record<'top' | 'middle' | 'sidebar', AdSize[]> = {
   top: [
     { minWidth: 1280, width: 970, height: 90, slotId: AD_SLOT_IDS.top.desktop },
     { minWidth: 900, width: 728, height: 90, slotId: AD_SLOT_IDS.top.tablet },
-    { minWidth: 0, width: 320, height: 100, slotId: AD_SLOT_IDS.top.mobile },
+    { minWidth: 0, width: 320, height: 50, slotId: AD_SLOT_IDS.top.mobile },
   ],
   middle: [
     { minWidth: 1024, width: 336, height: 280, slotId: AD_SLOT_IDS.middle.desktop },
