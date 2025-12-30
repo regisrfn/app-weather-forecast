@@ -66,8 +66,17 @@ const router = createRouter({
       }
     }
   ],
-  scrollBehavior() {
-    // Sempre rolar para o topo ao navegar
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) return savedPosition
+
+    const samePath = to.path === from.path
+    const paramsUnchanged = JSON.stringify(to.params) === JSON.stringify(from.params)
+    const onlyQueryChanged = samePath && paramsUnchanged && to.fullPath !== from.fullPath
+
+    // Evitar rolagem quando apenas a query muda (ex.: trocar dia/hora no carrossel)
+    if (onlyQueryChanged) return false
+
+    // Navegação real mantém comportamento atual de ir para o topo
     return { top: 0 }
   }
 })
