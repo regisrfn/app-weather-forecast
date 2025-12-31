@@ -56,6 +56,7 @@ const currentSize = ref<AdSize | null>(null);
 const isMounted = ref(false);
 const isLoading = ref(false);
 const isDev = import.meta.env.DEV;
+const lastPushedKey = ref<string | null>(null);
 
 const sortedSizes = computed(() => [...props.sizes].sort((a, b) => b.minWidth - a.minWidth));
 
@@ -96,6 +97,8 @@ const pickSize = () => {
 const pushAdSense = async () => {
   if (!isConfigured.value || !currentSize.value) return;
   if (typeof window === 'undefined') return;
+  const key = adKey.value;
+  if (key && key === lastPushedKey.value) return;
 
   await nextTick();
   if (!adRef.value) return;
@@ -104,6 +107,7 @@ const pushAdSense = async () => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+    lastPushedKey.value = key || null;
   } catch (error) {
     console.warn('Falha ao carregar anúncio', error);
   } finally {
@@ -118,18 +122,13 @@ const handleResize = () => {
     clearTimeout(resizeTimer);
   }
   resizeTimer = window.setTimeout(() => {
-    const previousKey = adKey.value;
     pickSize();
-    if (adKey.value !== previousKey) {
-      pushAdSense();
-    }
   }, 200);
 };
 
 onMounted(() => {
   isMounted.value = true;
   pickSize();
-  pushAdSense();
   window.addEventListener('resize', handleResize, { passive: true });
 });
 
