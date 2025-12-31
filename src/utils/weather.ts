@@ -1,11 +1,11 @@
 // Utilitários de exibição de clima (cores e descrições)
 
 export function getRainfallColor(intensity: number): string {
-  if (intensity === 0) return 'rgba(200, 200, 200, 0.3)';
-  if (intensity < 15) return 'rgba(173, 216, 230, 0.6)';
-  if (intensity < 35) return 'rgba(100, 149, 237, 0.7)';
-  if (intensity < 60) return 'rgba(30, 144, 255, 0.8)';
-  return 'rgba(0, 0, 139, 0.9)';
+  if (intensity === 0) return 'rgba(191, 219, 254, 0.22)'; // Azul bem claro e translúcido - sem chuva
+  if (intensity < 15) return 'rgba(96, 165, 250, 0.55)'; // Azul suave - chuva fraca
+  if (intensity < 35) return 'rgba(37, 99, 235, 0.8)'; // Azul médio mais escuro - chuva moderada
+  if (intensity < 60) return 'rgba(30, 64, 175, 0.88)'; // Azul escuro - chuva forte
+  return 'rgba(15, 23, 42, 0.95)'; // Azul petróleo bem escuro - chuva muito intensa
 }
 
 export function getRainfallDescription(intensity: number): string {
