@@ -72,12 +72,13 @@
 }
 
 .insights-pill {
-  padding: 0.35rem 0.7rem;
+  padding: 0.3rem 0.6rem;
   border-radius: $radius-md;
   background: linear-gradient(120deg, rgba(52, 211, 153, 0.16), rgba(14, 165, 233, 0.12));
   color: var(--home-text-strong);
   border: 1px solid var(--home-border-soft);
   font-weight: $font-semibold;
+  font-size: $font-xs;
   white-space: nowrap;
 }
 
