@@ -434,9 +434,8 @@ const buildCharts = async () => {
             callbacks: {
               label: (context) => {
                 const value = context.parsed as number;
-                const label = context.label ?? '';
                 const suffix = value === 1 ? ' dia' : ' dias';
-                return `${label}: ${value}${suffix}`;
+                return `${value}${suffix}`;
               },
             },
           },
