@@ -108,6 +108,16 @@ const totalDays = computed(() => dailyForecasts.value.length);
 const rainyDays = computed(() =>
   dailyForecasts.value.filter((forecast) => isRainyDay(forecast)).length
 );
+const totalRainVolume = computed(() => {
+  if (!dailyForecasts.value.length) return 0;
+
+  const total = dailyForecasts.value.reduce(
+    (acc, day) => acc + Math.max(0, day.precipitationMm ?? 0),
+    0
+  );
+
+  return Math.round(total);
+});
 const averageRainChance = computed(() => {
   if (!dailyForecasts.value.length) return 0;
   const sum = dailyForecasts.value.reduce((acc, day) => acc + (day.rainProbability ?? 0), 0);
@@ -262,7 +272,7 @@ const chartCards = computed<ChartCard[]>(() => {
       labels: volumeBuckets.map((bucket) => bucket.label),
       values: volumeBuckets.map((bucket) => bucket.count),
       colors: colorPalettes.volume.slice(0, volumeBuckets.length),
-      highlight: rainyDays.value === 0 ? 'Sem chuva' : `${rainyDays.value} dia${rainyDays.value === 1 ? '' : 's'}`,
+      highlight: `${totalRainVolume.value}mm`,
       ariaLabel: 'Pizza com distribuição de volume de chuva em milímetros.',
     },
     {
