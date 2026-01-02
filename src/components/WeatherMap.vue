@@ -273,6 +273,12 @@
             <span>{{ item.label }}</span>
           </div>
         </div>
+
+        <ForecastInsightsCarousel
+          v-if="selectedCity"
+          :city-id="selectedCity.cityId"
+          :city-name="selectedCity.cityName"
+        />
       </section>
 
       <transition name="panel-fade">
@@ -468,6 +474,7 @@ import AdSlot from './AdSlot.vue';
 import WeatherAlerts from './WeatherAlerts.vue';
 import AlertDetailPanel from './AlertDetailPanel.vue';
 import LayerSelector from './LayerSelector.vue';
+import ForecastInsightsCarousel from './ForecastInsightsCarousel.vue';
 import type { AlertSeverity, DataResolution, WeatherAlert, WeatherData } from '../types/weather';
 import { componentLogger } from '../utils/logger';
 import { useTheme } from '../composables/useTheme';
