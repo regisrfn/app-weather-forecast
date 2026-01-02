@@ -9,14 +9,14 @@
         <span class="dot"></span>
         Visão de {{ totalDays }} dias
       </div>
+      <div class="insights-pill" v-if="rainyDays > 0">
+        {{ rainyDays }} dia{{ rainyDays === 1 ? '' : 's' }} com chuva
+      </div>
       <div class="insights-title">
         <h3>Panorama rápido</h3>
         <p>
           {{ cityContextLabel }} nos próximos 16 dias.
         </p>
-      </div>
-      <div class="insights-pill" v-if="rainyDays > 0">
-        {{ rainyDays }} dia{{ rainyDays === 1 ? '' : 's' }} com chuva
       </div>
     </div>
 

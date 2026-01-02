@@ -26,6 +26,8 @@
   gap: 0.8rem;
   flex-wrap: wrap;
   justify-content: space-between;
+  border-bottom: 1px solid var(--home-border-soft);
+  padding-bottom: 0.6rem;
 }
 
 .insights-title {
