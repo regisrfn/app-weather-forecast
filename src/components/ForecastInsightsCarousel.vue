@@ -4,15 +4,15 @@
     class="forecast-insights"
     :aria-busy="isLoading"
   >
-    <div class="insights-header">
-      <div class="insights-eyebrow">
-        <span class="dot"></span>
+    <div class="forecast-insights__header">
+      <div class="forecast-insights__eyebrow">
+        <span class="forecast-insights__eyebrow-dot"></span>
         Visão de {{ totalDays }} dias
       </div>
-      <div class="insights-pill" v-if="rainyDays > 0">
+      <div class="forecast-insights__pill" v-if="rainyDays > 0">
         {{ rainyDays }} dia{{ rainyDays === 1 ? '' : 's' }} com chuva
       </div>
-      <div class="insights-title">
+      <div class="forecast-insights__title">
         <h3>Panorama rápido</h3>
         <p>
           {{ cityContextLabel }} nos próximos 16 dias.
@@ -20,18 +20,18 @@
       </div>
     </div>
 
-    <div v-if="isLoading" class="insights-placeholder" role="status" aria-live="polite">
-      <div class="skeleton-bar"></div>
-      <div class="skeleton-bar short"></div>
-      <div class="skeleton-bar"></div>
+    <div v-if="isLoading" class="forecast-insights__placeholder" role="status" aria-live="polite">
+      <div class="forecast-insights__skeleton-bar"></div>
+      <div class="forecast-insights__skeleton-bar forecast-insights__skeleton-bar--short"></div>
+      <div class="forecast-insights__skeleton-bar"></div>
     </div>
-    <div v-else-if="!hasData" class="insights-empty">
+    <div v-else-if="!hasData" class="forecast-insights__empty">
       <span v-if="hasError">Não foi possível carregar os gráficos agora. Tente novamente em instantes.</span>
       <span v-else>Sem dados suficientes para montar os gráficos agora.</span>
     </div>
-    <div v-else class="insights-carousel-wrapper">
+    <div v-else class="forecast-insights__carousel-wrapper">
       <button
-        class="insights-nav insights-nav--prev"
+        class="forecast-insights__nav forecast-insights__nav--prev"
         type="button"
         @click="scrollPrev"
         :disabled="!canScrollLeft"
@@ -42,40 +42,40 @@
         </svg>
       </button>
 
-      <div class="insights-carousel" ref="carouselTrackRef">
+      <div class="forecast-insights__carousel" ref="carouselTrackRef">
         <article
           v-for="(card, index) in chartCards"
           :key="card.key"
-          class="insight-card"
+          class="forecast-insights__card"
           role="group"
           :aria-label="card.ariaLabel"
         >
-          <div class="card-header">
+          <div class="forecast-insights__card-header">
             <div>
-              <div class="card-kicker">{{ card.kicker }}</div>
-              <div class="card-title">{{ card.title }}</div>
+              <div class="forecast-insights__card-kicker">{{ card.kicker }}</div>
+              <div class="forecast-insights__card-title">{{ card.title }}</div>
             </div>
-            <div class="card-metric">{{ card.highlight }}</div>
+            <div class="forecast-insights__card-metric">{{ card.highlight }}</div>
           </div>
-          <p class="card-description">{{ card.description }}</p>
-          <div class="chart-area">
+          <p class="forecast-insights__card-description">{{ card.description }}</p>
+          <div class="forecast-insights__chart">
             <canvas :ref="(el) => setCanvasRef(el as HTMLCanvasElement | null, index)" :aria-label="card.ariaLabel" role="img"></canvas>
           </div>
-          <div class="card-legend">
+          <div class="forecast-insights__legend">
             <div
               v-for="(label, idx) in card.labels"
               :key="`${card.key}-${label}`"
-              class="legend-item"
+              class="forecast-insights__legend-item"
             >
-              <span class="legend-dot" :style="{ backgroundColor: card.colors[idx] }"></span>
-              <span class="legend-text">{{ label }}</span>
+              <span class="forecast-insights__legend-dot" :style="{ backgroundColor: card.colors[idx] }"></span>
+              <span class="forecast-insights__legend-text">{{ label }}</span>
             </div>
           </div>
         </article>
       </div>
 
       <button
-        class="insights-nav insights-nav--next"
+        class="forecast-insights__nav forecast-insights__nav--next"
         type="button"
         @click="scrollNext"
         :disabled="!canScrollRight"
@@ -347,7 +347,7 @@ const getScrollStep = () => {
   const track = carouselTrackRef.value;
   if (!track) return 320;
 
-  const card = track.querySelector<HTMLElement>('.insight-card');
+  const card = track.querySelector<HTMLElement>('.forecast-insights__card');
   const styles = getComputedStyle(track);
   const gap = parseFloat(styles.columnGap || styles.gap || '0') || 12;
 
