@@ -79,6 +79,60 @@
   white-space: nowrap;
 }
 
+.insights-carousel-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  min-width: 0;
+
+  @include md {
+    gap: 0.3rem;
+  }
+}
+
+.insights-nav {
+  @include reset-button;
+  width: 36px;
+  height: 36px;
+  border-radius: $radius-full;
+  border: 1px solid var(--home-border-soft);
+  background: var(--home-control-bg);
+  color: var(--home-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--home-shadow-soft);
+  transition: $transition-fast;
+  flex-shrink: 0;
+
+  @include md {
+    width: 34px;
+    height: 34px;
+  }
+
+  &:hover:not(:disabled) {
+    color: var(--home-text-strong);
+    background: linear-gradient(135deg, rgba(47, 107, 216, 0.14), rgba(52, 211, 153, 0.14));
+    border-color: var(--home-border-strong);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
 .insights-carousel {
   display: grid;
   grid-auto-flow: column;
@@ -91,6 +145,9 @@
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x mandatory;
   align-items: stretch;
+  flex: 1;
+  min-width: 0;
+  scroll-behavior: smooth;
 
   @include md {
     grid-auto-columns: 82%;

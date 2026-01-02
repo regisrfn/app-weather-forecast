@@ -29,43 +29,69 @@
       <span v-if="hasError">Não foi possível carregar os gráficos agora. Tente novamente em instantes.</span>
       <span v-else>Sem dados suficientes para montar os gráficos agora.</span>
     </div>
-    <div v-else class="insights-carousel">
-      <article
-        v-for="(card, index) in chartCards"
-        :key="card.key"
-        class="insight-card"
-        role="group"
-        :aria-label="card.ariaLabel"
+    <div v-else class="insights-carousel-wrapper">
+      <button
+        class="insights-nav insights-nav--prev"
+        type="button"
+        @click="scrollPrev"
+        :disabled="!canScrollLeft"
+        aria-label="Cartões anteriores"
       >
-        <div class="card-header">
-          <div>
-            <div class="card-kicker">{{ card.kicker }}</div>
-            <div class="card-title">{{ card.title }}</div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+
+      <div class="insights-carousel" ref="carouselTrackRef">
+        <article
+          v-for="(card, index) in chartCards"
+          :key="card.key"
+          class="insight-card"
+          role="group"
+          :aria-label="card.ariaLabel"
+        >
+          <div class="card-header">
+            <div>
+              <div class="card-kicker">{{ card.kicker }}</div>
+              <div class="card-title">{{ card.title }}</div>
+            </div>
+            <div class="card-metric">{{ card.highlight }}</div>
           </div>
-          <div class="card-metric">{{ card.highlight }}</div>
-        </div>
-        <p class="card-description">{{ card.description }}</p>
-        <div class="chart-area">
-          <canvas :ref="(el) => setCanvasRef(el as HTMLCanvasElement | null, index)" :aria-label="card.ariaLabel" role="img"></canvas>
-        </div>
-        <div class="card-legend">
-          <div
-            v-for="(label, idx) in card.labels"
-            :key="`${card.key}-${label}`"
-            class="legend-item"
-          >
-            <span class="legend-dot" :style="{ backgroundColor: card.colors[idx] }"></span>
-            <span class="legend-text">{{ label }}</span>
+          <p class="card-description">{{ card.description }}</p>
+          <div class="chart-area">
+            <canvas :ref="(el) => setCanvasRef(el as HTMLCanvasElement | null, index)" :aria-label="card.ariaLabel" role="img"></canvas>
           </div>
-        </div>
-      </article>
+          <div class="card-legend">
+            <div
+              v-for="(label, idx) in card.labels"
+              :key="`${card.key}-${label}`"
+              class="legend-item"
+            >
+              <span class="legend-dot" :style="{ backgroundColor: card.colors[idx] }"></span>
+              <span class="legend-text">{{ label }}</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <button
+        class="insights-nav insights-nav--next"
+        type="button"
+        @click="scrollNext"
+        :disabled="!canScrollRight"
+        aria-label="Próximos cartões"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
 import { ArcElement, Chart as ChartJS, DoughnutController, Legend, Tooltip } from 'chart.js';
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useTheme } from '../composables/useTheme';
 import { getCityWeatherDetailed } from '../services/apiService';
 import type { DailyForecast } from '../types/weather';
@@ -98,6 +124,9 @@ const dailyForecasts = ref<DailyForecast[]>([]);
 const isLoading = ref<boolean>(false);
 const canvasRefs = ref<Array<HTMLCanvasElement | null>>([]);
 const chartInstances = ref<Array<ChartJS<'doughnut'>>>([]);
+const carouselTrackRef = ref<HTMLElement | null>(null);
+const canScrollLeft = ref(false);
+const canScrollRight = ref(false);
 
 const setCanvasRef = (el: HTMLCanvasElement | null, index: number) => {
   if (!el) return;
@@ -300,6 +329,57 @@ const chartCards = computed<ChartCard[]>(() => {
   ];
 });
 
+const updateScrollButtons = () => {
+  const track = carouselTrackRef.value;
+  if (!track) {
+    canScrollLeft.value = false;
+    canScrollRight.value = false;
+    return;
+  }
+
+  const { scrollLeft, scrollWidth, clientWidth } = track;
+  const maxScrollLeft = Math.max(0, scrollWidth - clientWidth);
+  canScrollLeft.value = scrollLeft > 2;
+  canScrollRight.value = scrollLeft < maxScrollLeft - 2;
+};
+
+const getScrollStep = () => {
+  const track = carouselTrackRef.value;
+  if (!track) return 320;
+
+  const card = track.querySelector<HTMLElement>('.insight-card');
+  const styles = getComputedStyle(track);
+  const gap = parseFloat(styles.columnGap || styles.gap || '0') || 12;
+
+  if (!card) return 320 + gap;
+
+  return card.clientWidth + gap;
+};
+
+const scrollPrev = () => {
+  const track = carouselTrackRef.value;
+  if (!track) return;
+  track.scrollBy({ left: -getScrollStep(), behavior: 'smooth' });
+};
+
+const scrollNext = () => {
+  const track = carouselTrackRef.value;
+  if (!track) return;
+  track.scrollBy({ left: getScrollStep(), behavior: 'smooth' });
+};
+
+const resetCarouselPosition = () => {
+  const track = carouselTrackRef.value;
+  if (!track) {
+    canScrollLeft.value = false;
+    canScrollRight.value = false;
+    return;
+  }
+
+  track.scrollTo({ left: 0, behavior: 'auto' });
+  updateScrollButtons();
+};
+
 const destroyCharts = () => {
   chartInstances.value.forEach((chart) => chart.destroy());
   chartInstances.value = [];
@@ -400,16 +480,44 @@ watch(
 
 watch(
   [chartCards, isDark],
-  () => {
+  async () => {
     if (!chartCards.value.length) {
       destroyCharts();
+      resetCarouselPosition();
       return;
     }
-    buildCharts();
+    await buildCharts();
+    await nextTick();
+    updateScrollButtons();
   }
 );
 
+watch(chartCards, async () => {
+  await nextTick();
+  resetCarouselPosition();
+  updateScrollButtons();
+});
+
+watch(carouselTrackRef, (track, previous) => {
+  if (previous) {
+    previous.removeEventListener('scroll', updateScrollButtons);
+  }
+
+  if (track) {
+    track.addEventListener('scroll', updateScrollButtons);
+    updateScrollButtons();
+  }
+});
+
+onMounted(() => {
+  window.addEventListener('resize', updateScrollButtons);
+});
+
 onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateScrollButtons);
+  if (carouselTrackRef.value) {
+    carouselTrackRef.value.removeEventListener('scroll', updateScrollButtons);
+  }
   destroyCharts();
 });
 </script>
