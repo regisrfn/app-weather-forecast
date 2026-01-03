@@ -5,7 +5,7 @@ export function getRainfallColor(intensity: number): string {
   if (intensity < 15) return 'rgba(96, 165, 250, 0.55)'; // Azul suave - chuva fraca
   if (intensity < 35) return 'rgba(37, 99, 235, 0.8)'; // Azul médio mais escuro - chuva moderada
   if (intensity < 60) return 'rgba(30, 64, 175, 0.88)'; // Azul escuro - chuva forte
-  return 'rgba(15, 23, 42, 0.95)'; // Azul petróleo bem escuro - chuva muito intensa
+  return 'rgba(11, 5, 69, 0.8)'; // Azul petróleo bem escuro - chuva muito intensa
 }
 
 export function getRainfallDescription(intensity: number): string {
