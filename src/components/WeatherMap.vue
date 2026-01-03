@@ -478,6 +478,8 @@ import ForecastInsightsCarousel from './ForecastInsightsCarousel.vue';
 import type { AlertSeverity, DataResolution, WeatherAlert, WeatherData } from '../types/weather';
 import { componentLogger } from '../utils/logger';
 import { useTheme } from '../composables/useTheme';
+import { searchMunicipalities } from '../utils/citySearch';
+import type { Municipality } from '../types/municipality';
 
 const logger = componentLogger('WeatherMap');
 
@@ -518,9 +520,9 @@ type SidebarCity = {
 };
 
 // Dados dos municípios
-const municipalities = ref<Array<{ id: string; name: string; state: string; latitude: number; longitude: number }>>([]);
+const municipalities = ref<Municipality[]>([]);
 const searchQuery = ref<string>('');
-const filteredCities = ref<Array<{ id: string; name: string; state: string; latitude: number; longitude: number }>>([]);
+const filteredCities = ref<Municipality[]>([]);
 const sidebarCities = ref<SidebarCity[]>([]);
 const mapCities = ref<SidebarCity[]>([]);
 
@@ -751,33 +753,8 @@ const loadMunicipalities = async () => {
   }
 };
 
-/**
- * Normaliza string removendo acentos, cedilha e convertendo para minúsculas
- */
-const normalizeString = (str: string): string => {
-  return str
-    .toLowerCase()
-    .normalize('NFD') // Decompõe caracteres acentuados
-    .replace(/[\u0300-\u036f]/g, '') // Remove marcas diacríticas (acentos)
-    .replace(/ç/g, 'c') // Substitui ç por c
-    .replace(/[^a-z0-9\s]/g, ''); // Remove outros caracteres especiais
-};
-
 const filterCities = () => {
-  if (searchQuery.value.length < 2) {
-    filteredCities.value = [];
-    return;
-  }
-  
-  const normalizedQuery = normalizeString(searchQuery.value);
-  
-  filteredCities.value = municipalities.value.filter(city => {
-    const normalizedName = normalizeString(city.name);
-    const normalizedState = normalizeString(city.state);
-    
-    return normalizedName.includes(normalizedQuery) || 
-           normalizedState.includes(normalizedQuery);
-  });
+  filteredCities.value = searchMunicipalities(municipalities.value, searchQuery.value);
 };
 
 const selectCity = (city: SidebarCity) => {

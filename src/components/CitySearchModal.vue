@@ -68,18 +68,8 @@
 
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue';
-
-interface Municipality {
-  id: string;
-  name: string;
-  state: string;
-  state_name: string;
-  microregion: string;
-  mesoregion: string;
-  region: string;
-  latitude: number;
-  longitude: number;
-}
+import { searchMunicipalities } from '../utils/citySearch';
+import type { Municipality } from '../types/municipality';
 
 interface Props {
   isOpen: boolean;
@@ -100,18 +90,6 @@ const isSearching = ref(false);
 const filteredCities = ref<Municipality[]>([]);
 
 /**
- * Normaliza string removendo acentos, cedilha e convertendo para minúsculas
- */
-const normalizeString = (str: string): string => {
-  return str
-    .toLowerCase()
-    .normalize('NFD') // Decompõe caracteres acentuados
-    .replace(/[\u0300-\u036f]/g, '') // Remove marcas diacríticas (acentos)
-    .replace(/ç/g, 'c') // Substitui ç por c
-    .replace(/[^a-z0-9\s]/g, ''); // Remove outros caracteres especiais
-};
-
-/**
  * Filtra cidades conforme digitação
  */
 const handleSearchInput = () => {
@@ -119,52 +97,7 @@ const handleSearchInput = () => {
   
   // Debounce simples
   setTimeout(() => {
-    const query = searchQuery.value.trim();
-    
-    if (!query || query.length < 2) {
-      filteredCities.value = [];
-      isSearching.value = false;
-      return;
-    }
-    
-    const normalizedQuery = normalizeString(query);
-    
-    // Filtrar e ordenar cidades por relevância
-    const matchedCities = props.municipalities
-      .filter(city => {
-        const normalizedName = normalizeString(city.name);
-        const normalizedState = normalizeString(city.state);
-        const normalizedStateName = normalizeString(city.state_name);
-        
-        return normalizedName.includes(normalizedQuery) ||
-               normalizedState.includes(normalizedQuery) ||
-               normalizedStateName.includes(normalizedQuery);
-      })
-      .map(city => {
-        const normalizedName = normalizeString(city.name);
-        const normalizedState = normalizeString(city.state);
-        const normalizedStateName = normalizeString(city.state_name);
-        
-        // Calcular score de relevância
-        let score = 0;
-        
-        // Match exato tem prioridade máxima
-        if (normalizedName === normalizedQuery) score = 1000;
-        // Match que começa com a query
-        else if (normalizedName.startsWith(normalizedQuery)) score = 500;
-        // Match que contém a query
-        else if (normalizedName.includes(normalizedQuery)) score = 100;
-        // Match no estado
-        else if (normalizedState === normalizedQuery || normalizedStateName === normalizedQuery) score = 50;
-        else if (normalizedState.includes(normalizedQuery) || normalizedStateName.includes(normalizedQuery)) score = 10;
-        
-        return { city, score };
-      })
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 50)
-      .map(item => item.city);
-    
-    filteredCities.value = matchedCities;
+    filteredCities.value = searchMunicipalities(props.municipalities, searchQuery.value);
     isSearching.value = false;
   }, 150);
 };
