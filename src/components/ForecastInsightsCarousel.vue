@@ -170,7 +170,12 @@ const colorPalettes = {
   // Claro -> escuro, respeitando intensidade
   probability: ['#dbeafe', '#93c5fd', '#60a5fa', '#2563eb'],
   volume: ['#e5e7eb', '#cbd5e1', '#93c5fd', '#3b82f6', '#1e3a8a'],
-  temperature: ['#ffedd5', '#fdba74', '#f97316', '#ea580c'],
+  temperature: [
+    'rgba(99, 179, 237, 0.85)', // < 18°C
+    'rgba(74, 222, 240, 0.9)',  // 18 - 24°C
+    'rgba(255, 200, 124, 0.9)', // 24 - 32°C
+    'rgba(248, 113, 113, 0.95)', // > 32°C
+  ],
   sky: ['#fef9c3', '#fde68a', '#cbd5e1', '#1d4ed8'],
 };
 
@@ -226,17 +231,17 @@ const buildVolumeBuckets = () => {
 
 const buildTemperatureBuckets = () => {
   const buckets = [
-    { label: '< 22°C', count: 0 },
-    { label: '22-28°C', count: 0 },
-    { label: '28-34°C', count: 0 },
-    { label: '> 34°C', count: 0 },
+    { label: '< 18°C', count: 0 },
+    { label: '18 - 24°C', count: 0 },
+    { label: '24 - 32°C', count: 0 },
+    { label: '> 32°C', count: 0 },
   ];
 
   dailyForecasts.value.forEach((forecast) => {
     const maxTemp = forecast.tempMax ?? forecast.tempMin ?? 0;
-    if (maxTemp < 22) buckets[0]!.count += 1;
-    else if (maxTemp < 28) buckets[1]!.count += 1;
-    else if (maxTemp < 34) buckets[2]!.count += 1;
+    if (maxTemp < 18) buckets[0]!.count += 1;
+    else if (maxTemp < 24) buckets[1]!.count += 1;
+    else if (maxTemp < 32) buckets[2]!.count += 1;
     else buckets[3]!.count += 1;
   });
 
