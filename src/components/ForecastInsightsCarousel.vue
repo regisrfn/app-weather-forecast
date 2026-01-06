@@ -140,10 +140,12 @@ const rainyDays = computed(() =>
 const totalRainVolume = computed(() => {
   if (!dailyForecasts.value.length) return 0;
 
-  const total = dailyForecasts.value.reduce(
-    (acc, day) => acc + Math.max(0, day.precipitationMm ?? 0),
-    0
-  );
+  const total = dailyForecasts.value.reduce((acc, day) => {
+    const intensity = day.rainfallIntensity ?? 0;
+    if (intensity <= 0) return acc;
+
+    return acc + Math.max(0, day.precipitationMm ?? 0);
+  }, 0);
 
   return Math.round(total);
 });
