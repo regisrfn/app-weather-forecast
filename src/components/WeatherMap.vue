@@ -814,7 +814,8 @@ const getTemperatureColor = (temperature: number) => {
   if (temperature < 18) return 'rgba(99, 179, 237, 0.85)';
   if (temperature < 24) return 'rgba(74, 222, 240, 0.9)';
   if (temperature < 32) return 'rgba(255, 200, 124, 0.9)';
-  return 'rgba(248, 113, 113, 0.95)';
+  if (temperature < 36) return 'rgba(248, 150, 113, 0.95)';
+  return 'rgba(220, 38, 38, 0.95)';
 };
 
 const getWindColor = (windSpeed: number) => {
@@ -917,7 +918,8 @@ const legendItems = computed(() => {
       { color: getTemperatureColor(15), label: '< 18°C' },
       { color: getTemperatureColor(20), label: '18 - 24°C' },
       { color: getTemperatureColor(28), label: '24 - 32°C' },
-      { color: getTemperatureColor(35), label: '> 32°C' },
+      { color: getTemperatureColor(34), label: '32 - 36°C' },
+      { color: getTemperatureColor(38), label: '> 36°C' },
     ];
   }
 
