@@ -953,11 +953,11 @@ const legendItems = computed(() => {
   }
 
   return [
-    { color: getRainfallColor(0), label: '0 - Sem chuva' },
-    { color: getRainfallColor(7.5), label: '< 15 - Fraca' },
-    { color: getRainfallColor(25), label: '15-35 - Moderada' },
-    { color: getRainfallColor(45), label: '35-60 - Forte' },
-    { color: getRainfallColor(70), label: '> 60 - Intensa' },
+    { color: getRainfallColor(0), label: 'Sem chuva' },
+    { color: getRainfallColor(7.5), label: 'Fraca' },
+    { color: getRainfallColor(25), label: 'Moderada' },
+    { color: getRainfallColor(45), label: 'Forte' },
+    { color: getRainfallColor(70), label: 'Intensa' },
   ];
 });
 
@@ -1041,7 +1041,7 @@ const getTooltipContent = (cityName: string, weather: WeatherData): string => {
   }
 
   const intensity = getRainIntensityValue(weather);
-  return `<b>${cityName}</b><br>Intensidade: ${intensity.toFixed(0)} - ${getRainfallDescription(intensity)}`;
+  return `<b>${cityName}</b><br>${getRainfallDescription(intensity)}`;
 };
 
 const initMap = () => {
